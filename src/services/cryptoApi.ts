@@ -1,6 +1,10 @@
 // Serviços de APIs para análise cripto
-const COINGECKO_API_KEY = 'CG-VSFBbjoxdooFJDrBNn9PmqPQ';
-const COINMARKETCAP_API_KEY = '2ed85355-d461-44da-9073-23c826aa4e8d';
+const getApiKeys = () => {
+  return {
+    coingecko: localStorage.getItem('coingecko_api_key') || '',
+    coinmarketcap: localStorage.getItem('coinmarketcap_api_key') || ''
+  };
+};
 
 export interface CryptoData {
   id: string;
@@ -39,8 +43,9 @@ export interface TechnicalIndicators {
 // CoinGecko API
 export const fetchCryptoData = async (): Promise<CryptoData[]> => {
   try {
+    const { coingecko } = getApiKeys();
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false&x_cg_demo_api_key=${COINGECKO_API_KEY}`
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false&x_cg_demo_api_key=${coingecko}`
     );
     return await response.json();
   } catch (error) {
@@ -51,8 +56,9 @@ export const fetchCryptoData = async (): Promise<CryptoData[]> => {
 
 export const fetchHistoricalData = async (coinId: string, days: number = 30) => {
   try {
+    const { coingecko } = getApiKeys();
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&x_cg_demo_api_key=${COINGECKO_API_KEY}`
+      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&x_cg_demo_api_key=${coingecko}`
     );
     return await response.json();
   } catch (error) {
@@ -76,11 +82,12 @@ export const fetchFearGreedIndex = async (): Promise<FearGreedData | null> => {
 // CoinMarketCap para dominância
 export const fetchMarketDominance = async (): Promise<DominanceData | null> => {
   try {
+    const { coinmarketcap } = getApiKeys();
     const response = await fetch(
       'https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/latest',
       {
         headers: {
-          'X-CMC_PRO_API_KEY': COINMARKETCAP_API_KEY,
+          'X-CMC_PRO_API_KEY': coinmarketcap,
           'Accept': 'application/json'
         }
       }
