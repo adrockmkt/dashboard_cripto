@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
   fetchCryptoData, 
@@ -12,7 +13,7 @@ import {
   type FearGreedData,
   type DominanceData 
 } from "@/services/cryptoApi";
-import { AlertTriangle, TrendingUp, TrendingDown, Clock } from "lucide-react";
+import { AlertTriangle, TrendingUp, TrendingDown, Clock, RefreshCw } from "lucide-react";
 
 const DailyReport = () => {
   const [dominanceData, setDominanceData] = useState<DominanceData | null>(null);
@@ -71,34 +72,37 @@ const DailyReport = () => {
     return alerts;
   };
 
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        // Buscar dados em paralelo
-        const [dominance, fearGreed, btcHistorical] = await Promise.all([
-          fetchMarketDominance(),
-          fetchFearGreedIndex(),
-          fetchHistoricalData('bitcoin', 200)
-        ]);
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      console.log('Iniciando carregamento de dados...');
+      // Buscar dados em paralelo
+      const [dominance, fearGreed, btcHistorical] = await Promise.all([
+        fetchMarketDominance(),
+        fetchFearGreedIndex(),
+        fetchHistoricalData('bitcoin', 200)
+      ]);
 
-        setDominanceData(dominance);
-        setFearGreedData(fearGreed);
+      console.log('Dados recebidos:', { dominance, fearGreed, btcHistorical });
 
-        if (btcHistorical?.prices) {
-          const prices = btcHistorical.prices.map((item: [number, number]) => item[1]);
-          const indicators = calculateTechnicalIndicators(prices);
-          setTechnicalIndicators(indicators);
-        }
+      setDominanceData(dominance);
+      setFearGreedData(fearGreed);
 
-        setLastUpdate(new Date().toLocaleString('pt-BR'));
-      } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-      } finally {
-        setLoading(false);
+      if (btcHistorical?.prices) {
+        const prices = btcHistorical.prices.map((item: [number, number]) => item[1]);
+        const indicators = calculateTechnicalIndicators(prices);
+        setTechnicalIndicators(indicators);
       }
-    };
 
+      setLastUpdate(new Date().toLocaleString('pt-BR'));
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadData();
     // Atualizar a cada 5 minutos
     const interval = setInterval(loadData, 5 * 60 * 1000);
@@ -123,16 +127,29 @@ const DailyReport = () => {
       {/* Header do Relatório */}
       <Card className="glass-card">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold flex items-center gap-2">
-            <Clock className="w-6 h-6" />
-            {getGreeting()}
-          </CardTitle>
-          <p className="text-muted-foreground">
-            Aqui está o relatório diário do mercado cripto:
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Última atualização: {lastUpdate}
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl font-bold flex items-center gap-2">
+                <Clock className="w-6 h-6" />
+                {getGreeting()}
+              </CardTitle>
+              <p className="text-muted-foreground">
+                Aqui está o relatório diário do mercado cripto:
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Última atualização: {lastUpdate}
+              </p>
+            </div>
+            <Button 
+              onClick={loadData} 
+              disabled={loading}
+              variant="outline"
+              size="sm"
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Atualizar
+            </Button>
+          </div>
         </CardHeader>
       </Card>
 
