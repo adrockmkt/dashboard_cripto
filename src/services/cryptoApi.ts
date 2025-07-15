@@ -40,13 +40,12 @@ export interface TechnicalIndicators {
   fibonacciLevels: number[];
 }
 
-// CoinGecko API
+// CoinGecko API - usando endpoint público sem CORS
 export const fetchCryptoData = async (): Promise<CryptoData[]> => {
   try {
-    const { coingecko } = getApiKeys();
-    console.log('CoinGecko API Key:', coingecko ? 'Configurada' : 'Não encontrada');
+    console.log('Buscando dados de criptomoedas...');
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false&x_cg_demo_api_key=${coingecko}`
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false`
     );
     const data = await response.json();
     console.log('CoinGecko response:', data);
@@ -59,11 +58,13 @@ export const fetchCryptoData = async (): Promise<CryptoData[]> => {
 
 export const fetchHistoricalData = async (coinId: string, days: number = 30) => {
   try {
-    const { coingecko } = getApiKeys();
+    console.log(`Buscando dados históricos para ${coinId}...`);
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&x_cg_demo_api_key=${coingecko}`
+      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`
     );
-    return await response.json();
+    const data = await response.json();
+    console.log('Dados históricos recebidos:', data);
+    return data;
   } catch (error) {
     console.error('Erro ao buscar dados históricos:', error);
     return null;
@@ -84,27 +85,22 @@ export const fetchFearGreedIndex = async (): Promise<FearGreedData | null> => {
   }
 };
 
-// CoinMarketCap para dominância
+// Usar CoinGecko para dominância também (solução alternativa)
 export const fetchMarketDominance = async (): Promise<DominanceData | null> => {
   try {
-    const { coinmarketcap } = getApiKeys();
-    console.log('CoinMarketCap API Key:', coinmarketcap ? 'Configurada' : 'Não encontrada');
-    const response = await fetch(
-      'https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/latest',
-      {
-        headers: {
-          'X-CMC_PRO_API_KEY': coinmarketcap,
-          'Accept': 'application/json'
-        }
-      }
-    );
+    console.log('Buscando dominância via CoinGecko...');
+    const response = await fetch('https://api.coingecko.com/api/v3/global');
     const data = await response.json();
-    console.log('CoinMarketCap response:', data);
-    return {
-      btc_dominance: data.data.btc_dominance_percentage,
-      altcoins_cap: data.data.altcoin_market_cap,
-      total_market_cap: data.data.quote.USD.total_market_cap
-    };
+    console.log('CoinGecko global response:', data);
+    
+    if (data?.data) {
+      return {
+        btc_dominance: data.data.market_cap_percentage?.btc || 0,
+        altcoins_cap: data.data.total_market_cap?.usd - (data.data.total_market_cap?.usd * (data.data.market_cap_percentage?.btc || 0) / 100),
+        total_market_cap: data.data.total_market_cap?.usd || 0
+      };
+    }
+    return null;
   } catch (error) {
     console.error('Erro ao buscar dominância de mercado:', error);
     return null;
