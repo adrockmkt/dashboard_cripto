@@ -9,6 +9,7 @@ import DailyReport from "@/components/DailyReport";
 import AdvancedCharts from "@/components/AdvancedCharts";
 import AlertsPanel from "@/components/AlertsPanel";
 import ApiKeyConfig from "@/components/ApiKeyConfig";
+import Footer from "@/components/Footer";
 import { useCryptoAnalysis, useCryptoAlerts } from "@/hooks/useCryptoAnalysis";
 import { RefreshCw, TrendingUp } from "lucide-react";
 
@@ -100,6 +101,8 @@ const Index = () => {
             <CryptoList />
           </TabsContent>
         </Tabs>
+        
+        <Footer />
       </div>
     </div>
   );
