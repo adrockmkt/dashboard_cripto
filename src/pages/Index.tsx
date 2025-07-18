@@ -4,6 +4,7 @@ import MarketStats from "@/components/MarketStats";
 import CryptoChart from "@/components/CryptoChart";
 import PortfolioCard from "@/components/PortfolioCard";
 import CryptoList from "@/components/CryptoList";
+import CryptoTable from "@/components/CryptoTable";
 import DailyReport from "@/components/DailyReport";
 import AdvancedCharts from "@/components/AdvancedCharts";
 import AlertsPanel from "@/components/AlertsPanel";
@@ -68,6 +69,7 @@ const Index = () => {
           <TabsContent value="dashboard" className="space-y-6">
             <MarketStats />
             <DailyReport />
+            <CryptoTable />
           </TabsContent>
 
           <TabsContent value="report" className="space-y-6">

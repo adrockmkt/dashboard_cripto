@@ -45,10 +45,26 @@ export const fetchCryptoData = async (): Promise<CryptoData[]> => {
   try {
     console.log('Buscando dados de criptomoedas...');
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false`
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false`,
+      {
+        headers: {
+          'Accept': 'application/json',
+        }
+      }
     );
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const data = await response.json();
     console.log('CoinGecko response:', data);
+    
+    if (!Array.isArray(data)) {
+      console.error('Resposta inesperada da API:', data);
+      return [];
+    }
+    
     return data;
   } catch (error) {
     console.error('Erro ao buscar dados do CoinGecko:', error);
@@ -60,10 +76,26 @@ export const fetchHistoricalData = async (coinId: string, days: number = 30) => 
   try {
     console.log(`Buscando dados históricos para ${coinId}...`);
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`
+      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`,
+      {
+        headers: {
+          'Accept': 'application/json',
+        }
+      }
     );
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const data = await response.json();
     console.log('Dados históricos recebidos:', data);
+    
+    if (!data.prices || !Array.isArray(data.prices)) {
+      console.error('Dados históricos inválidos:', data);
+      return null;
+    }
+    
     return data;
   } catch (error) {
     console.error('Erro ao buscar dados históricos:', error);
@@ -75,10 +107,25 @@ export const fetchHistoricalData = async (coinId: string, days: number = 30) => 
 export const fetchFearGreedIndex = async (): Promise<FearGreedData | null> => {
   try {
     console.log('Buscando Fear & Greed Index...');
-    const response = await fetch('https://api.alternative.me/fng/');
+    const response = await fetch('https://api.alternative.me/fng/', {
+      headers: {
+        'Accept': 'application/json',
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const data = await response.json();
     console.log('Fear & Greed response:', data);
-    return data.data[0];
+    
+    if (data?.data && Array.isArray(data.data) && data.data[0]) {
+      return data.data[0];
+    }
+    
+    console.error('Dados de Fear & Greed inválidos:', data);
+    return null;
   } catch (error) {
     console.error('Erro ao buscar Fear & Greed Index:', error);
     return null;
@@ -89,17 +136,31 @@ export const fetchFearGreedIndex = async (): Promise<FearGreedData | null> => {
 export const fetchMarketDominance = async (): Promise<DominanceData | null> => {
   try {
     console.log('Buscando dominância via CoinGecko...');
-    const response = await fetch('https://api.coingecko.com/api/v3/global');
+    const response = await fetch('https://api.coingecko.com/api/v3/global', {
+      headers: {
+        'Accept': 'application/json',
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const data = await response.json();
     console.log('CoinGecko global response:', data);
     
-    if (data?.data) {
+    if (data?.data?.market_cap_percentage?.btc && data?.data?.total_market_cap?.usd) {
+      const btcDominance = data.data.market_cap_percentage.btc;
+      const totalMarketCap = data.data.total_market_cap.usd;
+      
       return {
-        btc_dominance: data.data.market_cap_percentage?.btc || 0,
-        altcoins_cap: data.data.total_market_cap?.usd - (data.data.total_market_cap?.usd * (data.data.market_cap_percentage?.btc || 0) / 100),
-        total_market_cap: data.data.total_market_cap?.usd || 0
+        btc_dominance: btcDominance,
+        altcoins_cap: totalMarketCap * (100 - btcDominance) / 100,
+        total_market_cap: totalMarketCap
       };
     }
+    
+    console.error('Dados de dominância inválidos:', data);
     return null;
   } catch (error) {
     console.error('Erro ao buscar dominância de mercado:', error);
