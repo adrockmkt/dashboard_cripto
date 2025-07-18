@@ -110,8 +110,8 @@ const CryptoTable = () => {
           })
         );
         
-        // Delay menor entre chunks e melhor tratamento de erros
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Delay maior entre chunks para evitar rate limiting
+        await new Promise(resolve => setTimeout(resolve, 2000));
       }
       
       setLastUpdate(new Date().toLocaleString('pt-BR'));
@@ -124,8 +124,8 @@ const CryptoTable = () => {
 
   useEffect(() => {
     loadCryptoData();
-    // Atualizar a cada 10 minutos
-    const interval = setInterval(loadCryptoData, 10 * 60 * 1000);
+    // Atualizar a cada 15 minutos (menos frequente para evitar rate limit)
+    const interval = setInterval(loadCryptoData, 15 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
