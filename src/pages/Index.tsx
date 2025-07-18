@@ -23,7 +23,12 @@ const Index = () => {
         <header className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
+              <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
+                <img 
+                  src="/lovable-uploads/f9adaae1-4eb9-43b8-9d30-50c6204dd06b.png" 
+                  alt="Ad Rock Digital MKT Logo" 
+                  className="w-10 h-10 object-contain"
+                />
                 <TrendingUp className="w-8 h-8 text-primary" />
                 Análise Cripto Avançada
               </h1>
