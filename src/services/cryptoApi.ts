@@ -127,12 +127,14 @@ export const fetchHistoricalData = async (coinId: string, days: number = 30) => 
   try {
     console.log(`Buscando dados históricos para ${coinId}...`);
     
-    const corsProxy = 'https://api.allorigins.win/raw?url=';
-    const url = encodeURIComponent(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`);
+    // Primeiro tenta com cors-anywhere proxy
+    const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+    const url = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`;
     
     const response = await fetch(`${corsProxy}${url}`, {
       headers: {
         'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
       }
     });
     
@@ -151,9 +153,39 @@ export const fetchHistoricalData = async (coinId: string, days: number = 30) => 
     
     return data;
   } catch (error) {
-    console.error('Erro ao buscar dados históricos:', error);
-    console.log('Usando dados históricos de fallback...');
-    return generateFallbackHistoricalData(days);
+    console.error('Erro ao buscar dados históricos (primeiro proxy):', error);
+    
+    // Fallback para allorigins proxy
+    try {
+      console.log('Tentando com proxy alternativo...');
+      const corsProxy = 'https://api.allorigins.win/raw?url=';
+      const url = encodeURIComponent(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`);
+      
+      const response = await fetch(`${corsProxy}${url}`, {
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Dados históricos recebidos do proxy alternativo:', data);
+      
+      if (!data.prices || !Array.isArray(data.prices)) {
+        console.error('Dados históricos inválidos do proxy alternativo:', data);
+        console.log('Usando dados históricos de fallback...');
+        return generateFallbackHistoricalData(days);
+      }
+      
+      return data;
+    } catch (fallbackError) {
+      console.error('Erro ao buscar dados históricos (proxy alternativo):', fallbackError);
+      console.log('Usando dados históricos de fallback...');
+      return generateFallbackHistoricalData(days);
+    }
   }
 };
 
