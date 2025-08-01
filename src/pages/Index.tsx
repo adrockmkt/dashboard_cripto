@@ -23,14 +23,15 @@ const Index = () => {
         <header className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
+              <h1 className="text-2xl md:text-3xl font-bold mb-2 flex items-center gap-2 md:gap-3">
                 <img 
-                  src="/lovable-uploads/f9adaae1-4eb9-43b8-9d30-50c6204dd06b.png" 
+                  src="./lovable-uploads/f9adaae1-4eb9-43b8-9d30-50c6204dd06b.png" 
                   alt="Ad Rock Digital MKT Logo" 
-                  className="w-10 h-10 object-contain"
+                  className="w-8 h-8 md:w-10 md:h-10 object-contain"
                 />
-                <TrendingUp className="w-8 h-8 text-primary" />
-                Análise Cripto Avançada
+                <TrendingUp className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+                <span className="hidden sm:inline">Análise Cripto Avançada</span>
+                <span className="sm:hidden">Análise Cripto</span>
               </h1>
               <p className="text-muted-foreground">
                 Relatórios técnicos e fundamentalistas do mercado de criptomoedas
@@ -64,12 +65,12 @@ const Index = () => {
         </header>
 
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="report">Relatório Diário</TabsTrigger>
-            <TabsTrigger value="charts">Gráficos Avançados</TabsTrigger>
-            <TabsTrigger value="alerts">Alertas & Config</TabsTrigger>
-            <TabsTrigger value="legacy">Visão Clássica</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
+            <TabsTrigger value="dashboard" className="text-xs md:text-sm">Dashboard</TabsTrigger>
+            <TabsTrigger value="report" className="text-xs md:text-sm">Relatório</TabsTrigger>
+            <TabsTrigger value="charts" className="text-xs md:text-sm">Gráficos</TabsTrigger>
+            <TabsTrigger value="alerts" className="text-xs md:text-sm">Alertas</TabsTrigger>
+            <TabsTrigger value="legacy" className="text-xs md:text-sm">Clássica</TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">

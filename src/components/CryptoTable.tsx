@@ -22,6 +22,7 @@ import { RefreshCw, TrendingUp, TrendingDown } from "lucide-react";
 interface CryptoWithIndicators extends CryptoData {
   indicators?: TechnicalIndicators;
   isLoading?: boolean;
+  image?: string;
 }
 
 const CryptoTable = () => {
@@ -187,7 +188,7 @@ const CryptoTable = () => {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <img 
-                        src={`https://assets.coingecko.com/coins/images/${crypto.id.replace(/-/g, '')}/small/1.png`}
+                        src={crypto.image || `https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa5/32/icon/${crypto.symbol.toLowerCase()}.png`}
                         alt={crypto.name}
                         className="w-6 h-6 rounded-full"
                         onError={(e) => {
