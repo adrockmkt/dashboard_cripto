@@ -25,7 +25,7 @@ const Index = () => {
             <div>
               <h1 className="text-2xl md:text-3xl font-bold mb-2 flex items-center gap-2 md:gap-3">
                 <img 
-                  src="./lovable-uploads/f9adaae1-4eb9-43b8-9d30-50c6204dd06b.png" 
+                  src="/lovable-uploads/f9adaae1-4eb9-43b8-9d30-50c6204dd06b.png" 
                   alt="Ad Rock Digital MKT Logo" 
                   className="w-8 h-8 md:w-10 md:h-10 object-contain"
                 />
@@ -65,13 +65,15 @@ const Index = () => {
         </header>
 
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
-            <TabsTrigger value="dashboard" className="text-xs md:text-sm">Dashboard</TabsTrigger>
-            <TabsTrigger value="report" className="text-xs md:text-sm">Relatório</TabsTrigger>
-            <TabsTrigger value="charts" className="text-xs md:text-sm">Gráficos</TabsTrigger>
-            <TabsTrigger value="alerts" className="text-xs md:text-sm">Alertas</TabsTrigger>
-            <TabsTrigger value="legacy" className="text-xs md:text-sm">Clássica</TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto pb-2">
+            <TabsList className="grid w-full min-w-max grid-cols-5 gap-1 h-auto p-1">
+              <TabsTrigger value="dashboard" className="text-xs md:text-sm px-2 py-2 whitespace-nowrap">Dashboard</TabsTrigger>
+              <TabsTrigger value="report" className="text-xs md:text-sm px-2 py-2 whitespace-nowrap">Relatório</TabsTrigger>
+              <TabsTrigger value="charts" className="text-xs md:text-sm px-2 py-2 whitespace-nowrap">Gráficos</TabsTrigger>
+              <TabsTrigger value="alerts" className="text-xs md:text-sm px-2 py-2 whitespace-nowrap">Alertas</TabsTrigger>
+              <TabsTrigger value="legacy" className="text-xs md:text-sm px-2 py-2 whitespace-nowrap">Clássica</TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="dashboard" className="space-y-6">
             <MarketStats />

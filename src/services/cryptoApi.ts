@@ -76,11 +76,11 @@ export const fetchCryptoData = async (): Promise<CryptoData[]> => {
   try {
     console.log('Buscando dados de criptomoedas...');
     
-    // Tenta primeiro com proxy CORS
-    const corsProxy = 'https://api.allorigins.win/raw?url=';
-    const url = encodeURIComponent('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false');
+    // Tenta primeiro diretamente com a chave de API
+    const apiKey = 'CG-VSFBbjoxdooFJDrBNn9PmqPQ';
+    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false&x_cg_demo_api_key=${apiKey}`;
     
-    const response = await fetch(`${corsProxy}${url}`, {
+    const response = await fetch(url, {
       headers: {
         'Accept': 'application/json',
       }
@@ -127,14 +127,13 @@ export const fetchHistoricalData = async (coinId: string, days: number = 30) => 
   try {
     console.log(`Buscando dados históricos para ${coinId}...`);
     
-    // Primeiro tenta com cors-anywhere proxy
-    const corsProxy = 'https://cors-anywhere.herokuapp.com/';
-    const url = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`;
+    // Tenta primeiro diretamente com a chave de API
+    const apiKey = 'CG-VSFBbjoxdooFJDrBNn9PmqPQ';
+    const url = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&x_cg_demo_api_key=${apiKey}`;
     
-    const response = await fetch(`${corsProxy}${url}`, {
+    const response = await fetch(url, {
       headers: {
         'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
       }
     });
     
