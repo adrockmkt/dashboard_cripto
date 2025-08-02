@@ -2,11 +2,35 @@ import { ArrowUpIcon, ArrowDownIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 const fetchCryptoData = async () => {
-  const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=5&page=1&sparkline=false');
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
+  try {
+    // Usar CoinCap API primeiro
+    const response = await fetch('https://api.coincap.io/v2/assets?limit=5');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    
+    // Converter dados do CoinCap para formato esperado
+    return data.data.map((crypto: any) => ({
+      id: crypto.id,
+      symbol: crypto.symbol,
+      name: crypto.name,
+      current_price: parseFloat(crypto.priceUsd),
+      price_change_percentage_24h: parseFloat(crypto.changePercent24Hr),
+      total_volume: parseFloat(crypto.volumeUsd24Hr) || 0,
+      image: `https://assets.coincap.io/assets/icons/${crypto.symbol.toLowerCase()}@2x.png`
+    }));
+  } catch (error) {
+    console.error('Erro ao buscar dados:', error);
+    // Dados mock como fallback
+    return [
+      { id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin', current_price: 45000, price_change_percentage_24h: 2.5, total_volume: 1000000000 },
+      { id: 'ethereum', symbol: 'ETH', name: 'Ethereum', current_price: 3000, price_change_percentage_24h: -1.2, total_volume: 500000000 },
+      { id: 'binancecoin', symbol: 'BNB', name: 'BNB', current_price: 300, price_change_percentage_24h: 0.8, total_volume: 200000000 },
+      { id: 'solana', symbol: 'SOL', name: 'Solana', current_price: 100, price_change_percentage_24h: 3.2, total_volume: 150000000 },
+      { id: 'cardano', symbol: 'ADA', name: 'Cardano', current_price: 0.5, price_change_percentage_24h: -0.5, total_volume: 80000000 }
+    ];
   }
-  return response.json();
 };
 
 const CryptoList = () => {

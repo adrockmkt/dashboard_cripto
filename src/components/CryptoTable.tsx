@@ -55,19 +55,22 @@ const CryptoTable = () => {
         return;
       }
       
-      // Buscar mais cryptos se necessário
+      // Buscar mais cryptos se necessário via CoinCap
       if (cryptoData.length < 20) {
-        const response = await fetch(
-          'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false',
-          {
-            headers: {
-              'Accept': 'application/json',
-            }
-          }
-        );
+        const response = await fetch('https://api.coincap.io/v2/assets?limit=20');
         
         if (response.ok) {
-          const moreData = await response.json();
+          const coinCapData = await response.json();
+          const moreData = coinCapData.data.map((crypto: any) => ({
+            id: crypto.id,
+            symbol: crypto.symbol,
+            name: crypto.name,
+            current_price: parseFloat(crypto.priceUsd),
+            price_change_percentage_24h: parseFloat(crypto.changePercent24Hr),
+            market_cap: parseFloat(crypto.marketCapUsd),
+            total_volume: parseFloat(crypto.volumeUsd24Hr) || 0,
+            image: `https://assets.coincap.io/assets/icons/${crypto.symbol.toLowerCase()}@2x.png`
+          }));
           if (Array.isArray(moreData)) {
             cryptoData.push(...moreData.slice(cryptoData.length));
           }
