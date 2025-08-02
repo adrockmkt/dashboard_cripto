@@ -71,38 +71,74 @@ const fallbackCryptoData: CryptoData[] = [
   }
 ];
 
-// CoinGecko API com proxy CORS e fallback
+// APIs alternativas gratuitas e confiáveis
 export const fetchCryptoData = async (): Promise<CryptoData[]> => {
   try {
-    console.log('Buscando dados de criptomoedas...');
+    console.log('🚀 Buscando dados de criptomoedas via CoinCap...');
     
-    // Tenta primeiro diretamente com a chave de API
-    const apiKey = 'CG-VSFBbjoxdooFJDrBNn9PmqPQ';
-    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false&x_cg_demo_api_key=${apiKey}`;
-    
-    const response = await fetch(url, {
-      headers: {
-        'Accept': 'application/json',
+    // Primeira alternativa: CoinCap API (100% gratuita, sem limitações)
+    try {
+      const response = await fetch('https://api.coincap.io/v2/assets?limit=20');
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ CoinCap funcionou! Recebidos:', data.data?.length || 0, 'cryptos');
+        
+        // Converter formato CoinCap para nosso formato
+        const cryptos = data.data.map((coin: any, index: number) => ({
+          id: coin.id,
+          symbol: coin.symbol.toLowerCase(),
+          name: coin.name,
+          image: `https://assets.coincap.io/assets/icons/${coin.symbol.toLowerCase()}@2x.png`,
+          current_price: parseFloat(coin.priceUsd),
+          market_cap: parseFloat(coin.marketCapUsd || 0),
+          market_cap_rank: index + 1,
+          price_change_percentage_24h: parseFloat(coin.changePercent24Hr || 0),
+          total_volume: parseFloat(coin.volumeUsd24Hr || 0)
+        }));
+        
+        return cryptos;
       }
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    } catch (error) {
+      console.log('❌ CoinCap falhou, tentando CryptoCompare...', error);
     }
-    
-    const data = await response.json();
-    console.log('CoinGecko response:', data);
-    
-    if (!Array.isArray(data)) {
-      console.error('Resposta inesperada da API:', data);
-      console.log('Usando dados de fallback...');
-      return fallbackCryptoData;
+
+    // Segunda alternativa: CryptoCompare API (gratuita)
+    try {
+      console.log('🔄 Tentando CryptoCompare...');
+      const response = await fetch('https://min-api.cryptocompare.com/data/top/mktcapfull?limit=20&tsym=USD');
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ CryptoCompare funcionou! Recebidos:', data.Data?.length || 0, 'cryptos');
+        
+        const cryptos = data.Data.map((item: any, index: number) => {
+          const coin = item.CoinInfo;
+          const display = item.DISPLAY?.USD || {};
+          const raw = item.RAW?.USD || {};
+          
+          return {
+            id: coin.Name.toLowerCase(),
+            symbol: coin.Name.toLowerCase(),
+            name: coin.FullName,
+            image: `https://www.cryptocompare.com${coin.ImageUrl}`,
+            current_price: raw.PRICE || 0,
+            market_cap: raw.MKTCAP || 0,
+            market_cap_rank: index + 1,
+            price_change_percentage_24h: raw.CHANGEPCT24HOUR || 0,
+            total_volume: raw.VOLUME24HOUR || 0
+          };
+        });
+        
+        return cryptos;
+      }
+    } catch (error) {
+      console.log('❌ CryptoCompare falhou:', error);
     }
+
+    console.log('⚠️ Todas as APIs falharam, usando dados de exemplo...');
+    return fallbackCryptoData;
     
-    return data;
   } catch (error) {
-    console.error('Erro ao buscar dados do CoinGecko:', error);
-    console.log('Usando dados de fallback...');
+    console.error('❌ Erro geral ao buscar dados:', error);
     return fallbackCryptoData;
   }
 };
@@ -125,66 +161,81 @@ const generateFallbackHistoricalData = (days: number = 30) => {
 
 export const fetchHistoricalData = async (coinId: string, days: number = 30) => {
   try {
-    console.log(`Buscando dados históricos para ${coinId}...`);
+    console.log(`📈 Buscando dados históricos para ${coinId} (${days} dias)...`);
     
-    // Tenta primeiro diretamente com a chave de API
-    const apiKey = 'CG-VSFBbjoxdooFJDrBNn9PmqPQ';
-    const url = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&x_cg_demo_api_key=${apiKey}`;
-    
-    const response = await fetch(url, {
-      headers: {
-        'Accept': 'application/json',
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    console.log('Dados históricos recebidos:', data);
-    
-    if (!data.prices || !Array.isArray(data.prices)) {
-      console.error('Dados históricos inválidos:', data);
-      console.log('Usando dados históricos de fallback...');
-      return generateFallbackHistoricalData(days);
-    }
-    
-    return data;
-  } catch (error) {
-    console.error('Erro ao buscar dados históricos (primeiro proxy):', error);
-    
-    // Fallback para allorigins proxy
+    // Primeira alternativa: CoinCap API para dados históricos
     try {
-      console.log('Tentando com proxy alternativo...');
-      const corsProxy = 'https://api.allorigins.win/raw?url=';
-      const url = encodeURIComponent(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`);
+      const interval = days <= 1 ? 'h1' : days <= 7 ? 'h6' : days <= 30 ? 'h12' : 'd1';
+      const response = await fetch(`https://api.coincap.io/v2/assets/${coinId}/history?interval=${interval}`);
       
-      const response = await fetch(`${corsProxy}${url}`, {
-        headers: {
-          'Accept': 'application/json',
+      if (response.ok) {
+        const data = await response.json();
+        if (data.data && Array.isArray(data.data)) {
+          // Pegar os últimos pontos baseado no período
+          const maxPoints = days <= 7 ? days * 4 : days <= 30 ? days * 2 : days;
+          const prices: [number, number][] = data.data
+            .slice(-maxPoints)
+            .map((item: any) => [item.time, parseFloat(item.priceUsd)]);
+          
+          console.log(`✅ CoinCap histórico funcionou: ${prices.length} pontos`);
+          return { prices };
         }
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
-      const data = await response.json();
-      console.log('Dados históricos recebidos do proxy alternativo:', data);
-      
-      if (!data.prices || !Array.isArray(data.prices)) {
-        console.error('Dados históricos inválidos do proxy alternativo:', data);
-        console.log('Usando dados históricos de fallback...');
-        return generateFallbackHistoricalData(days);
-      }
-      
-      return data;
-    } catch (fallbackError) {
-      console.error('Erro ao buscar dados históricos (proxy alternativo):', fallbackError);
-      console.log('Usando dados históricos de fallback...');
-      return generateFallbackHistoricalData(days);
+    } catch (error) {
+      console.log('❌ CoinCap histórico falhou:', error);
     }
+
+    // Segunda alternativa: gerar dados baseados no preço atual
+    console.log('🔄 Gerando dados históricos simulados baseados no preço atual...');
+    
+    // Buscar preço atual
+    let currentPrice = 45000; // Default para Bitcoin
+    try {
+      const currentResponse = await fetch(`https://api.coincap.io/v2/assets/${coinId}`);
+      if (currentResponse.ok) {
+        const currentData = await currentResponse.json();
+        currentPrice = parseFloat(currentData.data?.priceUsd || currentPrice);
+        console.log(`💰 Preço atual de ${coinId}: $${currentPrice}`);
+      }
+    } catch (e) {
+      console.log('⚠️ Usando preço padrão');
+    }
+    
+    // Gerar dados históricos realistas
+    const prices: [number, number][] = [];
+    const now = Date.now();
+    const pointsPerDay = days <= 7 ? 24 : days <= 30 ? 4 : 1;
+    const totalPoints = days * pointsPerDay;
+    const intervalMs = (24 * 60 * 60 * 1000) / pointsPerDay;
+    
+    let basePrice = currentPrice * (0.90 + Math.random() * 0.20); // Começar entre 90-110% do preço atual
+    
+    for (let i = 0; i < totalPoints; i++) {
+      const timestamp = now - ((totalPoints - 1 - i) * intervalMs);
+      
+      // Simular movimento mais realista com tendências
+      const progress = i / totalPoints;
+      const trend = Math.sin(progress * Math.PI * 2) * 0.01; // Oscilação suave
+      const volatility = (Math.random() - 0.5) * 0.02; // Volatilidade 2%
+      const growth = (progress * 0.1) - 0.05; // Crescimento até o preço atual
+      
+      basePrice *= (1 + trend + volatility + (growth / totalPoints));
+      basePrice = Math.max(basePrice, currentPrice * 0.5); // Não deixar cair muito
+      
+      prices.push([timestamp, basePrice]);
+    }
+    
+    // Ajustar último preço para o preço atual
+    if (prices.length > 0) {
+      prices[prices.length - 1][1] = currentPrice;
+    }
+    
+    console.log(`📊 Dados simulados gerados: ${prices.length} pontos para ${coinId}`);
+    return { prices };
+    
+  } catch (error) {
+    console.error(`❌ Erro geral ao buscar dados históricos para ${coinId}:`, error);
+    return generateFallbackHistoricalData(days);
   }
 };
 
