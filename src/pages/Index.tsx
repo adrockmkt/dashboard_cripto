@@ -66,12 +66,12 @@ const Index = () => {
 
         <Tabs defaultValue="dashboard" className="w-full">
           <div className="overflow-x-auto pb-2">
-            <TabsList className="grid w-full min-w-max grid-cols-5 gap-1 h-auto p-1">
-              <TabsTrigger value="dashboard" className="text-xs md:text-sm px-2 py-2 whitespace-nowrap">Dashboard</TabsTrigger>
-              <TabsTrigger value="report" className="text-xs md:text-sm px-2 py-2 whitespace-nowrap">Relatório</TabsTrigger>
-              <TabsTrigger value="charts" className="text-xs md:text-sm px-2 py-2 whitespace-nowrap">Gráficos</TabsTrigger>
-              <TabsTrigger value="alerts" className="text-xs md:text-sm px-2 py-2 whitespace-nowrap">Alertas</TabsTrigger>
-              <TabsTrigger value="legacy" className="text-xs md:text-sm px-2 py-2 whitespace-nowrap">Clássica</TabsTrigger>
+            <TabsList className="flex w-full min-w-max gap-1 h-auto p-1">
+              <TabsTrigger value="dashboard" className="flex-1 text-xs md:text-sm px-1 md:px-2 py-2 whitespace-nowrap">Dashboard</TabsTrigger>
+              <TabsTrigger value="report" className="flex-1 text-xs md:text-sm px-1 md:px-2 py-2 whitespace-nowrap">Relatório</TabsTrigger>
+              <TabsTrigger value="charts" className="flex-1 text-xs md:text-sm px-1 md:px-2 py-2 whitespace-nowrap">Gráficos</TabsTrigger>
+              <TabsTrigger value="alerts" className="flex-1 text-xs md:text-sm px-1 md:px-2 py-2 whitespace-nowrap">Alertas</TabsTrigger>
+              <TabsTrigger value="legacy" className="flex-1 text-xs md:text-sm px-1 md:px-2 py-2 whitespace-nowrap">Clássica</TabsTrigger>
             </TabsList>
           </div>
 
