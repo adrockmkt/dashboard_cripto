@@ -163,21 +163,40 @@ export const fetchHistoricalData = async (coinId: string, days: number = 30) => 
   try {
     console.log(`📈 Buscando dados históricos para ${coinId} (${days} dias)...`);
     
-    // Primeira alternativa: CoinCap API para dados históricos
+    // Mapear IDs para CoinCap
+    const coinMap: { [key: string]: string } = {
+      'bitcoin': 'bitcoin',
+      'ethereum': 'ethereum',
+      'sui': 'sui',
+      'wrapped-beacon-eth': 'ethereum',
+      'bitcoin-cash': 'bitcoin-cash', 
+      'chainlink': 'chainlink',
+      'hedera-hashgraph': 'hedera-hashgraph'
+    };
+    
+    const mappedCoinId = coinMap[coinId] || coinId;
+    
+    // Primeira alternativa: CoinCap API para dados históricos  
     try {
-      const interval = days <= 1 ? 'h1' : days <= 7 ? 'h6' : days <= 30 ? 'h12' : 'd1';
-      const response = await fetch(`https://api.coincap.io/v2/assets/${coinId}/history?interval=${interval}`);
+      const endTime = Date.now();
+      const startTime = endTime - (days * 24 * 60 * 60 * 1000);
+      const interval = days <= 7 ? 'h6' : 'd1';
+      
+      const response = await fetch(
+        `https://api.coincap.io/v2/assets/${mappedCoinId}/history?interval=${interval}&start=${startTime}&end=${endTime}`
+      );
       
       if (response.ok) {
-        const data = await response.json();
-        if (data.data && Array.isArray(data.data)) {
-          // Pegar os últimos pontos baseado no período
-          const maxPoints = days <= 7 ? days * 4 : days <= 30 ? days * 2 : days;
-          const prices: [number, number][] = data.data
-            .slice(-maxPoints)
-            .map((item: any) => [item.time, parseFloat(item.priceUsd)]);
+        const result = await response.json();
+        console.log('📊 Resposta CoinCap:', result);
+        
+        if (result?.data && Array.isArray(result.data) && result.data.length > 0) {
+          const prices: [number, number][] = result.data.map((item: any) => [
+            parseInt(item.time),
+            parseFloat(item.priceUsd)
+          ]);
           
-          console.log(`✅ CoinCap histórico funcionou: ${prices.length} pontos`);
+          console.log(`✅ CoinCap histórico OK: ${prices.length} pontos`);
           return { prices };
         }
       }

@@ -66,12 +66,22 @@ const Index = () => {
 
         <Tabs defaultValue="dashboard" className="w-full">
           <div className="overflow-x-auto pb-2">
-            <TabsList className="flex w-full min-w-max gap-1 h-auto p-1">
-              <TabsTrigger value="dashboard" className="flex-1 text-xs md:text-sm px-1 md:px-2 py-2 whitespace-nowrap">Dashboard</TabsTrigger>
-              <TabsTrigger value="report" className="flex-1 text-xs md:text-sm px-1 md:px-2 py-2 whitespace-nowrap">Relatório</TabsTrigger>
-              <TabsTrigger value="charts" className="flex-1 text-xs md:text-sm px-1 md:px-2 py-2 whitespace-nowrap">Gráficos</TabsTrigger>
-              <TabsTrigger value="alerts" className="flex-1 text-xs md:text-sm px-1 md:px-2 py-2 whitespace-nowrap">Alertas</TabsTrigger>
-              <TabsTrigger value="legacy" className="flex-1 text-xs md:text-sm px-1 md:px-2 py-2 whitespace-nowrap">Clássica</TabsTrigger>
+            <TabsList className="grid grid-cols-5 w-full min-w-[500px] h-auto p-1">
+              <TabsTrigger value="dashboard" className="text-[10px] sm:text-xs md:text-sm px-1 py-2 min-w-0">
+                <span className="truncate">Dashboard</span>
+              </TabsTrigger>
+              <TabsTrigger value="report" className="text-[10px] sm:text-xs md:text-sm px-1 py-2 min-w-0">
+                <span className="truncate">Relatório</span>
+              </TabsTrigger>
+              <TabsTrigger value="charts" className="text-[10px] sm:text-xs md:text-sm px-1 py-2 min-w-0">
+                <span className="truncate">Gráficos</span>
+              </TabsTrigger>
+              <TabsTrigger value="alerts" className="text-[10px] sm:text-xs md:text-sm px-1 py-2 min-w-0">
+                <span className="truncate">Alertas</span>
+              </TabsTrigger>
+              <TabsTrigger value="legacy" className="text-[10px] sm:text-xs md:text-sm px-1 py-2 min-w-0">
+                <span className="truncate">Clássica</span>
+              </TabsTrigger>
             </TabsList>
           </div>
 
