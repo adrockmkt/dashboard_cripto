@@ -10,16 +10,22 @@ const CryptoChart = () => {
   useEffect(() => {
     const loadChartData = async () => {
       try {
+        console.log('🚀 Carregando dados do gráfico Bitcoin...');
         const data = await fetchHistoricalData('bitcoin', 30);
+        console.log('📊 Dados recebidos:', data);
+        
         if (data?.prices) {
           const formattedData = data.prices.map((item: [number, number]) => ({
             date: new Date(item[0]).toLocaleDateString(),
             price: item[1]
           }));
+          console.log('✅ Dados formatados para o gráfico:', formattedData.length, 'pontos');
           setChartData(formattedData);
+        } else {
+          console.error('❌ Dados inválidos recebidos:', data);
         }
       } catch (error) {
-        console.error('Erro ao carregar dados do gráfico:', error);
+        console.error('❌ Erro ao carregar dados do gráfico:', error);
       } finally {
         setLoading(false);
       }
