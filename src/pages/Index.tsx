@@ -25,7 +25,7 @@ const Index = () => {
             <div>
               <h1 className="text-2xl md:text-3xl font-bold mb-2 flex items-center gap-2 md:gap-3">
                 <img 
-                  src="/lovable-uploads/f9adaae1-4eb9-43b8-9d30-50c6204dd06b.png" 
+                  src="./lovable-uploads/f9adaae1-4eb9-43b8-9d30-50c6204dd06b.png" 
                   alt="Ad Rock Digital MKT Logo" 
                   className="w-8 h-8 md:w-10 md:h-10 object-contain"
                 />
