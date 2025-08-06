@@ -88,7 +88,7 @@ export const fetchCryptoData = async (): Promise<CryptoData[]> => {
           id: coin.id,
           symbol: coin.symbol.toLowerCase(),
           name: coin.name,
-          image: `https://assets.coincap.io/assets/icons/${coin.symbol.toLowerCase()}@2x.png`,
+          image: `https://cryptologos.cc/logos/${coin.name.toLowerCase().replace(/\s+/g, '-')}-${coin.symbol.toLowerCase()}-logo.png`,
           current_price: parseFloat(coin.priceUsd),
           market_cap: parseFloat(coin.marketCapUsd || 0),
           market_cap_rank: index + 1,
