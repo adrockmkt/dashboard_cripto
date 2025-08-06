@@ -166,7 +166,7 @@ export const fetchHistoricalData = async (coinId: string, days: number = 30) => 
     // Usar CoinGecko API (sem CORS issues)
     try {
       const response = await fetch(
-        `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&interval=daily`
+        `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&interval=daily&precision=2`
       );
       
       if (response.ok) {

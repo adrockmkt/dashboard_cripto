@@ -191,7 +191,7 @@ const CryptoTable = () => {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <img 
-                        src={crypto.image || `https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa5/32/icon/${crypto.symbol.toLowerCase()}.png`}
+                        src={crypto.image || `https://assets.coingecko.com/coins/images/1/small/${crypto.id}.png`}
                         alt={crypto.name}
                         className="w-6 h-6 rounded-full"
                         onError={(e) => {
