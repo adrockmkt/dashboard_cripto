@@ -9,26 +9,56 @@ const fetchCryptoData = async () => {
       throw new Error('Network response was not ok');
     }
     const data = await response.json();
-    
-    // Converter dados do CoinCap para formato esperado
-    return data.data.map((crypto: any) => ({
-      id: crypto.id,
-      symbol: crypto.symbol,
-      name: crypto.name,
-      current_price: parseFloat(crypto.priceUsd),
-      price_change_percentage_24h: parseFloat(crypto.changePercent24Hr),
-      total_volume: parseFloat(crypto.volumeUsd24Hr) || 0,
-      image: `https://assets.coincap.io/assets/icons/${crypto.symbol.toLowerCase()}@2x.png`
+
+    // Mapa local para principais moedas
+    const iconMap: Record<string, string> = {
+      bitcoin: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png",
+      ethereum: "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
+      binancecoin: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png",
+      bnb: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png",
+      solana: "https://assets.coingecko.com/coins/images/4128/large/solana.png",
+      cardano: "https://assets.coingecko.com/coins/images/975/large/cardano.png"
+    };
+
+    return await Promise.all(data.data.map(async (crypto: any) => {
+      let imageUrl = "";
+      try {
+        // Tenta buscar imagem do CoinGecko
+        const coingeckoResp = await fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}`);
+        if (coingeckoResp.ok) {
+          const coingeckoData = await coingeckoResp.json();
+          imageUrl = coingeckoData.image?.large || coingeckoData.image?.thumb || "";
+        }
+      } catch (e) {
+        // ignora erro, tenta fallback
+      }
+      // Se falhar ou não houver imagem, tenta pelo mapa local
+      if (!imageUrl) {
+        imageUrl = iconMap[crypto.id] || iconMap[crypto.symbol.toLowerCase()] || "";
+      }
+      // Se ainda não houver imagem, usa placeholder
+      if (!imageUrl) {
+        imageUrl = "/placeholder.png";
+      }
+      return {
+        id: crypto.id,
+        symbol: crypto.symbol,
+        name: crypto.name,
+        current_price: parseFloat(crypto.priceUsd),
+        price_change_percentage_24h: parseFloat(crypto.changePercent24Hr),
+        total_volume: parseFloat(crypto.volumeUsd24Hr) || 0,
+        image: imageUrl,
+      };
     }));
   } catch (error) {
     console.error('Erro ao buscar dados:', error);
     // Dados mock como fallback
     return [
-      { id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin', current_price: 45000, price_change_percentage_24h: 2.5, total_volume: 1000000000 },
-      { id: 'ethereum', symbol: 'ETH', name: 'Ethereum', current_price: 3000, price_change_percentage_24h: -1.2, total_volume: 500000000 },
-      { id: 'binancecoin', symbol: 'BNB', name: 'BNB', current_price: 300, price_change_percentage_24h: 0.8, total_volume: 200000000 },
-      { id: 'solana', symbol: 'SOL', name: 'Solana', current_price: 100, price_change_percentage_24h: 3.2, total_volume: 150000000 },
-      { id: 'cardano', symbol: 'ADA', name: 'Cardano', current_price: 0.5, price_change_percentage_24h: -0.5, total_volume: 80000000 }
+      { id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin', current_price: 45000, price_change_percentage_24h: 2.5, total_volume: 1000000000, image: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png" },
+      { id: 'ethereum', symbol: 'ETH', name: 'Ethereum', current_price: 3000, price_change_percentage_24h: -1.2, total_volume: 500000000, image: "https://assets.coingecko.com/coins/images/279/large/ethereum.png" },
+      { id: 'binancecoin', symbol: 'BNB', name: 'BNB', current_price: 300, price_change_percentage_24h: 0.8, total_volume: 200000000, image: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png" },
+      { id: 'solana', symbol: 'SOL', name: 'Solana', current_price: 100, price_change_percentage_24h: 3.2, total_volume: 150000000, image: "https://assets.coingecko.com/coins/images/4128/large/solana.png" },
+      { id: 'cardano', symbol: 'ADA', name: 'Cardano', current_price: 0.5, price_change_percentage_24h: -0.5, total_volume: 80000000, image: "https://assets.coingecko.com/coins/images/975/large/cardano.png" }
     ];
   }
 };
@@ -62,7 +92,7 @@ const CryptoList = () => {
               <tr key={crypto.symbol} className="border-t border-secondary">
                 <td className="py-4">
                   <div className="flex items-center gap-2">
-                    <img src={crypto.image} alt={crypto.name} className="w-8 h-8 rounded-full" />
+                    <img src={crypto.image} alt={crypto.name} className="w-8 h-8 rounded-full" onError={(e) => (e.currentTarget.src = "/placeholder.png")} />
                     <div>
                       <p className="font-medium">{crypto.name}</p>
                       <p className="text-sm text-muted-foreground">{crypto.symbol.toUpperCase()}</p>

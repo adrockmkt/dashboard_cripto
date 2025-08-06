@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useState, useEffect } from 'react';
 import { fetchHistoricalData } from '@/services/cryptoApi';
+import { AdvancedRealTimeChart } from "react-ts-tradingview-widgets";
 
 const CryptoChart = () => {
   const [chartData, setChartData] = useState<any[]>([]);
@@ -53,38 +54,7 @@ const CryptoChart = () => {
       </CardHeader>
       <CardContent>
         <div className="h-[400px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-              <XAxis 
-                dataKey="date" 
-                className="text-muted-foreground"
-                tick={{ fontSize: 12 }}
-              />
-              <YAxis 
-                className="text-muted-foreground"
-                tick={{ fontSize: 12 }}
-                tickFormatter={(value) => `$${value.toLocaleString()}`}
-              />
-              <Tooltip 
-                formatter={(value: number) => [`$${value.toLocaleString()}`, 'Preço']}
-                labelFormatter={(label) => `Data: ${label}`}
-                contentStyle={{
-                  backgroundColor: 'hsl(var(--card))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '8px'
-                }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="price" 
-                stroke="hsl(var(--primary))" 
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          <AdvancedRealTimeChart symbol="BINANCE:BTCUSDT" theme="dark" autosize />
         </div>
       </CardContent>
     </Card>
