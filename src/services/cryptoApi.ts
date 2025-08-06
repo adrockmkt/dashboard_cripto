@@ -74,32 +74,32 @@ const fallbackCryptoData: CryptoData[] = [
 // APIs alternativas gratuitas e confiáveis
 export const fetchCryptoData = async (): Promise<CryptoData[]> => {
   try {
-    console.log('🚀 Buscando dados de criptomoedas via CoinCap...');
+    console.log('🚀 Buscando dados de criptomoedas via CoinGecko...');
     
-    // Primeira alternativa: CoinCap API (100% gratuita, sem limitações)
+    // Usar CoinGecko API (funciona melhor em produção)
     try {
-      const response = await fetch('https://api.coincap.io/v2/assets?limit=20');
+      const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false&price_change_percentage=24h');
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ CoinCap funcionou! Recebidos:', data.data?.length || 0, 'cryptos');
+        console.log('✅ CoinGecko funcionou! Recebidos:', data?.length || 0, 'cryptos');
         
-        // Converter formato CoinCap para nosso formato
-        const cryptos = data.data.map((coin: any, index: number) => ({
+        // Converter formato CoinGecko para nosso formato
+        const cryptos = data.map((coin: any) => ({
           id: coin.id,
           symbol: coin.symbol.toLowerCase(),
           name: coin.name,
-          image: `https://cryptologos.cc/logos/${coin.name.toLowerCase().replace(/\s+/g, '-')}-${coin.symbol.toLowerCase()}-logo.png`,
-          current_price: parseFloat(coin.priceUsd),
-          market_cap: parseFloat(coin.marketCapUsd || 0),
-          market_cap_rank: index + 1,
-          price_change_percentage_24h: parseFloat(coin.changePercent24Hr || 0),
-          total_volume: parseFloat(coin.volumeUsd24Hr || 0)
+          image: coin.image,
+          current_price: coin.current_price,
+          market_cap: coin.market_cap,
+          market_cap_rank: coin.market_cap_rank,
+          price_change_percentage_24h: coin.price_change_percentage_24h || 0,
+          total_volume: coin.total_volume || 0
         }));
         
         return cryptos;
       }
     } catch (error) {
-      console.log('❌ CoinCap falhou, tentando CryptoCompare...', error);
+      console.log('❌ CoinGecko falhou, tentando CryptoCompare...', error);
     }
 
     // Segunda alternativa: CryptoCompare API (gratuita)
@@ -163,57 +163,40 @@ export const fetchHistoricalData = async (coinId: string, days: number = 30) => 
   try {
     console.log(`📈 Buscando dados históricos para ${coinId} (${days} dias)...`);
     
-    // Mapear IDs para CoinCap
-    const coinMap: { [key: string]: string } = {
-      'bitcoin': 'bitcoin',
-      'ethereum': 'ethereum',
-      'sui': 'sui',
-      'wrapped-beacon-eth': 'ethereum',
-      'bitcoin-cash': 'bitcoin-cash', 
-      'chainlink': 'chainlink',
-      'hedera-hashgraph': 'hedera-hashgraph'
-    };
-    
-    const mappedCoinId = coinMap[coinId] || coinId;
-    
-    // Primeira alternativa: CoinCap API para dados históricos  
+    // Usar CoinGecko API (sem CORS issues)
     try {
-      const endTime = Date.now();
-      const startTime = endTime - (days * 24 * 60 * 60 * 1000);
-      const interval = days <= 7 ? 'h6' : 'd1';
-      
       const response = await fetch(
-        `https://api.coincap.io/v2/assets/${mappedCoinId}/history?interval=${interval}&start=${startTime}&end=${endTime}`
+        `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&interval=daily`
       );
       
       if (response.ok) {
         const result = await response.json();
-        console.log('📊 Resposta CoinCap:', result);
+        console.log('📊 Resposta CoinGecko histórico:', result);
         
-        if (result?.data && Array.isArray(result.data) && result.data.length > 0) {
-          const prices: [number, number][] = result.data.map((item: any) => [
-            parseInt(item.time),
-            parseFloat(item.priceUsd)
+        if (result?.prices && Array.isArray(result.prices) && result.prices.length > 0) {
+          const prices: [number, number][] = result.prices.map(([timestamp, price]: [number, number]) => [
+            timestamp,
+            price
           ]);
           
-          console.log(`✅ CoinCap histórico OK: ${prices.length} pontos`);
+          console.log(`✅ CoinGecko histórico OK: ${prices.length} pontos`);
           return { prices };
         }
       }
     } catch (error) {
-      console.log('❌ CoinCap histórico falhou:', error);
+      console.log('❌ CoinGecko histórico falhou:', error);
     }
 
-    // Segunda alternativa: gerar dados baseados no preço atual
-    console.log('🔄 Gerando dados históricos simulados baseados no preço atual...');
+    // Fallback: gerar dados simulados baseados no preço atual
+    console.log('🔄 Gerando dados históricos simulados...');
     
-    // Buscar preço atual
+    // Buscar preço atual via CoinGecko
     let currentPrice = 45000; // Default para Bitcoin
     try {
-      const currentResponse = await fetch(`https://api.coincap.io/v2/assets/${coinId}`);
+      const currentResponse = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd`);
       if (currentResponse.ok) {
         const currentData = await currentResponse.json();
-        currentPrice = parseFloat(currentData.data?.priceUsd || currentPrice);
+        currentPrice = currentData[coinId]?.usd || currentPrice;
         console.log(`💰 Preço atual de ${coinId}: $${currentPrice}`);
       }
     } catch (e) {
