@@ -2,6 +2,7 @@
 
 Dashboard profissional para análise de criptomoedas com indicadores técnicos em tempo real, desenvolvido por **Rafael Marques Lins** da **Ad Rock Digital Mkt**.
 
+
 ## 📊 Funcionalidades
 
 - ✅ **Análise técnica em tempo real** - RSI, Momentum, SMA, Bollinger Bands
@@ -11,6 +12,43 @@ Dashboard profissional para análise de criptomoedas com indicadores técnicos e
 - ✅ **Alertas dinâmicos** baseados em indicadores
 - ✅ **Gráficos avançados** interativos
 - ✅ **Interface responsiva** e moderna
+
+## 🔮 Melhorias Futuras Planejadas
+
+### 1. Sistema de Alertas Avançado
+- Alertas personalizados por usuário
+- Notificações push/email
+- Sistema de stop-loss/take-profit
+
+### 2. Análises Técnicas Avançadas
+- Padrões candlestick (Doji, Hammer, etc.)
+- Ondas de Elliott
+- Indicadores Ichimoku Cloud
+- Volume Profile
+
+### 3. Portfolio Management
+- Tracking de carteira real
+- Cálculo de P&L (profit & loss)
+- Gráficos de alocação de ativos
+- Comparação de performance com benchmarks
+
+### 4. Funcionalidades Premium
+- Alternância entre tema claro/escuro
+- Exportação para PDF/Excel
+- Backtesting histórico
+- Análise de correlação entre ativos
+
+### 5. Melhorias de UX/UI
+- Navegação via sidebar
+- Skeletons de carregamento
+- Toast notifications
+- Customização do layout via drag & drop
+
+### 6. Dados em Tempo Real
+- Conexões via WebSocket
+- Streaming de preços
+- Visualização de order book
+- Gráficos de profundidade de mercado
 
 ## 🛠️ Como rodar o projeto localmente
 
