@@ -26,7 +26,7 @@ Certifique-se de ter instalado em sua máquina:
    ```bash
    # Se você tem acesso ao repositório Git
    git clone [URL_DO_REPOSITORIO]
-   cd dashboard-cripto-avancado
+   cd cripto_dashboard
    
    # OU baixe o ZIP e extraia
    ```
@@ -60,7 +60,7 @@ Certifique-se de ter instalado em sua máquina:
 ## 🔧 Configuração
 
 O projeto funciona sem configuração adicional! As APIs utilizadas são públicas:
-- **CoinGecko API** - Para dados de criptomoedas
+- **CoinCap API** - Para dados de criptomoedas
 - **Alternative.me API** - Para Fear & Greed Index
 
 ## 🚀 Deploy em produção
@@ -75,6 +75,24 @@ Para fazer deploy:
 2. **Faça upload da pasta `dist/`** para seu servidor web
 
 3. **Configure servidor** para servir arquivos estáticos e SPA
+
+### 🚀 Deploy com PM2 (produção)
+
+1. Gere o build:
+   ```bash
+   npm run build
+   ```
+
+2. Suba os arquivos da pasta `dist/` para o servidor
+
+3. No servidor, execute:
+   ```bash
+   pm2 start npx --name cripto-frontend -- serve -s /home/adrock/cripto-dashboard -l 5173
+   pm2 save
+   pm2 startup
+   ```
+
+O projeto estará acessível em `http://[IP_DO_SERVIDOR]:5173`
 
 ## 📱 Tecnologias utilizadas
 

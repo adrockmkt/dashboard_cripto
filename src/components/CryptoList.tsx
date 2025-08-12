@@ -2,6 +2,7 @@ import { ArrowUpIcon, ArrowDownIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 const fetchCryptoData = async () => {
+  console.log("Buscando dados da CoinCap...");
   try {
     // Usar CoinCap API primeiro
     const response = await fetch('https://api.coincap.io/v2/assets?limit=5');
@@ -22,24 +23,16 @@ const fetchCryptoData = async () => {
 
     return await Promise.all(data.data.map(async (crypto: any) => {
       let imageUrl = "";
-      try {
-        // Tenta buscar imagem do CoinGecko
-        const coingeckoResp = await fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}`);
-        if (coingeckoResp.ok) {
-          const coingeckoData = await coingeckoResp.json();
-          imageUrl = coingeckoData.image?.large || coingeckoData.image?.thumb || "";
-        }
-      } catch (e) {
-        // ignora erro, tenta fallback
-      }
-      // Se falhar ou não houver imagem, tenta pelo mapa local
-      if (!imageUrl) {
-        imageUrl = iconMap[crypto.id] || iconMap[crypto.symbol.toLowerCase()] || "";
-      }
-      // Se ainda não houver imagem, usa placeholder
-      if (!imageUrl) {
-        imageUrl = "/placeholder.png";
-      }
+      // try {
+      //   const coingeckoResp = await fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}`);
+      //   if (coingeckoResp.ok) {
+      //     const coingeckoData = await coingeckoResp.json();
+      //     imageUrl = coingeckoData.image?.large || coingeckoData.image?.thumb || "";
+      //   }
+      // } catch (e) {
+      //   // ignora erro
+      // }
+      imageUrl = iconMap[crypto.id] || iconMap[crypto.symbol.toLowerCase()] || "/placeholder.png";
       return {
         id: crypto.id,
         symbol: crypto.symbol,
@@ -51,7 +44,7 @@ const fetchCryptoData = async () => {
       };
     }));
   } catch (error) {
-    console.error('Erro ao buscar dados:', error);
+    console.warn("API falhou. Retornando dados mock.");
     // Dados mock como fallback
     return [
       { id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin', current_price: 45000, price_change_percentage_24h: 2.5, total_volume: 1000000000, image: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png" },
@@ -76,6 +69,7 @@ const CryptoList = () => {
 
   return (
     <div className="glass-card rounded-lg p-6 animate-fade-in">
+      <p className="text-xs text-muted-foreground mb-2">{cryptos[0]?.current_price === 45000 ? "Mock ativo" : "Dados da API CoinCap"}</p>
       <h2 className="text-xl font-semibold mb-6">Top Cryptocurrencies</h2>
       <div className="overflow-x-auto">
         <table className="w-full">
