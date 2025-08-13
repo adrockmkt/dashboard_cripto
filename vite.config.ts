@@ -17,6 +17,9 @@ export default defineConfig(({ mode }) => ({
       '*.manusvm.computer',
     ],
   },
+  build: {
+    sourcemap: true,
+  },
   plugins: [
     react(),
     mode === 'development' && componentTagger(),
