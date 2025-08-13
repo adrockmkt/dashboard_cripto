@@ -81,19 +81,6 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
         })}
       </nav>
 
-      {/* Settings */}
-      <div className="p-2 border-t border-border">
-        <Button
-          variant="ghost"
-          className={cn(
-            "w-full justify-start h-10",
-            collapsed ? "px-2" : "px-3"
-          )}
-        >
-          <Settings className={cn("h-4 w-4", collapsed ? "" : "mr-3")} />
-          {!collapsed && <span>Configurações</span>}
-        </Button>
-      </div>
     </div>
   )
 }
