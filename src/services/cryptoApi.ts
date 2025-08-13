@@ -73,6 +73,7 @@ const fallbackCryptoData: CryptoData[] = [
 
 // APIs alternativas gratuitas e confiáveis
 export const fetchCryptoData = async (): Promise<CryptoData[]> => {
+  console.log('🔄 Fetching real-time crypto data...');
   try {
     console.log('🚀 Buscando dados de criptomoedas via CoinGecko...');
     

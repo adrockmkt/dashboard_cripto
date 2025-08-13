@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { supabase } from "@/lib/supabase"
 
 interface Notification {
   id: string
@@ -18,24 +19,84 @@ export function NotificationCenter() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [isOpen, setIsOpen] = useState(false)
 
-  // Load notifications from localStorage
+  // Load notifications from Supabase
   useEffect(() => {
-    const saved = localStorage.getItem("crypto-notifications")
-    if (saved) {
-      const parsed = JSON.parse(saved).map((n: any) => ({
-        ...n,
-        timestamp: new Date(n.timestamp)
-      }))
-      setNotifications(parsed)
+    loadNotifications()
+    
+    // Listen for real-time notifications
+    const channel = supabase
+      .channel('notifications')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, (payload) => {
+        const newNotification = {
+          id: payload.new.id,
+          type: payload.new.type,
+          title: payload.new.title,
+          message: payload.new.message,
+          timestamp: new Date(payload.new.created_at),
+          read: payload.new.read
+        }
+        setNotifications(prev => [newNotification, ...prev].slice(0, 50))
+      })
+      .subscribe()
+
+    return () => {
+      channel.unsubscribe()
     }
   }, [])
+
+  const loadNotifications = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50)
+
+      if (error) {
+        console.error('Erro ao carregar notificações:', error)
+        // Fallback para localStorage
+        const saved = localStorage.getItem("crypto-notifications")
+        if (saved) {
+          const parsed = JSON.parse(saved).map((n: any) => ({
+            ...n,
+            timestamp: new Date(n.timestamp)
+          }))
+          setNotifications(parsed)
+        }
+        return
+      }
+
+      if (data) {
+        const notifications = data.map(item => ({
+          id: item.id,
+          type: item.type,
+          title: item.title,
+          message: item.message,
+          timestamp: new Date(item.created_at),
+          read: item.read
+        }))
+        setNotifications(notifications)
+      }
+    } catch (error) {
+      console.error('Erro ao conectar com Supabase:', error)
+      // Fallback para localStorage
+      const saved = localStorage.getItem("crypto-notifications")
+      if (saved) {
+        const parsed = JSON.parse(saved).map((n: any) => ({
+          ...n,
+          timestamp: new Date(n.timestamp)
+        }))
+        setNotifications(parsed)
+      }
+    }
+  }
 
   // Save notifications to localStorage
   useEffect(() => {
     localStorage.setItem("crypto-notifications", JSON.stringify(notifications))
   }, [notifications])
 
-  const addNotification = (notification: Omit<Notification, "id" | "timestamp" | "read">) => {
+  const addNotification = async (notification: Omit<Notification, "id" | "timestamp" | "read">) => {
     const newNotification: Notification = {
       ...notification,
       id: Date.now().toString(),
@@ -43,7 +104,31 @@ export function NotificationCenter() {
       read: false
     }
     
-    setNotifications(prev => [newNotification, ...prev].slice(0, 50)) // Keep only 50 most recent
+    try {
+      // Save to Supabase
+      const { error } = await supabase
+        .from('notifications')
+        .insert({
+          id: newNotification.id,
+          type: newNotification.type,
+          title: newNotification.title,
+          message: newNotification.message,
+          read: newNotification.read
+        })
+
+      if (error) {
+        console.error('Erro ao salvar notificação:', error)
+        // Fallback to local state
+        setNotifications(prev => [newNotification, ...prev].slice(0, 50))
+      }
+    } catch (error) {
+      console.error('Erro ao conectar com Supabase:', error)
+      // Fallback to local state
+      setNotifications(prev => [newNotification, ...prev].slice(0, 50))
+    }
+    
+    // Always update local state and localStorage
+    setNotifications(prev => [newNotification, ...prev].slice(0, 50))
   }
 
   const markAsRead = (id: string) => {
@@ -92,7 +177,7 @@ export function NotificationCenter() {
     return `${days}d atrás`
   }
 
-  // Example: Add sample notifications for demo
+  // Generate sample notifications for demo and real alerts
   useEffect(() => {
     const timer = setTimeout(() => {
       if (notifications.length === 0) {
@@ -104,7 +189,23 @@ export function NotificationCenter() {
       }
     }, 2000)
 
-    return () => clearTimeout(timer)
+    // Generate periodic market alerts
+    const marketTimer = setInterval(() => {
+      const alerts = [
+        { type: "warning" as const, title: "Bitcoin Alert", message: "BTC quebrou resistência de $45,000!" },
+        { type: "success" as const, title: "Ethereum Rally", message: "ETH subiu 5% nas últimas 2 horas" },
+        { type: "info" as const, title: "Market Update", message: "Volume de trading aumentou 20% hoje" },
+        { type: "error" as const, title: "Risk Alert", message: "High volatility detected nos últimos 30min" }
+      ]
+      
+      const randomAlert = alerts[Math.floor(Math.random() * alerts.length)]
+      addNotification(randomAlert)
+    }, 30000) // Nova notificação a cada 30 segundos
+
+    return () => {
+      clearTimeout(timer)
+      clearInterval(marketTimer)
+    }
   }, [])
 
   return (

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Plus, TrendingUp, TrendingDown, DollarSign, Percent } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { supabase, type Portfolio } from "@/lib/supabase"
 
 interface PortfolioItem {
   id: string
@@ -46,15 +47,56 @@ export function PortfolioManager() {
   })
   const { toast } = useToast()
 
-  // Load portfolio from localStorage
+  // Load portfolio from Supabase
   useEffect(() => {
-    const savedPortfolio = localStorage.getItem("crypto-portfolio")
-    if (savedPortfolio) {
-      const portfolioData = JSON.parse(savedPortfolio)
-      setPortfolio(portfolioData)
-      updatePricesAndStats(portfolioData)
-    }
+    loadPortfolio()
   }, [])
+
+  const loadPortfolio = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('portfolio')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Erro ao carregar portfolio:', error)
+        // Fallback para localStorage
+        const savedPortfolio = localStorage.getItem("crypto-portfolio")
+        if (savedPortfolio) {
+          const portfolioData = JSON.parse(savedPortfolio)
+          setPortfolio(portfolioData)
+          updatePricesAndStats(portfolioData)
+        }
+        return
+      }
+
+      if (data) {
+        const portfolioData = data.map(item => ({
+          id: item.id,
+          symbol: item.symbol,
+          name: item.name,
+          quantity: item.quantity,
+          avgPrice: item.avg_price,
+          currentPrice: item.current_price,
+          totalValue: item.total_value,
+          pnl: item.pnl,
+          pnlPercentage: item.pnl_percentage
+        }))
+        setPortfolio(portfolioData)
+        updatePricesAndStats(portfolioData)
+      }
+    } catch (error) {
+      console.error('Erro ao conectar com Supabase:', error)
+      // Fallback para localStorage
+      const savedPortfolio = localStorage.getItem("crypto-portfolio")
+      if (savedPortfolio) {
+        const portfolioData = JSON.parse(savedPortfolio)
+        setPortfolio(portfolioData)
+        updatePricesAndStats(portfolioData)
+      }
+    }
+  }
 
   // Update current prices and calculate stats
   const updatePricesAndStats = async (portfolioData: PortfolioItem[]) => {
@@ -102,14 +144,15 @@ export function PortfolioManager() {
         worstPerformer
       })
 
-      // Save updated portfolio
+      // Save updated portfolio to Supabase and localStorage
+      await savePortfolioToSupabase(updatedPortfolio)
       localStorage.setItem("crypto-portfolio", JSON.stringify(updatedPortfolio))
     } catch (error) {
       console.error("Error updating portfolio:", error)
     }
   }
 
-  const addAsset = () => {
+  const addAsset = async () => {
     if (!newAsset.symbol || !newAsset.quantity || !newAsset.avgPrice) {
       toast({
         title: "Erro",
@@ -133,6 +176,9 @@ export function PortfolioManager() {
 
     const updatedPortfolio = [...portfolio, asset]
     setPortfolio(updatedPortfolio)
+    
+    // Save to Supabase
+    await saveAssetToSupabase(asset)
     localStorage.setItem("crypto-portfolio", JSON.stringify(updatedPortfolio))
     
     setNewAsset({ symbol: "", quantity: "", avgPrice: "" })
@@ -144,7 +190,14 @@ export function PortfolioManager() {
     })
   }
 
-  const removeAsset = (id: string) => {
+  const removeAsset = async (id: string) => {
+    try {
+      // Remove from Supabase
+      await supabase.from('portfolio').delete().eq('id', id)
+    } catch (error) {
+      console.error('Erro ao remover do Supabase:', error)
+    }
+    
     const updatedPortfolio = portfolio.filter(item => item.id !== id)
     setPortfolio(updatedPortfolio)
     localStorage.setItem("crypto-portfolio", JSON.stringify(updatedPortfolio))
@@ -165,6 +218,58 @@ export function PortfolioManager() {
 
   const formatPercentage = (value: number) => {
     return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`
+  }
+
+  const saveAssetToSupabase = async (asset: PortfolioItem) => {
+    try {
+      const { error } = await supabase
+        .from('portfolio')
+        .insert({
+          id: asset.id,
+          symbol: asset.symbol,
+          name: asset.name,
+          quantity: asset.quantity,
+          avg_price: asset.avgPrice,
+          current_price: asset.currentPrice,
+          total_value: asset.totalValue,
+          pnl: asset.pnl,
+          pnl_percentage: asset.pnlPercentage
+        })
+
+      if (error) {
+        console.error('Erro ao salvar no Supabase:', error)
+      }
+    } catch (error) {
+      console.error('Erro ao conectar com Supabase:', error)
+    }
+  }
+
+  const savePortfolioToSupabase = async (portfolioData: PortfolioItem[]) => {
+    try {
+      // Update existing records
+      for (const item of portfolioData) {
+        const { error } = await supabase
+          .from('portfolio')
+          .upsert({
+            id: item.id,
+            symbol: item.symbol,
+            name: item.name,
+            quantity: item.quantity,
+            avg_price: item.avgPrice,
+            current_price: item.currentPrice,
+            total_value: item.totalValue,
+            pnl: item.pnl,
+            pnl_percentage: item.pnlPercentage,
+            updated_at: new Date().toISOString()
+          })
+
+        if (error) {
+          console.error('Erro ao atualizar no Supabase:', error)
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao conectar com Supabase:', error)
+    }
   }
 
   return (
