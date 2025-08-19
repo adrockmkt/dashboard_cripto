@@ -3,56 +3,60 @@ import { useQuery } from "@tanstack/react-query";
 
 const fetchCryptoData = async () => {
   console.log("Buscando dados da CoinCap...");
+  
+  // Mapa local para principais moedas
+  const iconMap: Record<string, string> = {
+    bitcoin: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png",
+    ethereum: "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
+    binancecoin: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png",
+    bnb: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png",
+    solana: "https://assets.coingecko.com/coins/images/4128/large/solana.png",
+    cardano: "https://assets.coingecko.com/coins/images/975/large/cardano.png"
+  };
+
+  // Dados mock como fallback
+  const fallbackData = [
+    { id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin', current_price: 45000, price_change_percentage_24h: 2.5, total_volume: 1000000000, image: iconMap.bitcoin },
+    { id: 'ethereum', symbol: 'ETH', name: 'Ethereum', current_price: 3000, price_change_percentage_24h: -1.2, total_volume: 500000000, image: iconMap.ethereum },
+    { id: 'binancecoin', symbol: 'BNB', name: 'BNB', current_price: 300, price_change_percentage_24h: 0.8, total_volume: 200000000, image: iconMap.binancecoin },
+    { id: 'solana', symbol: 'SOL', name: 'Solana', current_price: 100, price_change_percentage_24h: 3.2, total_volume: 150000000, image: iconMap.solana },
+    { id: 'cardano', symbol: 'ADA', name: 'Cardano', current_price: 0.5, price_change_percentage_24h: -0.5, total_volume: 80000000, image: iconMap.cardano }
+  ];
+
   try {
     // Usar CoinCap API primeiro
     const response = await fetch('https://api.coincap.io/v2/assets?limit=5');
+    
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      console.warn(`CoinCap API falhou com status ${response.status}. Usando dados mock.`);
+      return fallbackData;
     }
+    
     const data = await response.json();
+    
+    if (!data.data || !Array.isArray(data.data)) {
+      console.warn("Dados da CoinCap API em formato inesperado. Usando dados mock.");
+      return fallbackData;
+    }
 
-    // Mapa local para principais moedas
-    const iconMap: Record<string, string> = {
-      bitcoin: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png",
-      ethereum: "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
-      binancecoin: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png",
-      bnb: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png",
-      solana: "https://assets.coingecko.com/coins/images/4128/large/solana.png",
-      cardano: "https://assets.coingecko.com/coins/images/975/large/cardano.png"
-    };
-
-    return await Promise.all(data.data.map(async (crypto: any) => {
-      let imageUrl = "";
-      // try {
-      //   const coingeckoResp = await fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}`);
-      //   if (coingeckoResp.ok) {
-      //     const coingeckoData = await coingeckoResp.json();
-      //     imageUrl = coingeckoData.image?.large || coingeckoData.image?.thumb || "";
-      //   }
-      // } catch (e) {
-      //   // ignora erro
-      // }
-      imageUrl = iconMap[crypto.id] || iconMap[crypto.symbol.toLowerCase()] || "/placeholder.png";
+    console.log("Dados da CoinCap carregados com sucesso:", data.data.length, "moedas");
+    
+    return data.data.map((crypto: any) => {
+      const imageUrl = iconMap[crypto.id] || iconMap[crypto.symbol?.toLowerCase()] || "/placeholder.png";
       return {
         id: crypto.id,
         symbol: crypto.symbol,
         name: crypto.name,
-        current_price: parseFloat(crypto.priceUsd),
-        price_change_percentage_24h: parseFloat(crypto.changePercent24Hr),
+        current_price: parseFloat(crypto.priceUsd) || 0,
+        price_change_percentage_24h: parseFloat(crypto.changePercent24Hr) || 0,
         total_volume: parseFloat(crypto.volumeUsd24Hr) || 0,
         image: imageUrl,
       };
-    }));
+    });
   } catch (error) {
-    console.warn("API falhou. Retornando dados mock.");
-    // Dados mock como fallback
-    return [
-      { id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin', current_price: 45000, price_change_percentage_24h: 2.5, total_volume: 1000000000, image: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png" },
-      { id: 'ethereum', symbol: 'ETH', name: 'Ethereum', current_price: 3000, price_change_percentage_24h: -1.2, total_volume: 500000000, image: "https://assets.coingecko.com/coins/images/279/large/ethereum.png" },
-      { id: 'binancecoin', symbol: 'BNB', name: 'BNB', current_price: 300, price_change_percentage_24h: 0.8, total_volume: 200000000, image: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png" },
-      { id: 'solana', symbol: 'SOL', name: 'Solana', current_price: 100, price_change_percentage_24h: 3.2, total_volume: 150000000, image: "https://assets.coingecko.com/coins/images/4128/large/solana.png" },
-      { id: 'cardano', symbol: 'ADA', name: 'Cardano', current_price: 0.5, price_change_percentage_24h: -0.5, total_volume: 80000000, image: "https://assets.coingecko.com/coins/images/975/large/cardano.png" }
-    ];
+    console.error("Erro ao buscar dados da CoinCap:", error);
+    console.warn("Usando dados mock como fallback.");
+    return fallbackData;
   }
 };
 

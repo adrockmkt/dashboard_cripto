@@ -118,17 +118,17 @@ export function NotificationCenter() {
 
       if (error) {
         console.error('Erro ao salvar notificação:', error)
-        // Fallback to local state
+        // Fallback to local state only if Supabase fails
         setNotifications(prev => [newNotification, ...prev].slice(0, 50))
+        localStorage.setItem('notifications', JSON.stringify([newNotification, ...notifications].slice(0, 50)))
       }
+      // If successful, the realtime listener will handle the update
     } catch (error) {
       console.error('Erro ao conectar com Supabase:', error)
-      // Fallback to local state
+      // Fallback to local state only if Supabase fails
       setNotifications(prev => [newNotification, ...prev].slice(0, 50))
+      localStorage.setItem('notifications', JSON.stringify([newNotification, ...notifications].slice(0, 50)))
     }
-    
-    // Always update local state and localStorage
-    setNotifications(prev => [newNotification, ...prev].slice(0, 50))
   }
 
   const markAsRead = (id: string) => {
