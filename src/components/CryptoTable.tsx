@@ -22,7 +22,6 @@ import { RefreshCw, TrendingUp, TrendingDown } from "lucide-react";
 interface CryptoWithIndicators extends CryptoData {
   indicators?: TechnicalIndicators;
   isLoading?: boolean;
-  image?: string;
 }
 
 const CryptoTable = () => {

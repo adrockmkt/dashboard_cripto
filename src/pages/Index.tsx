@@ -8,11 +8,11 @@ import MarketStats from "@/components/MarketStats";
 import CryptoChart from "@/components/CryptoChart";
 import CryptoTable from "@/components/CryptoTable";
 import { AdvancedTechnicalIndicators } from "@/components/AdvancedTechnicalIndicators";
-import { AdvancedCharts } from "@/components/AdvancedCharts";
-import { AlertsPanel } from "@/components/AlertsPanel";
+import AdvancedCharts from "@/components/AdvancedCharts";
+import AlertsPanel from "@/components/AlertsPanel";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { PortfolioManager } from "@/components/PortfolioManager";
-import { DailyReport } from "@/components/DailyReport";
+import DailyReport from "@/components/DailyReport";
 import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { CustomAlertsPanel } from "@/components/CustomAlertsPanel";
 import { CryptoNewsFeed } from "@/components/CryptoNewsFeed";
@@ -45,11 +45,7 @@ const Index = () => {
               <CryptoNewsFeed />
             </div>
             
-            <MarketStats 
-              cryptoList={cryptoList} 
-              fearGreed={fearGreed} 
-              dominance={dominance} 
-            />
+            <MarketStats />
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <CryptoList />
@@ -99,11 +95,7 @@ const Index = () => {
               <h1 className="text-3xl font-bold">Relatório Diário</h1>
               <NotificationCenter />
             </div>
-            <DailyReport 
-              cryptoList={cryptoList}
-              fearGreed={fearGreed}
-              technicalIndicators={technicalIndicators}
-            />
+            <DailyReport />
           </div>
         );
 
@@ -133,11 +125,7 @@ const Index = () => {
                 <NotificationCenter />
               </div>
 
-              <MarketStats 
-                cryptoList={cryptoList} 
-                fearGreed={fearGreed} 
-                dominance={dominance} 
-              />
+              <MarketStats />
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 <CryptoList />
@@ -151,7 +139,7 @@ const Index = () => {
                 <AdvancedTechnicalIndicators technicalIndicators={technicalIndicators} />
               </div>
 
-              <CryptoTable cryptoList={cryptoList} />
+              <CryptoTable />
             </div>
           </div>
         );
