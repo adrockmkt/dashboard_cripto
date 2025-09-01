@@ -2,53 +2,53 @@
 
 Dashboard profissional para análise de criptomoedas com indicadores técnicos em tempo real, desenvolvido por **Rafael Marques Lins** da **Ad Rock Digital Mkt**.
 
+## 📊 Funcionalidades Implementadas
 
-## 📊 Funcionalidades
+### 🎯 **Core Features**
+- ✅ **Dashboard Principal** - Interface moderna e responsiva com dados em tempo real
+- ✅ **Top 20 Criptomoedas** - Lista atualizada com preços e variações 24h
+- ✅ **Análise Técnica Avançada** - RSI, Momentum, SMA, Bollinger Bands
+- ✅ **Fear & Greed Index** - Indicador de sentimento do mercado atualizado automaticamente
+- ✅ **Dominância do Bitcoin** - Percentual de dominância e market cap total
+- ✅ **Gráficos Interativos** - Charts avançados com TradingView widgets
 
-- ✅ **Análise técnica em tempo real** - RSI, Momentum, SMA, Bollinger Bands
-- ✅ **Top 20 criptomoedas** com indicadores técnicos
-- ✅ **Fear & Greed Index** atualizado automaticamente
-- ✅ **Dominância do Bitcoin** e market cap total
-- ✅ **Alertas dinâmicos** baseados em indicadores
-- ✅ **Gráficos avançados** interativos
-- ✅ **Interface responsiva** e moderna
+### 💫 **Sistema de Favoritos**
+- ✅ **Persistência no Supabase** - Favoritos salvos no banco de dados
+- ✅ **Sincronização em Tempo Real** - Atualizações instantâneas
+- ✅ **Interface Intuitiva** - Toggle de favoritos com ícone de coração
+- ✅ **Dashboard de Favoritos** - Seção dedicada para moedas favoritas
 
-## 🔮 Melhorias Futuras Planejadas
+### 🚨 **Sistema de Alertas Customizados**
+- ✅ **Alertas de Preço** - Definir alertas para preços específicos
+- ✅ **Alertas de Variação** - Monitorar mudanças percentuais
+- ✅ **Persistência no Banco** - Todos os alertas salvos no Supabase
+- ✅ **Status de Ativação** - Ativar/desativar alertas individualmente
+- ✅ **Notificações em Tempo Real** - Alertas disparados automaticamente
 
-### 1. Sistema de Alertas Avançado
-- Alertas personalizados por usuário
-- Notificações push/email
-- Sistema de stop-loss/take-profit
+### 📰 **Feed de Notícias**
+- ✅ **Notícias do Mercado Cripto** - Feed atualizado com últimas notícias
+- ✅ **Categorização** - Notícias organizadas por categorias
+- ✅ **Timestamps** - Data e hora de publicação
+- ✅ **Links Externos** - Acesso direto às fontes das notícias
 
-### 2. Análises Técnicas Avançadas
-- Padrões candlestick (Doji, Hammer, etc.)
-- Ondas de Elliott
-- Indicadores Ichimoku Cloud
-- Volume Profile
+### 📊 **Gerenciador de Portfólio**
+- ✅ **Tracking de Assets** - Acompanhamento de investimentos
+- ✅ **Cálculo de P&L** - Profit & Loss em tempo real
+- ✅ **Distribuição de Ativos** - Visualização da alocação do portfólio
+- ✅ **Performance Analytics** - Métricas detalhadas de performance
 
-### 3. Portfolio Management
-- Tracking de carteira real
-- Cálculo de P&L (profit & loss)
-- Gráficos de alocação de ativos
-- Comparação de performance com benchmarks
+### 🔔 **Centro de Notificações**
+- ✅ **Alertas em Tempo Real** - Sistema de notificações ativo
+- ✅ **Indicadores Técnicos** - Resumo dos principais indicadores
+- ✅ **Controle de Som** - Ativação/desativação de alertas sonoros
+- ✅ **Histórico de Alertas** - Visualização de alertas anteriores
 
-### 4. Funcionalidades Premium
-- Alternância entre tema claro/escuro
-- Exportação para PDF/Excel
-- Backtesting histórico
-- Análise de correlação entre ativos
-
-### 5. Melhorias de UX/UI
-- Navegação via sidebar
-- Skeletons de carregamento
-- Toast notifications
-- Customização do layout via drag & drop
-
-### 6. Dados em Tempo Real
-- Conexões via WebSocket
-- Streaming de preços
-- Visualização de order book
-- Gráficos de profundidade de mercado
+### 🎨 **Interface e UX**
+- ✅ **Design Responsivo** - Funciona perfeitamente em mobile e desktop
+- ✅ **Tema Escuro/Claro** - Alternância de temas
+- ✅ **Toast Notifications** - Feedback visual para ações do usuário
+- ✅ **Loading States** - Skeletons durante carregamento
+- ✅ **Layout Moderno** - Interface clean e profissional
 
 ## 🛠️ Como rodar o projeto localmente
 
@@ -97,9 +97,18 @@ Certifique-se de ter instalado em sua máquina:
 
 ## 🔧 Configuração
 
-O projeto funciona sem configuração adicional! As APIs utilizadas são públicas:
-- **CoinCap API** - Para dados de criptomoedas
-- **Alternative.me API** - Para Fear & Greed Index
+### APIs e Serviços Utilizados
+- **CoinGecko API** - Dados de criptomoedas em tempo real
+- **Alternative.me API** - Fear & Greed Index
+- **Supabase** - Backend para persistência de dados (favoritos e alertas)
+
+### Configuração do Supabase
+O projeto inclui integração com Supabase para armazenar:
+- Favoritos do usuário
+- Alertas customizados
+- Configurações personalizadas
+
+As tabelas necessárias estão definidas em `src/sql/schema.sql`
 
 ## 🚀 Deploy em produção
 
@@ -134,14 +143,38 @@ O projeto estará acessível em `http://[IP_DO_SERVIDOR]:5173`
 
 ## 📱 Tecnologias utilizadas
 
-- **React 18** - Framework frontend
-- **TypeScript** - Tipagem estática
-- **Vite** - Build tool moderno
-- **Tailwind CSS** - Framework CSS
-- **Shadcn/ui** - Componentes UI
-- **Lucide React** - Ícones
-- **Recharts** - Gráficos interativos
-- **React Query** - Gerenciamento de estado
+### 🎨 **Frontend**
+- **React 18** - Framework frontend moderno
+- **TypeScript** - Tipagem estática para JavaScript
+- **Vite** - Build tool rápido e moderno
+- **Tailwind CSS** - Framework CSS utilitário
+- **Shadcn/ui** - Componentes UI acessíveis e customizáveis
+
+### 📊 **Visualização de Dados**
+- **Recharts** - Gráficos interativos e responsivos
+- **TradingView Widgets** - Charts profissionais de trading
+- **Lucide React** - Biblioteca de ícones moderna
+
+### 🔧 **Estado e Dados**
+- **React Query (TanStack Query)** - Gerenciamento de estado server
+- **React Hook Form** - Gerenciamento de formulários
+- **Zod** - Validação de esquemas TypeScript
+
+### 💾 **Backend e Persistência**
+- **Supabase** - Backend as a Service (BaaS)
+- **PostgreSQL** - Banco de dados relacional (via Supabase)
+- **Real-time subscriptions** - Atualizações em tempo real
+
+### 🎯 **APIs Externas**
+- **CoinGecko API** - Dados de criptomoedas
+- **Alternative.me API** - Fear & Greed Index
+- **WebSocket connections** - Dados em tempo real
+
+### 🎨 **UI/UX**
+- **Next Themes** - Sistema de temas (claro/escuro)
+- **Sonner** - Toast notifications elegantes
+- **Class Variance Authority** - Sistema de variantes CSS
+- **Tailwind Merge** - Merge inteligente de classes CSS
 
 ## 📞 Contato
 
