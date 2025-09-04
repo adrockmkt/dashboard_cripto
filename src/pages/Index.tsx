@@ -1,25 +1,31 @@
 
 import { useState } from "react";
-import { Toaster } from "@/components/ui/toaster";
 import { Sidebar } from "@/components/Sidebar";
-import CryptoList from "@/components/CryptoList";
-import PortfolioCard from "@/components/PortfolioCard";
+import { Toaster } from "@/components/ui/toaster";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Card, CardContent } from "@/components/ui/card";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { FavoritesPanel } from "@/components/FavoritesPanel";
+import { CryptoNewsFeed } from "@/components/CryptoNewsFeed";
 import MarketStats from "@/components/MarketStats";
-import CryptoChart from "@/components/CryptoChart";
-import CryptoTable from "@/components/CryptoTable";
-import { AdvancedTechnicalIndicators } from "@/components/AdvancedTechnicalIndicators";
+import CryptoList from "@/components/CryptoList";
+import { CustomAlertsPanel } from "@/components/CustomAlertsPanel";
+import { NotificationCenter } from "@/components/NotificationCenter";
 import AdvancedCharts from "@/components/AdvancedCharts";
 import AlertsPanel from "@/components/AlertsPanel";
-import { NotificationCenter } from "@/components/NotificationCenter";
+import PortfolioCard from "@/components/PortfolioCard";
 import { PortfolioManager } from "@/components/PortfolioManager";
 import DailyReport from "@/components/DailyReport";
-import { FavoritesPanel } from "@/components/FavoritesPanel";
-import { CustomAlertsPanel } from "@/components/CustomAlertsPanel";
-import { CryptoNewsFeed } from "@/components/CryptoNewsFeed";
+import CryptoTable from "@/components/CryptoTable";
+import CryptoChart from "@/components/CryptoChart";
+import { AdvancedTechnicalIndicators } from "@/components/AdvancedTechnicalIndicators";
 import { useCryptoAnalysis } from "@/hooks/useCryptoAnalysis";
+import { Menu } from "lucide-react";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { 
     cryptoList, 
     fearGreed, 
@@ -34,12 +40,7 @@ const Index = () => {
     switch (activeTab) {
       case "dashboard":
         return (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold">Dashboard Crypto</h1>
-              <NotificationCenter />
-            </div>
-            
+          <div className="space-y-6">            
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <FavoritesPanel />
               <CryptoNewsFeed />
@@ -59,10 +60,6 @@ const Index = () => {
       case "portfolio":
         return (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold">Gerenciamento de Portfolio</h1>
-              <NotificationCenter />
-            </div>
             <PortfolioManager />
           </div>
         );
@@ -70,31 +67,84 @@ const Index = () => {
       case "charts":
         return (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold">Análise Técnica Avançada</h1>
-              <NotificationCenter />
+            {/* Bitcoin Chart - Full Width */}
+            <Card className="glass-card">
+              <CardContent className="p-0">
+                <CryptoChart />
+              </CardContent>
+            </Card>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+              {/* Technical Indicators Cards */}
+              {technicalIndicators && (
+                <>
+                  <Card className="glass-card">
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold text-sm text-muted-foreground mb-2">RSI (14)</h3>
+                      <div className="text-2xl font-bold">{technicalIndicators.rsi.toFixed(1)}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {technicalIndicators.rsi > 70 ? "Sobrecomprado" : 
+                         technicalIndicators.rsi < 30 ? "Sobrevendido" : "Neutro"}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="glass-card">
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold text-sm text-muted-foreground mb-2">Momentum (10)</h3>
+                      <div className={`text-2xl font-bold ${technicalIndicators.momentum >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        {technicalIndicators.momentum >= 0 ? '+' : ''}{technicalIndicators.momentum.toFixed(2)}%
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {Math.abs(technicalIndicators.momentum) > 5 ? "Forte" : "Fraco"}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="glass-card">
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold text-sm text-muted-foreground mb-2">Bandas de Bollinger</h3>
+                      <div className="space-y-1">
+                        <div className="text-sm">Superior: <span className="font-mono">${technicalIndicators.bollingerUpper.toLocaleString()}</span></div>
+                        <div className="text-sm">Inferior: <span className="font-mono">${technicalIndicators.bollingerLower.toLocaleString()}</span></div>
+                      </div>
+                      <div className="text-sm text-muted-foreground mt-2">
+                        Volatilidade: {((technicalIndicators.bollingerUpper - technicalIndicators.bollingerLower) / technicalIndicators.bollingerUpper * 100).toFixed(1)}%
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="glass-card">
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold text-sm text-muted-foreground mb-2">Médias Móveis</h3>
+                      <div className="space-y-1">
+                        <div className="text-sm">SMA 50: <span className="font-mono">${technicalIndicators.sma50.toLocaleString()}</span></div>
+                        <div className="text-sm">SMA 200: <span className="font-mono">${technicalIndicators.sma200.toLocaleString()}</span></div>
+                      </div>
+                      <div className={`text-sm font-semibold mt-2 ${technicalIndicators.sma50 > technicalIndicators.sma200 ? 'text-green-500' : 'text-red-500'}`}>
+                        {technicalIndicators.sma50 > technicalIndicators.sma200 ? "Tendência Bullish" : "Tendência Bearish"}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
             </div>
             
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <div className="xl:col-span-2">
                 <AdvancedCharts />
               </div>
-              <div>
+              <div className="space-y-6">
+                <AdvancedTechnicalIndicators technicalIndicators={technicalIndicators} />
                 <CustomAlertsPanel />
               </div>
             </div>
-            
-            <AdvancedTechnicalIndicators technicalIndicators={technicalIndicators} />
           </div>
         );
 
       case "report":
         return (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold">Relatório Diário</h1>
-              <NotificationCenter />
-            </div>
             <DailyReport />
           </div>
         );
@@ -102,11 +152,6 @@ const Index = () => {
       case "alerts":
         return (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold">Central de Alertas</h1>
-              <NotificationCenter />
-            </div>
-            
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <CustomAlertsPanel />
               <AlertsPanel technicalIndicators={technicalIndicators} />
@@ -116,31 +161,22 @@ const Index = () => {
 
       case "legacy":
         return (
-          <div className="min-h-screen bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] text-[#E6E4DD]">
-            <div className="container mx-auto px-4 py-8">
-              <div className="flex items-center justify-between mb-8">
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-[#8989DE] to-[#6B73FF] bg-clip-text text-transparent">
-                  CryptoTracker Pro - Visão Clássica
-                </h1>
-                <NotificationCenter />
-              </div>
+          <div className="space-y-6">
+            <MarketStats />
 
-              <MarketStats />
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                <CryptoList />
-                <AlertsPanel technicalIndicators={technicalIndicators} />
-              </div>
-
-              <PortfolioCard />
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                <CryptoChart />
-                <AdvancedTechnicalIndicators technicalIndicators={technicalIndicators} />
-              </div>
-
-              <CryptoTable />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <CryptoList />
+              <AlertsPanel technicalIndicators={technicalIndicators} />
             </div>
+
+            <PortfolioCard />
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <CryptoChart />
+              <AdvancedTechnicalIndicators technicalIndicators={technicalIndicators} />
+            </div>
+
+            <CryptoTable />
           </div>
         );
 
@@ -151,10 +187,54 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="flex w-full">
-        <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
-        <main className="flex-1 p-6">
-          {renderContent()}
+      {/* Mobile Header */}
+      <div className="lg:hidden bg-card border-b border-border p-4 flex items-center justify-between">
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon">
+              <Menu className="h-4 w-4" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-0">
+            <Sidebar activeTab={activeTab} onTabChange={(tab) => {
+              setActiveTab(tab);
+              setMobileMenuOpen(false);
+            }} />
+          </SheetContent>
+        </Sheet>
+        
+        <h1 className="font-bold text-lg">CryptoTracker Pro</h1>
+        
+        <div className="flex items-center gap-2">
+          <NotificationCenter />
+          <ThemeToggle />
+        </div>
+      </div>
+
+      <div className="flex">
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:block">
+          <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
+        
+        {/* Main Content */}
+        <main className="flex-1 overflow-auto">
+          {/* Desktop Header with Theme Toggle */}
+          <div className="hidden lg:flex justify-between items-center p-4 border-b border-border bg-card">
+            <h1 className="font-bold text-xl">CryptoTracker Pro - {activeTab === "dashboard" ? "Dashboard" : 
+              activeTab === "portfolio" ? "Portfolio" : 
+              activeTab === "charts" ? "Gráficos" : 
+              activeTab === "report" ? "Relatório" : 
+              activeTab === "alerts" ? "Alertas" : "Visão Clássica"}</h1>
+            <div className="flex items-center gap-2">
+              <NotificationCenter />
+              <ThemeToggle />
+            </div>
+          </div>
+          
+          <div className="p-4">
+            {renderContent()}
+          </div>
         </main>
       </div>
       <Toaster />

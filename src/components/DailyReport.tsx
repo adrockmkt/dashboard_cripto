@@ -274,8 +274,43 @@ const DailyReport = () => {
               <AlertDescription>{alert.message}</AlertDescription>
             </Alert>
           ))}
-        </div>
       )}
+
+      {/* Market Analysis Summary */}
+      <Card className={`glass-card ${loading ? 'animate-pulse' : ''}`}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            🔍 Resumo da Análise
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/20">
+              <div className="font-semibold text-green-500 mb-2">✅ Pontos Positivos</div>
+              <ul className="text-sm space-y-1">
+                <li>• Volume de trading crescente</li>
+                <li>• Sentiment geral positivo</li>
+                <li>• Adoção institucional aumentando</li>
+              </ul>
+            </div>
+            <div className="bg-yellow-500/10 rounded-lg p-4 border border-yellow-500/20">
+              <div className="font-semibold text-yellow-500 mb-2">⚠️ Pontos de Atenção</div>
+              <ul className="text-sm space-y-1">
+                <li>• Resistência em $118k</li>
+                <li>• Volatilidade acima da média</li>
+                <li>• Possível correção técnica</li>
+              </ul>
+            </div>
+            <div className="bg-blue-500/10 rounded-lg p-4 border border-blue-500/20">
+              <div className="font-semibold text-blue-500 mb-2">📊 Recomendação</div>
+              <div className="text-sm">
+                <div className="font-semibold mb-1">HOLD com viés de COMPRA</div>
+                <div>Aguardar rompimento de resistência ou retorno ao suporte para entrada.</div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

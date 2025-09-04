@@ -228,8 +228,14 @@ export function NotificationCenter() {
       </Button>
 
       {isOpen && (
-        <Card className="absolute right-0 top-12 w-80 max-h-96 z-50 shadow-lg">
-          <CardHeader className="pb-3">
+        <>
+          {/* Overlay para fechar ao clicar fora */}
+          <div 
+            className="fixed inset-0 z-40" 
+            onClick={() => setIsOpen(false)}
+          />
+          <Card className="absolute right-0 top-12 w-80 max-h-96 z-50 shadow-lg">
+            <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm">Notificações</CardTitle>
               <div className="flex items-center space-x-2">
@@ -317,6 +323,7 @@ export function NotificationCenter() {
             )}
           </CardContent>
         </Card>
+        </>
       )}
     </div>
   )
