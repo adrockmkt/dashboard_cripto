@@ -74,8 +74,11 @@ const Index = () => {
               </CardContent>
             </Card>
             
+            {/* Advanced Charts - Pie Charts and Other Visuals */}
+            <AdvancedCharts />
+            
+            {/* Technical Indicators Grid - Below Charts */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-              {/* Technical Indicators Cards */}
               {technicalIndicators && (
                 <>
                   <Card className="glass-card">
@@ -130,14 +133,10 @@ const Index = () => {
               )}
             </div>
             
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <div className="xl:col-span-2">
-                <AdvancedCharts />
-              </div>
-              <div className="space-y-6">
-                <AdvancedTechnicalIndicators technicalIndicators={technicalIndicators} />
-                <CustomAlertsPanel />
-              </div>
+            {/* Additional Technical Analysis */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <AdvancedTechnicalIndicators technicalIndicators={technicalIndicators} />
+              <CustomAlertsPanel />
             </div>
           </div>
         );
