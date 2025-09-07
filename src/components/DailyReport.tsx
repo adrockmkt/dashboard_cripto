@@ -274,6 +274,7 @@ const DailyReport = () => {
               <AlertDescription>{alert.message}</AlertDescription>
             </Alert>
           ))}
+        </div>
       )}
 
       {/* Market Analysis Summary */}
