@@ -1,16 +1,5 @@
 import { useState } from "react"
-import { 
-  BarChart3, 
-  TrendingUp, 
-  AlertTriangle, 
-  Settings, 
-  PieChart,
-  ChevronLeft,
-  ChevronRight,
-  Home,
-  FileText,
-  Activity
-} from "lucide-react"
+import { ChartBar as BarChart3, TrendingUp, TriangleAlert as AlertTriangle, Settings, ChartPie as PieChart, ChevronLeft, ChevronRight, Chrome as Home, FileText, Activity } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
