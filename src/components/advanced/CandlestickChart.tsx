@@ -7,17 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  AlertTriangle, 
-  Volume2, 
-  VolumeX,
-  RefreshCw,
-  Settings,
-  Target,
-  Activity
-} from "lucide-react";
+import { TrendingUp, TrendingDown, TriangleAlert as AlertTriangle, Volume2, VolumeX, RefreshCw, Settings, Target, Activity } from "lucide-react";
 
 interface CandleData {
   timestamp: number;
