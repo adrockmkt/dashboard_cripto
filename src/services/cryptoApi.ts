@@ -287,28 +287,18 @@ export const fetchMarketDominance = async (): Promise<DominanceData | null> => {
   try {
     console.log('Calculando dominância do mercado...');
     
-    // Buscar dados do Bitcoin via CoinCap
-    const btcResponse = await fetch('https://api.coincap.io/v2/assets/bitcoin');
-    if (!btcResponse.ok) {
-      throw new Error(`HTTP error! status: ${btcResponse.status}`);
+    // Buscar dados globais via CoinGecko
+    const response = await fetch('https://api.coingecko.com/api/v3/global');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    const btcData = await btcResponse.json();
-    const btcMarketCap = parseFloat(btcData.data.marketCapUsd);
+    const data = await response.json();
+    const globalData = data.data;
     
-    // Buscar dados gerais do mercado via CoinCap
-    const assetsResponse = await fetch('https://api.coincap.io/v2/assets?limit=100');
-    if (!assetsResponse.ok) {
-      throw new Error(`HTTP error! status: ${assetsResponse.status}`);
-    }
-    
-    const assetsData = await assetsResponse.json();
-    const totalMarketCap = assetsData.data.reduce((total: number, asset: any) => {
-      return total + parseFloat(asset.marketCapUsd || 0);
-    }, 0);
-    
-    const btcDominance = (btcMarketCap / totalMarketCap) * 100;
-    const altcoinMarketCap = totalMarketCap - btcMarketCap;
+    const btcDominance = globalData.market_cap_percentage.btc;
+    const totalMarketCap = globalData.total_market_cap.usd;
+    const altcoinMarketCap = totalMarketCap * (1 - btcDominance / 100);
     
     console.log(`✅ Dominância calculada: BTC ${btcDominance.toFixed(2)}%`);
     
