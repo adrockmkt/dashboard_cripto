@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 export interface CustomAlert {
   id: string
@@ -24,6 +24,19 @@ export const useCustomAlerts = () => {
 
   const loadAlerts = async () => {
     try {
+      if (!isSupabaseConfigured() || !supabase) {
+        const saved = localStorage.getItem('custom-alerts')
+        if (saved) {
+          const parsed = JSON.parse(saved).map((a: any) => ({
+            ...a,
+            createdAt: new Date(a.createdAt)
+          }))
+          setAlerts(parsed)
+        }
+        setIsLoading(false)
+        return
+      }
+
       const { data, error } = await supabase
         .from('custom_alerts')
         .select('*')
@@ -76,6 +89,13 @@ export const useCustomAlerts = () => {
       createdAt: new Date()
     }
 
+    if (!isSupabaseConfigured() || !supabase) {
+      const updatedAlerts = [newAlert, ...alerts]
+      setAlerts(updatedAlerts)
+      localStorage.setItem('custom-alerts', JSON.stringify(updatedAlerts))
+      return
+    }
+
     try {
       const { error } = await supabase
         .from('custom_alerts')
@@ -106,6 +126,15 @@ export const useCustomAlerts = () => {
     const alert = alerts.find(a => a.id === alertId)
     if (!alert) return
 
+    if (!isSupabaseConfigured() || !supabase) {
+      const updatedAlerts = alerts.map(a => 
+        a.id === alertId ? { ...a, isActive: !a.isActive } : a
+      )
+      setAlerts(updatedAlerts)
+      localStorage.setItem('custom-alerts', JSON.stringify(updatedAlerts))
+      return
+    }
+
     const newActiveState = !alert.isActive
 
     try {
@@ -129,6 +158,13 @@ export const useCustomAlerts = () => {
   }
 
   const deleteAlert = async (alertId: string) => {
+    if (!isSupabaseConfigured() || !supabase) {
+      const updatedAlerts = alerts.filter(a => a.id !== alertId)
+      setAlerts(updatedAlerts)
+      localStorage.setItem('custom-alerts', JSON.stringify(updatedAlerts))
+      return
+    }
+
     try {
       const { error } = await supabase
         .from('custom_alerts')
