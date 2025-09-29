@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 export interface FavoriteCrypto {
   id: string
@@ -20,6 +20,21 @@ export const useFavorites = () => {
   }, [])
 
   const loadFavorites = async () => {
+    // Check if Supabase is configured before attempting to use it
+    if (!isSupabaseConfigured()) {
+      // Fall back to localStorage only
+      const saved = localStorage.getItem('crypto-favorites')
+      if (saved) {
+        const parsed = JSON.parse(saved).map((f: any) => ({
+          ...f,
+          addedAt: new Date(f.addedAt)
+        }))
+        setFavorites(parsed)
+      }
+      setIsLoading(false)
+      return
+    }
+
     try {
       const { data, error } = await supabase
         .from('favorites')
@@ -69,22 +84,25 @@ export const useFavorites = () => {
       addedAt: new Date()
     }
 
-    try {
-      const { error } = await supabase
-        .from('favorites')
-        .insert({
-          crypto_id: crypto.id,
-          symbol: crypto.symbol,
-          name: crypto.name,
-          price: crypto.price,
-          change_24h: crypto.change24h
-        })
+    // Only try Supabase if it's configured
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase
+          .from('favorites')
+          .insert({
+            crypto_id: crypto.id,
+            symbol: crypto.symbol,
+            name: crypto.name,
+            price: crypto.price,
+            change_24h: crypto.change24h
+          })
 
-      if (error) {
-        console.error('Erro ao salvar favorito:', error)
+        if (error) {
+          console.error('Erro ao salvar favorito:', error)
+        }
+      } catch (error) {
+        console.error('Erro ao conectar com Supabase:', error)
       }
-    } catch (error) {
-      console.error('Erro ao conectar com Supabase:', error)
     }
 
     const updatedFavorites = [newFavorite, ...favorites]
@@ -93,17 +111,20 @@ export const useFavorites = () => {
   }
 
   const removeFromFavorites = async (cryptoId: string) => {
-    try {
-      const { error } = await supabase
-        .from('favorites')
-        .delete()
-        .eq('crypto_id', cryptoId)
+    // Only try Supabase if it's configured
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase
+          .from('favorites')
+          .delete()
+          .eq('crypto_id', cryptoId)
 
-      if (error) {
-        console.error('Erro ao remover favorito:', error)
+        if (error) {
+          console.error('Erro ao remover favorito:', error)
+        }
+      } catch (error) {
+        console.error('Erro ao conectar com Supabase:', error)
       }
-    } catch (error) {
-      console.error('Erro ao conectar com Supabase:', error)
     }
 
     const updatedFavorites = favorites.filter(f => f.id !== cryptoId)
