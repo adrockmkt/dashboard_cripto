@@ -2,7 +2,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useState, useEffect } from 'react';
 import { fetchHistoricalData } from '@/services/cryptoApi';
-import { AdvancedRealTimeChart } from "react-ts-tradingview-widgets";
 
 const CryptoChart = () => {
   const [chartData, setChartData] = useState<any[]>([]);
@@ -53,9 +52,44 @@ const CryptoChart = () => {
         <CardTitle>Bitcoin Price Chart (30 dias)</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[400px] w-full">
-          <AdvancedRealTimeChart symbol="BINANCE:BTCUSDT" theme="dark" autosize />
-        </div>
+        {chartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="date" 
+                stroke="#888888"
+                fontSize={12}
+              />
+              <YAxis 
+                stroke="#888888"
+                fontSize={12}
+                tickFormatter={(value) => `$${value.toLocaleString()}`}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '8px'
+                }}
+                labelStyle={{ color: 'hsl(var(--foreground))' }}
+                formatter={(value: number) => [`$${value.toLocaleString()}`, 'Preço BTC']}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="price" 
+                stroke="#f7931a" 
+                strokeWidth={3}
+                dot={false}
+                activeDot={{ r: 6, stroke: '#f7931a', strokeWidth: 2 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="flex items-center justify-center h-[400px]">
+            <p className="text-muted-foreground">Dados não disponíveis</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
