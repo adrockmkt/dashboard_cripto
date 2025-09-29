@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { Toaster } from "@/components/ui/toaster";
@@ -20,6 +19,11 @@ import DailyReport from "@/components/DailyReport";
 import CryptoTable from "@/components/CryptoTable";
 import CryptoChart from "@/components/CryptoChart";
 import { AdvancedTechnicalIndicators } from "@/components/AdvancedTechnicalIndicators";
+import { CandlestickChart } from "@/components/advanced/CandlestickChart";
+import { OnChainMetrics } from "@/components/advanced/OnChainMetrics";
+import { DCASimulator } from "@/components/advanced/DCASimulator";
+import { StockToFlowModel } from "@/components/advanced/StockToFlowModel";
+import { AdvancedAlertsSystem } from "@/components/advanced/AdvancedAlertsSystem";
 import { useCryptoAnalysis } from "@/hooks/useCryptoAnalysis";
 import { Menu } from "lucide-react";
 
@@ -54,6 +58,72 @@ const Index = () => {
             </div>
             
             <PortfolioCard />
+          </div>
+        );
+
+      case "trading":
+        return (
+          <div className="space-y-6">
+            <CandlestickChart />
+          </div>
+        );
+
+      case "onchain":
+        return (
+          <div className="space-y-6">
+            <OnChainMetrics />
+          </div>
+        );
+
+      case "models":
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold mb-4">📊 Modelos Disponíveis</h3>
+                  <div className="space-y-3">
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start"
+                      onClick={() => setActiveTab('dca')}
+                    >
+                      🔄 Simulador DCA
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start"
+                      onClick={() => setActiveTab('s2f')}
+                    >
+                      📈 Modelo Stock-to-Flow
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold mb-4">ℹ️ Sobre os Modelos</h3>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <p><strong>DCA:</strong> Simule estratégias de investimento periódico</p>
+                    <p><strong>S2F:</strong> Modelo de escassez baseado em oferta/demanda</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        );
+
+      case "dca":
+        return (
+          <div className="space-y-6">
+            <DCASimulator />
+          </div>
+        );
+
+      case "s2f":
+        return (
+          <div className="space-y-6">
+            <StockToFlowModel />
           </div>
         );
 
@@ -151,6 +221,7 @@ const Index = () => {
       case "alerts":
         return (
           <div className="space-y-6">
+            <AdvancedAlertsSystem />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <CustomAlertsPanel />
               <AlertsPanel technicalIndicators={technicalIndicators} />
@@ -221,6 +292,11 @@ const Index = () => {
           {/* Desktop Header with Theme Toggle */}
           <div className="hidden lg:flex justify-between items-center p-4 border-b border-border bg-card">
             <h1 className="font-bold text-xl">CryptoTracker Pro - {activeTab === "dashboard" ? "Dashboard" : 
+              activeTab === "trading" ? "Trading Pro" :
+              activeTab === "onchain" ? "Métricas On-Chain" :
+              activeTab === "models" ? "Modelos Preditivos" :
+              activeTab === "dca" ? "Simulador DCA" :
+              activeTab === "s2f" ? "Stock-to-Flow" :
               activeTab === "portfolio" ? "Portfolio" : 
               activeTab === "charts" ? "Gráficos" : 
               activeTab === "report" ? "Relatório" : 

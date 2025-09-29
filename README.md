@@ -1,6 +1,6 @@
 # 🚀 Dashboard Cripto Avançado
 
-Dashboard profissional para análise de criptomoedas com indicadores técnicos em tempo real, desenvolvido por **Rafael Marques Lins** da **Ad Rock Digital Mkt**.
+**Plataforma Profissional de Análise Cripto** com gráficos de velas avançados, métricas on-chain, modelos preditivos e sistema de alertas inteligente, desenvolvido por **Rafael Marques Lins** da **Ad Rock Digital Mkt**.
 
 ## 📊 Funcionalidades Implementadas
 
@@ -12,13 +12,58 @@ Dashboard profissional para análise de criptomoedas com indicadores técnicos e
 - ✅ **Dominância do Bitcoin** - Percentual de dominância e market cap total
 - ✅ **Gráficos Interativos** - Charts avançados com TradingView widgets
 
+### 📈 **Trading Pro - Gráficos de Velas Avançados**
+- ✅ **Candlestick Charts Personalizáveis** - Timeframes de 1min até 1d
+- ✅ **Indicadores Técnicos Completos** - RSI, MACD, Bollinger Bands, Médias Móveis, Fibonacci
+- ✅ **Detecção Automática de Padrões** - Doji, Martelo, Engolfo, Triângulo Ascendente/Descendente
+- ✅ **Suporte e Resistência Automáticos** - Identificação inteligente de níveis críticos
+- ✅ **Alertas de Rompimento** - Notificações sonoras e visuais para breakouts
+- ✅ **Canvas Nativo** - Renderização otimizada para performance máxima
+- ✅ **Análise de Padrões em Tempo Real** - Detecção contínua de formações gráficas
+
+### 🔗 **Métricas On-Chain Avançadas**
+- ✅ **Endereços Ativos** - Monitoramento da atividade da rede Bitcoin
+- ✅ **Hashrate em Tempo Real** - Segurança e saúde da rede
+- ✅ **Fluxo de Exchanges** - Entrada/saída de BTC (indicador de acúmulo/distribuição)
+- ✅ **Mempool Analytics** - Transações pendentes e taxas médias
+- ✅ **Movimentações de Baleias** - Tracking de grandes transferências
+- ✅ **Saúde da Rede** - Score composto de descentralização, segurança e atividade
+- ✅ **Fluxo Institucional** - Análise de acúmulo/distribuição institucional
+- ✅ **Gráficos Históricos** - 30 dias de dados on-chain com tendências
+
+### 💰 **Simulador DCA (Dollar Cost Averaging)**
+- ✅ **Simulação Completa** - "Se eu tivesse investido R$ X por semana desde [data]"
+- ✅ **Cenários Pré-definidos** - Conservador, Moderado, Agressivo, Bear Market
+- ✅ **Gráficos de Performance** - Evolução do investimento vs valor atual
+- ✅ **Comparação de Estratégias** - DCA vs Compra Única (Lump Sum)
+- ✅ **Métricas Detalhadas** - ROI, preço médio, total de compras, período
+- ✅ **Exportação de Dados** - CSV com histórico completo de compras
+- ✅ **Análise de Vantagens** - Explicação dos benefícios do DCA
+
+### 📊 **Modelo Stock-to-Flow (S2F)**
+- ✅ **Gráfico S2F vs Preço Real** - Modelo original com dados históricos
+- ✅ **Eventos de Halving** - Histórico completo e próximos eventos
+- ✅ **Previsões Futuras** - Cenários conservador, base e otimista até 2030
+- ✅ **Indicador de Fase** - Subvalorizado, Justo ou Sobrevalorizado
+- ✅ **Countdown Halving** - Dias restantes para próximo halving
+- ✅ **Desvio do Modelo** - Percentual de diferença do preço teórico
+- ✅ **Análise de Ciclos** - Padrões de 4 anos pós-halving
+
+### 🚨 **Sistema de Alertas Estratégicos Avançado**
+- ✅ **Alertas Multi-Condição** - Preço, técnicos, on-chain, padrões, sentimento
+- ✅ **Ações Personalizadas** - Som, visual, email, webhook
+- ✅ **Sinais Técnicos Live** - RSI, MACD, Bollinger, Volume Profile
+- ✅ **Detecção de Padrões** - Alertas automáticos para formações gráficas
+- ✅ **Configurações Globais** - Controle centralizado de notificações
+- ✅ **Histórico de Disparos** - Log completo de alertas executados
+- ✅ **Sistema Inteligente** - Prevenção de spam e alertas redundantes
 ### 💫 **Sistema de Favoritos**
 - ✅ **Persistência no Supabase** - Favoritos salvos no banco de dados
 - ✅ **Sincronização em Tempo Real** - Atualizações instantâneas
 - ✅ **Interface Intuitiva** - Toggle de favoritos com ícone de coração
 - ✅ **Dashboard de Favoritos** - Seção dedicada para moedas favoritas
 
-### 🚨 **Sistema de Alertas Customizados**
+### 🚨 **Sistema de Alertas Básicos**
 - ✅ **Alertas de Preço** - Definir alertas para preços específicos
 - ✅ **Alertas de Variação** - Monitorar mudanças percentuais
 - ✅ **Persistência no Banco** - Todos os alertas salvos no Supabase
@@ -50,6 +95,56 @@ Dashboard profissional para análise de criptomoedas com indicadores técnicos e
 - ✅ **Loading States** - Skeletons durante carregamento
 - ✅ **Layout Moderno** - Interface clean e profissional
 
+## 🎯 **Navegação da Plataforma**
+
+### 📱 **Dashboard** - Visão Geral
+- Favoritos e notícias em destaque
+- Estatísticas de mercado principais
+- Lista de top cryptos com indicadores
+- Portfolio overview e alertas ativos
+
+### 💼 **Portfolio** - Gerenciamento de Investimentos
+- Tracking completo de assets
+- Análise de performance detalhada
+- Métricas de P&L em tempo real
+- Distribuição e alocação de ativos
+
+### 📈 **Trading Pro** - Análise Técnica Avançada
+- Gráficos de velas com Canvas nativo
+- Indicadores técnicos completos
+- Detecção automática de padrões
+- Suporte/resistência inteligente
+- Sistema de alertas de breakout
+
+### 🔗 **On-Chain** - Dados Fundamentais
+- Métricas da blockchain Bitcoin
+- Fluxo de exchanges e baleias
+- Saúde da rede e hashrate
+- Análise institucional
+
+### 🧮 **Modelos** - Análise Preditiva
+- **DCA Simulator**: Simulação de investimento programado
+- **Stock-to-Flow**: Modelo S2F com previsões
+- Análise de ciclos e halvings
+- Cenários de preço futuros
+
+### 🚨 **Alertas** - Sistema Inteligente
+- Alertas multi-condição avançados
+- Sinais técnicos em tempo real
+- Configurações personalizadas
+- Histórico de disparos
+
+### 📊 **Relatório** - Análise Diária
+- Resumo completo do mercado
+- Indicadores principais
+- Recomendações estratégicas
+- Pontos de atenção
+
+### 🏛️ **Clássica** - Visão Tradicional
+- Interface original do dashboard
+- Tabela completa de cryptos
+- Gráficos básicos
+- Funcionalidades essenciais
 ## 🛠️ Como rodar o projeto localmente
 
 ### Pré-requisitos
@@ -101,15 +196,26 @@ Certifique-se de ter instalado em sua máquina:
 - **CoinGecko API** - Dados de criptomoedas em tempo real
 - **Alternative.me API** - Fear & Greed Index
 - **Supabase** - Backend para persistência de dados (favoritos e alertas)
+- **Canvas API** - Renderização de gráficos de velas customizados
+- **WebSocket Simulation** - Dados em tempo real simulados
 
 ### Configuração do Supabase
 O projeto inclui integração com Supabase para armazenar:
 - Favoritos do usuário
 - Alertas customizados
+- Alertas avançados multi-condição
 - Configurações personalizadas
+- Histórico de notificações
 
 As tabelas necessárias estão definidas em `src/sql/schema.sql`
 
+### 🔑 **Configuração de API Keys**
+Para funcionalidade completa, configure suas chaves de API:
+1. **CoinGecko**: Obtenha em [coingecko.com/api](https://coingecko.com/api)
+2. **CoinMarketCap**: Obtenha em [coinmarketcap.com/api](https://coinmarketcap.com/api)
+3. **Supabase**: Configure seu projeto em [supabase.com](https://supabase.com)
+
+As chaves podem ser configuradas através da interface ou no arquivo `.env`.
 ## 🚀 Deploy em produção
 
 Para fazer deploy:
@@ -153,7 +259,14 @@ O projeto estará acessível em `http://[IP_DO_SERVIDOR]:5173`
 ### 📊 **Visualização de Dados**
 - **Recharts** - Gráficos interativos e responsivos
 - **TradingView Widgets** - Charts profissionais de trading
+- **Canvas API** - Gráficos de velas customizados de alta performance
 - **Lucide React** - Biblioteca de ícones moderna
+
+### 🧮 **Análise e Algoritmos**
+- **Algoritmos de Detecção de Padrões** - Reconhecimento automático de formações
+- **Cálculos de Indicadores Técnicos** - RSI, MACD, Bollinger, Fibonacci
+- **Simulações Matemáticas** - DCA, Stock-to-Flow, previsões
+- **Análise de Suporte/Resistência** - Identificação inteligente de níveis
 
 ### 🔧 **Estado e Dados**
 - **React Query (TanStack Query)** - Gerenciamento de estado server
@@ -164,10 +277,12 @@ O projeto estará acessível em `http://[IP_DO_SERVIDOR]:5173`
 - **Supabase** - Backend as a Service (BaaS)
 - **PostgreSQL** - Banco de dados relacional (via Supabase)
 - **Real-time subscriptions** - Atualizações em tempo real
+- **LocalStorage** - Fallback para dados offline
 
 ### 🎯 **APIs Externas**
 - **CoinGecko API** - Dados de criptomoedas
 - **Alternative.me API** - Fear & Greed Index
+- **Simulação de APIs On-Chain** - Métricas da blockchain
 - **WebSocket connections** - Dados em tempo real
 
 ### 🎨 **UI/UX**
@@ -176,6 +291,39 @@ O projeto estará acessível em `http://[IP_DO_SERVIDOR]:5173`
 - **Class Variance Authority** - Sistema de variantes CSS
 - **Tailwind Merge** - Merge inteligente de classes CSS
 
+## 🎓 **Guia de Uso Avançado**
+
+### 📈 **Como Usar o Trading Pro**
+1. Acesse a seção "Trading Pro" no menu lateral
+2. Selecione o timeframe desejado (1m, 5m, 1h, 1d, etc.)
+3. Ative/desative indicadores técnicos conforme sua estratégia
+4. Configure alertas para rompimentos de padrões
+5. Monitore as zonas de suporte e resistência automáticas
+
+### 🔗 **Interpretando Métricas On-Chain**
+- **Fluxo de Exchanges**: Saída > Entrada = Bullish (acúmulo)
+- **Endereços Ativos**: Crescimento = Adoção aumentando
+- **Hashrate**: Alta = Rede mais segura
+- **Movimentações de Baleias**: Monitore grandes transferências
+
+### 💰 **Otimizando sua Estratégia DCA**
+1. Use o simulador para testar diferentes valores semanais
+2. Compare cenários conservador vs agressivo
+3. Analise o preço médio de entrada vs preço atual
+4. Exporte dados para acompanhamento externo
+
+### 📊 **Entendendo o Stock-to-Flow**
+- **S2F > 100**: Bitcoin mais escasso que ouro
+- **Preço abaixo do modelo**: Possível oportunidade
+- **Pós-halving**: Historicamente períodos de alta
+- **Desvio > 50%**: Zona de possível correção
+
+### 🚨 **Configurando Alertas Inteligentes**
+1. Defina condições específicas (preço, RSI, volume)
+2. Configure múltiplas ações (som + visual + email)
+3. Use timeframes apropriados para sua estratégia
+4. Monitore o histórico de disparos para ajustes
+
 ## 📞 Contato
 
 **Rafael Marques Lins**  
@@ -183,7 +331,6 @@ Ad Rock Digital Mkt
 
 - 📱 WhatsApp: [+55 41 99125-5859](https://wa.me/5541991255859)
 - 📧 Email: [rafael@adrock.com.br](mailto:rafael@adrock.com.br)
+- 🌐 Blog: [adrock.com.br/blog](https://adrock.com.br/blog)
 
 ---
-
-💚 **Nós amamos cripto!** 🚀

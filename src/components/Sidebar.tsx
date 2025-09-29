@@ -20,6 +20,9 @@ interface SidebarProps {
 
 const sidebarItems = [
   { id: "dashboard", label: "Dashboard", icon: Home },
+  { id: "trading", label: "Trading Pro", icon: BarChart3 },
+  { id: "onchain", label: "On-Chain", icon: Activity },
+  { id: "models", label: "Modelos", icon: TrendingUp },
   { id: "portfolio", label: "Portfolio", icon: PieChart },
   { id: "charts", label: "Gráficos", icon: BarChart3 },
   { id: "report", label: "Relatório", icon: FileText },
