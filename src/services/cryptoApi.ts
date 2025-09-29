@@ -287,29 +287,54 @@ export const fetchMarketDominance = async (): Promise<DominanceData | null> => {
   try {
     console.log('Calculando dominância do mercado...');
     
-    // Buscar dados globais via CoinGecko
-    const response = await fetch('https://api.coingecko.com/api/v3/global');
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    // Buscar dados globais via CoinGecko com timeout e retry
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    
+    try {
+      const response = await fetch('https://api.coingecko.com/api/v3/global', {
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const globalData = data.data;
+      
+      if (globalData && globalData.market_cap_percentage && globalData.total_market_cap) {
+        const btcDominance = globalData.market_cap_percentage.btc;
+        const totalMarketCap = globalData.total_market_cap.usd;
+        const altcoinMarketCap = totalMarketCap * (1 - btcDominance / 100);
+        
+        console.log(`✅ Dominância calculada: BTC ${btcDominance.toFixed(2)}%`);
+        
+        return {
+          btc_dominance: btcDominance,
+          altcoins_cap: altcoinMarketCap,
+          total_market_cap: totalMarketCap
+        };
+      } else {
+        throw new Error('Invalid data structure from API');
+      }
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      if (fetchError.name === 'AbortError') {
+        console.log('⏰ Request timeout - usando dados de fallback');
+      } else {
+        console.log('🌐 Network error - usando dados de fallback:', fetchError.message);
+      }
+      throw fetchError;
     }
     
-    const data = await response.json();
-    const globalData = data.data;
-    
-    const btcDominance = globalData.market_cap_percentage.btc;
-    const totalMarketCap = globalData.total_market_cap.usd;
-    const altcoinMarketCap = totalMarketCap * (1 - btcDominance / 100);
-    
-    console.log(`✅ Dominância calculada: BTC ${btcDominance.toFixed(2)}%`);
-    
-    return {
-      btc_dominance: btcDominance,
-      altcoins_cap: altcoinMarketCap,
-      total_market_cap: totalMarketCap
-    };
-    
   } catch (error) {
-    console.error('Erro ao buscar dominância de mercado:', error);
+    console.log('❌ Erro ao buscar dominância de mercado:', error.message || error);
     console.log('Usando dados de dominância de fallback...');
     return fallbackDominanceData;
   }

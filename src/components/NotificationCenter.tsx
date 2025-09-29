@@ -104,8 +104,14 @@ export function NotificationCenter() {
       read: false
     }
     
+    // Always add to local state first for immediate UI feedback
+    setNotifications(prev => [newNotification, ...prev].slice(0, 50))
+    
     try {
-      // Save to Supabase
+      // Try to save to Supabase with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      
       const { error } = await supabase
         .from('notifications')
         .insert({
@@ -114,20 +120,28 @@ export function NotificationCenter() {
           title: newNotification.title,
           message: newNotification.message,
           read: newNotification.read
+        }, {
+          signal: controller.signal
         })
 
+      clearTimeout(timeoutId);
+
       if (error) {
-        console.error('Erro ao salvar notificação:', error)
-        // Fallback to local state only if Supabase fails
-        setNotifications(prev => [newNotification, ...prev].slice(0, 50))
-        localStorage.setItem('notifications', JSON.stringify([newNotification, ...notifications].slice(0, 50)))
+        console.log('⚠️ Supabase error, usando localStorage:', error.message)
+        // Save to localStorage as backup
+        const currentNotifications = [newNotification, ...notifications].slice(0, 50)
+        localStorage.setItem('crypto-notifications', JSON.stringify(currentNotifications))
       }
-      // If successful, the realtime listener will handle the update
+      
     } catch (error) {
-      console.error('Erro ao conectar com Supabase:', error)
-      // Fallback to local state only if Supabase fails
-      setNotifications(prev => [newNotification, ...prev].slice(0, 50))
-      localStorage.setItem('notifications', JSON.stringify([newNotification, ...notifications].slice(0, 50)))
+      if (error.name === 'AbortError') {
+        console.log('⏰ Supabase timeout, usando localStorage')
+      } else {
+        console.log('🌐 Network error, usando localStorage:', error.message || error)
+      }
+      // Save to localStorage as backup
+      const currentNotifications = [newNotification, ...notifications].slice(0, 50)
+      localStorage.setItem('crypto-notifications', JSON.stringify(currentNotifications))
     }
   }
 
