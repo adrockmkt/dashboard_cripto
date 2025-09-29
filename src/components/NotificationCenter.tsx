@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { supabase } from "@/lib/supabase"
+import { supabase, isSupabaseConfigured } from "@/lib/supabase"
 
 interface Notification {
   id: string
@@ -23,28 +23,47 @@ export function NotificationCenter() {
   useEffect(() => {
     loadNotifications()
     
-    // Listen for real-time notifications
-    const channel = supabase
-      .channel('notifications')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, (payload) => {
-        const newNotification = {
-          id: payload.new.id,
-          type: payload.new.type,
-          title: payload.new.title,
-          message: payload.new.message,
-          timestamp: new Date(payload.new.created_at),
-          read: payload.new.read
-        }
-        setNotifications(prev => [newNotification, ...prev].slice(0, 50))
-      })
-      .subscribe()
+    // Listen for real-time notifications only if Supabase is configured
+    let channel = null
+    if (isSupabaseConfigured() && supabase) {
+      channel = supabase
+        .channel('notifications')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, (payload) => {
+          const newNotification = {
+            id: payload.new.id,
+            type: payload.new.type,
+            title: payload.new.title,
+            message: payload.new.message,
+            timestamp: new Date(payload.new.created_at),
+            read: payload.new.read
+          }
+          setNotifications(prev => [newNotification, ...prev].slice(0, 50))
+        })
+        .subscribe()
+    }
 
     return () => {
-      channel.unsubscribe()
+      if (channel) {
+        channel.unsubscribe()
+      }
     }
   }, [])
 
   const loadNotifications = async () => {
+    // Skip Supabase if not configured
+    if (!isSupabaseConfigured() || !supabase) {
+      console.log('⚠️ Supabase not configured, using localStorage only')
+      const saved = localStorage.getItem("crypto-notifications")
+      if (saved) {
+        const parsed = JSON.parse(saved).map((n: any) => ({
+          ...n,
+          timestamp: new Date(n.timestamp)
+        }))
+        setNotifications(parsed)
+      }
+      return
+    }
+
     try {
       const { data, error } = await supabase
         .from('notifications')
@@ -107,6 +126,14 @@ export function NotificationCenter() {
     // Always add to local state first for immediate UI feedback
     setNotifications(prev => [newNotification, ...prev].slice(0, 50))
     
+    // Skip Supabase if not configured
+    if (!isSupabaseConfigured() || !supabase) {
+      console.log('⚠️ Supabase not configured, saving to localStorage only')
+      const currentNotifications = [newNotification, ...notifications].slice(0, 50)
+      localStorage.setItem('crypto-notifications', JSON.stringify(currentNotifications))
+      return
+    }
+
     try {
       // Try to save to Supabase with timeout
       const controller = new AbortController();
