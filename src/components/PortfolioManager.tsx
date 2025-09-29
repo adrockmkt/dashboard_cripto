@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Plus, TrendingUp, TrendingDown, DollarSign, Percent } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { supabase, type Portfolio } from "@/lib/supabase"
+import { supabase, isSupabaseConfigured, type Portfolio } from "@/lib/supabase"
 
 interface PortfolioItem {
   id: string
@@ -53,6 +53,18 @@ export function PortfolioManager() {
   }, [])
 
   const loadPortfolio = async () => {
+    // Check if Supabase is configured before attempting to use it
+    if (!isSupabaseConfigured() || !supabase) {
+      console.warn('Supabase não configurado, usando localStorage apenas')
+      const savedPortfolio = localStorage.getItem("crypto-portfolio")
+      if (savedPortfolio) {
+        const portfolioData = JSON.parse(savedPortfolio)
+        setPortfolio(portfolioData)
+        updatePricesAndStats(portfolioData)
+      }
+      return
+    }
+
     try {
       const { data, error } = await supabase
         .from('portfolio')
@@ -221,6 +233,12 @@ export function PortfolioManager() {
   }
 
   const saveAssetToSupabase = async (asset: PortfolioItem) => {
+    // Check if Supabase is configured before attempting to use it
+    if (!isSupabaseConfigured() || !supabase) {
+      console.warn('Supabase não configurado, salvando apenas no localStorage')
+      return
+    }
+
     try {
       const { error } = await supabase
         .from('portfolio')
@@ -245,6 +263,12 @@ export function PortfolioManager() {
   }
 
   const savePortfolioToSupabase = async (portfolioData: PortfolioItem[]) => {
+    // Check if Supabase is configured before attempting to use it
+    if (!isSupabaseConfigured() || !supabase) {
+      console.warn('Supabase não configurado, salvando apenas no localStorage')
+      return
+    }
+
     try {
       // Update existing records
       for (const item of portfolioData) {
