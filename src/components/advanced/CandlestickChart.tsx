@@ -115,6 +115,7 @@ export function CandlestickChart() {
   // Detectar padrões de candlestick
   const detectCandlestickPatterns = (data: CandleData[]): TechnicalPattern[] => {
     const patterns: TechnicalPattern[] = [];
+    const usedPositions: Set<string> = new Set();
     
     for (let i = 2; i < data.length - 1; i++) {
       const prev2 = data[i - 2];
@@ -122,10 +123,14 @@ export function CandlestickChart() {
       const current = data[i];
       const next = data[i + 1];
 
+      // Skip if too close to existing pattern
+      const positionKey = `${Math.floor(i / 5)}-${Math.floor(current.close / 1000)}`;
+      if (usedPositions.has(positionKey)) continue;
       // Doji
       const bodySize = Math.abs(current.close - current.open);
       const candleRange = current.high - current.low;
       if (bodySize / candleRange < 0.1) {
+        usedPositions.add(positionKey);
         patterns.push({
           name: 'Doji',
           type: 'neutral',
@@ -133,12 +138,14 @@ export function CandlestickChart() {
           description: 'Indecisão do mercado - possível reversão',
           position: { x: i, y: current.close }
         });
+        continue; // Only one pattern per position
       }
 
       // Martelo (Hammer)
       const lowerShadow = Math.min(current.open, current.close) - current.low;
       const upperShadow = current.high - Math.max(current.open, current.close);
       if (lowerShadow > bodySize * 2 && upperShadow < bodySize * 0.5) {
+        usedPositions.add(positionKey);
         patterns.push({
           name: 'Martelo',
           type: 'bullish',
@@ -146,11 +153,13 @@ export function CandlestickChart() {
           description: 'Padrão de reversão bullish',
           position: { x: i, y: current.low }
         });
+        continue;
       }
 
       // Engolfo Bullish
       if (prev.close < prev.open && current.close > current.open &&
           current.close > prev.open && current.open < prev.close) {
+        usedPositions.add(positionKey);
         patterns.push({
           name: 'Engolfo Bullish',
           type: 'bullish',
@@ -158,10 +167,11 @@ export function CandlestickChart() {
           description: 'Forte sinal de reversão para alta',
           position: { x: i, y: current.close }
         });
+        continue;
       }
 
       // Triângulo Ascendente (simplificado)
-      if (i > 10) {
+      if (i > 10 && i % 10 === 0) { // Only check every 10 candles
         const recentData = data.slice(i - 10, i);
         const highs = recentData.map(d => d.high);
         const lows = recentData.map(d => d.low);
@@ -170,6 +180,7 @@ export function CandlestickChart() {
         const lowsRising = lows[lows.length - 1] > lows[0];
         
         if (highsFlat && lowsRising) {
+          usedPositions.add(positionKey);
           patterns.push({
             name: 'Triângulo Ascendente',
             type: 'bullish',
@@ -181,7 +192,16 @@ export function CandlestickChart() {
       }
     }
 
-    return patterns;
+    // Limit to most significant patterns and spread them out
+    return patterns
+      .sort((a, b) => b.confidence - a.confidence)
+      .slice(0, 8) // Max 8 patterns
+      .filter((pattern, index, arr) => {
+        // Ensure minimum distance between patterns
+        return !arr.slice(0, index).some(existing => 
+          Math.abs(existing.position.x - pattern.position.x) < 10
+        );
+      });
   };
 
   // Calcular suporte e resistência
@@ -313,13 +333,15 @@ export function CandlestickChart() {
       ctx.fillStyle = pattern.type === 'bullish' ? '#22c55e' : 
                      pattern.type === 'bearish' ? '#ef4444' : '#f59e0b';
       ctx.beginPath();
-      ctx.arc(x, y, 6, 0, 2 * Math.PI);
+      ctx.arc(x, y, 4, 0, 2 * Math.PI);
       ctx.fill();
       
-      // Label do padrão
+      // Label do padrão com background
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+      ctx.fillRect(x + 8, y - 20, pattern.name.length * 6 + 4, 16);
       ctx.fillStyle = '#fff';
-      ctx.font = '10px Arial';
-      ctx.fillText(pattern.name, x + 10, y - 10);
+      ctx.font = '9px Arial';
+      ctx.fillText(pattern.name, x + 10, y - 8);
     });
   };
 
