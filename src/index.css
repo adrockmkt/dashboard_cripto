@@ -64,6 +64,22 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
+  
+  /* Mobile optimizations */
+  @media (max-width: 768px) {
+    body {
+      font-size: clamp(14px, 4vw, 16px);
+    }
+  }
+  
+  /* Safe area for mobile notch/home indicator */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
 }
 
 .glass-card {
@@ -72,6 +88,29 @@
 
 .crypto-chart {
   @apply h-[300px] w-full;
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .crypto-chart {
+    @apply h-[250px];
+  }
+  
+  .mobile-padding {
+    @apply px-3 py-4;
+  }
+  
+  .mobile-text {
+    @apply text-sm;
+  }
+}
+
+/* Touch-friendly interactive elements */
+@media (hover: none) {
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
 }
 
 @keyframes pulse-subtle {
