@@ -78,8 +78,8 @@ export function AdvancedAlertsSystem() {
       timeframe: '1h'
     }],
     actions: [
-      { type: 'sound', config: { sound: 'default' } },
-      { type: 'visual', config: { duration: 5000 } }
+      { type: 'sound' as const, config: { sound: 'default' } },
+      { type: 'visual' as const, config: { duration: 5000 } }
     ]
   });
 
@@ -184,8 +184,8 @@ export function AdvancedAlertsSystem() {
         timeframe: '1h'
       }],
       actions: [
-        { type: 'sound', config: { sound: 'default' } },
-        { type: 'visual', config: { duration: 5000 } }
+        { type: 'sound' as const, config: { sound: 'default' } },
+        { type: 'visual' as const, config: { duration: 5000 } }
       ]
     });
     setShowCreateForm(false);

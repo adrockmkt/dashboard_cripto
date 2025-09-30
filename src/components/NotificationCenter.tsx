@@ -135,10 +135,6 @@ export function NotificationCenter() {
     }
 
     try {
-      // Try to save to Supabase with timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-      
       const { error } = await supabase
         .from('notifications')
         .insert({
@@ -147,11 +143,7 @@ export function NotificationCenter() {
           title: newNotification.title,
           message: newNotification.message,
           read: newNotification.read
-        }, {
-          signal: controller.signal
         })
-
-      clearTimeout(timeoutId);
 
       if (error) {
         console.log('⚠️ Supabase error, usando localStorage:', error.message)
