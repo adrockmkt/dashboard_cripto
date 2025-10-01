@@ -15,6 +15,7 @@ export interface CryptoData {
   market_cap_rank: number;
   price_change_percentage_24h: number;
   image: string;
+  total_volume?: number;
 }
 
 export interface FearGreedData {
@@ -51,7 +52,8 @@ const fallbackCryptoData: CryptoData[] = [
     market_cap: 1300000000000,
     market_cap_rank: 1,
     price_change_percentage_24h: 2.5,
-    image: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png'
+    image: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png',
+    total_volume: 24000000000
   },
   {
     id: 'ethereum',
@@ -61,7 +63,8 @@ const fallbackCryptoData: CryptoData[] = [
     market_cap: 420000000000,
     market_cap_rank: 2,
     price_change_percentage_24h: 1.8,
-    image: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png'
+    image: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png',
+    total_volume: 16000000000
   },
   {
     id: 'tether',
@@ -71,7 +74,8 @@ const fallbackCryptoData: CryptoData[] = [
     market_cap: 120000000000,
     market_cap_rank: 3,
     price_change_percentage_24h: 0.1,
-    image: 'https://assets.coingecko.com/coins/images/325/large/Tether.png'
+    image: 'https://assets.coingecko.com/coins/images/325/large/Tether.png',
+    total_volume: 50000000000
   }
 ];
 

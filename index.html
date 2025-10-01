@@ -3,17 +3,31 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ad Rock - Cripto dashboard 1.0</title>
-  <meta name="description" content="GPT Engineer Generated Project" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Ad Rock - Cripto Dashboard Pro</title>
+  <meta name="description" content="Dashboard profissional para acompanhamento de criptomoedas em tempo real com análises avançadas, alertas personalizados e portfolio tracking." />
   <meta name="author" content="Rafael Lins - rafael@adrock.com.br" />
+  <meta name="theme-color" content="#3B82F6" />
+  <meta property="og:title" content="Ad Rock - Cripto Dashboard Pro" />
+  <meta property="og:description" content="Dashboard profissional para acompanhamento de criptomoedas" />
   <meta property="og:image" content="/og-image.svg" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/lovable-uploads/f9adaae1-4eb9-43b8-9d30-50c6204dd06b.png" />
 </head>
 
 <body>
   <div id="root"></div>
   <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
   <script type="module" src="/src/main.tsx"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => console.log('SW registered'))
+          .catch(err => console.log('SW registration failed'));
+      });
+    }
+  </script>
 </body>
 
 </html>

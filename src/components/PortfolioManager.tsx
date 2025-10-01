@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Plus, TrendingUp, TrendingDown, DollarSign, Percent } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase, isSupabaseConfigured, type Portfolio } from "@/lib/supabase"
+import { ExportMenu } from "@/components/ExportMenu"
 
 interface PortfolioItem {
   id: string
@@ -378,8 +379,27 @@ export function PortfolioManager() {
 
         <TabsContent value="holdings" className="space-y-4">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <CardTitle>Meu Portfolio</CardTitle>
+              {portfolio.length > 0 && (
+                <ExportMenu 
+                  data={{
+                    title: 'Portfolio de Criptomoedas',
+                    filename: `portfolio-${new Date().toISOString().split('T')[0]}`,
+                    headers: ['Símbolo', 'Nome', 'Quantidade', 'Preço Médio', 'Preço Atual', 'Valor Total', 'P&L', 'P&L %'],
+                    rows: portfolio.map(item => [
+                      item.symbol,
+                      item.name,
+                      item.quantity.toString(),
+                      formatCurrency(item.avgPrice),
+                      formatCurrency(item.currentPrice),
+                      formatCurrency(item.totalValue),
+                      formatCurrency(item.pnl),
+                      formatPercentage(item.pnlPercentage)
+                    ])
+                  }}
+                />
+              )}
             </CardHeader>
             <CardContent>
               {portfolio.length === 0 ? (

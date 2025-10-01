@@ -1,11 +1,11 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, RefreshCw, Heart } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { fetchCryptoData, type CryptoData } from "@/services/cryptoApi";
 import { useFavorites } from "@/hooks/useFavorites";
+import { VirtualizedCryptoTable } from "@/components/VirtualizedCryptoTable";
+import { ExportMenu } from "@/components/ExportMenu";
 
 const CryptoList = () => {
   const { data: cryptoList, isLoading, refetch } = useQuery({
@@ -92,73 +92,35 @@ const CryptoList = () => {
 
   return (
     <Card className="glass-card">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          Top Cryptocurrencies
-          <Button variant="outline" size="sm" onClick={() => refetch()}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+        <CardTitle>Top Cryptocurrencies</CardTitle>
+        <div className="flex items-center gap-2">
+          <ExportMenu 
+            data={{
+              title: 'Top Criptomoedas',
+              filename: `top-cryptos-${new Date().toISOString().split('T')[0]}`,
+              headers: ['Rank', 'Nome', 'Símbolo', 'Preço', 'Mudança 24h', 'Market Cap'],
+              rows: cryptoList.slice(0, 20).map(crypto => [
+                crypto.market_cap_rank.toString(),
+                crypto.name,
+                crypto.symbol.toUpperCase(),
+                formatPrice(crypto.current_price),
+                formatPercentage(crypto.price_change_percentage_24h),
+                formatPrice(crypto.market_cap)
+              ])
+            }}
+          />
+          <Button variant="outline" size="sm" onClick={() => refetch()} aria-label="Atualizar dados">
             <RefreshCw className="w-4 h-4" />
           </Button>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {cryptoList.slice(0, 10).map((crypto) => (
-            <div key={crypto.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/30 transition-colors">
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <img 
-                    src={crypto.image} 
-                    alt={crypto.name}
-                    className="w-10 h-10 rounded-full"
-                  />
-                  <div className="absolute -top-1 -right-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className={`h-6 w-6 p-0 ${
-                        isFavorite(crypto.id) 
-                          ? 'text-red-500 hover:text-red-600' 
-                          : 'text-muted-foreground hover:text-red-500'
-                      }`}
-                      onClick={() => handleFavoriteToggle(crypto)}
-                    >
-                      <Heart className={`w-3 h-3 ${isFavorite(crypto.id) ? 'fill-current' : ''}`} />
-                    </Button>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex items-center space-x-2">
-                    <h3 className="font-semibold">{crypto.name}</h3>
-                    <Badge variant="secondary" className="text-xs">
-                      {crypto.symbol.toUpperCase()}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Rank #{crypto.market_cap_rank}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="text-right">
-                <div className="font-semibold text-lg">
-                  {formatPrice(crypto.current_price)}
-                </div>
-                <div className="flex items-center space-x-1">
-                  {crypto.price_change_percentage_24h >= 0 ? (
-                    <TrendingUp className="w-4 h-4 text-green-500" />
-                  ) : (
-                    <TrendingDown className="w-4 h-4 text-red-500" />
-                  )}
-                  <span className={`text-sm ${
-                    crypto.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'
-                  }`}>
-                    {formatPercentage(crypto.price_change_percentage_24h)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
+      </CardHeader>
+      <CardContent className="p-0">
+        <VirtualizedCryptoTable 
+          data={cryptoList.slice(0, 50)} 
+          favorites={cryptoList.filter(c => isFavorite(c.id)).map(c => c.id)}
+          onToggleFavorite={handleFavoriteToggle}
+        />
       </CardContent>
     </Card>
   );

@@ -7,6 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { OnboardingTour } from "@/components/OnboardingTour";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { DashboardSkeleton, ChartSkeleton, CardSkeleton } from "@/components/LoadingSkeleton";
 import { useCryptoAnalysis } from "@/hooks/useCryptoAnalysis";
 import { Menu, RefreshCw } from "lucide-react";
@@ -320,11 +322,13 @@ const Index = () => {
                 size="icon"
                 onClick={refreshData}
                 className="h-9 w-9"
+                aria-label="Atualizar dados"
               >
                 <RefreshCw className="h-4 w-4" />
               </Button>
             )}
             <NotificationCenter />
+            <LanguageSelector />
             <ThemeToggle />
           </div>
         </div>
@@ -360,11 +364,13 @@ const Index = () => {
                   size="icon"
                   onClick={refreshData}
                   title="Atualizar dados"
+                  aria-label="Atualizar dados"
                 >
                   <RefreshCw className="h-4 w-4" />
                 </Button>
               )}
               <NotificationCenter />
+              <LanguageSelector />
               <ThemeToggle />
             </div>
           </div>
@@ -389,6 +395,9 @@ const Index = () => {
       
       {/* Mobile Bottom Navigation */}
       <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      
+      {/* Onboarding Tour */}
+      <OnboardingTour />
       
       <Toaster />
     </div>
