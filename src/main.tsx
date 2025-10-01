@@ -13,7 +13,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark" storageKey="crypto-dashboard-theme">
-        <BrowserRouter basename="/cripto-dashboard">
+        <BrowserRouter>
           <App />
           <Toaster />
         </BrowserRouter>
