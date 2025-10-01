@@ -89,19 +89,30 @@
 - ✅ **Histórico de Alertas** - Visualização de alertas anteriores
 
 ### 🎨 **Interface e UX**
-- ✅ **Design Responsivo** - Funciona perfeitamente em mobile e desktop
-- ✅ **Tema Escuro/Claro** - Alternância de temas
-- ✅ **Toast Notifications** - Feedback visual para ações do usuário
-- ✅ **Loading States** - Skeletons durante carregamento
+- ✅ **Design Responsivo Mobile-First** - Otimizado para todas as resoluções
+- ✅ **Bottom Navigation Mobile** - Navegação rápida em dispositivos móveis
+- ✅ **Pull-to-Refresh** - Atualização intuitiva com gesto de arrastar
+- ✅ **Safe Areas iOS/Android** - Suporte para notch e barras do sistema
+- ✅ **Busca Global** - Pesquisa instantânea com atalho Ctrl+K
+- ✅ **Hamburger Menu Mobile** - Menu lateral adaptativo com Sheet
+- ✅ **Tema Escuro/Claro** - Alternância de temas com persistência
+- ✅ **Toast Notifications** - Feedback visual elegante para ações
+- ✅ **Loading Skeletons** - Estados de carregamento profissionais
 - ✅ **Layout Moderno** - Interface clean e profissional
+- ✅ **Lazy Loading** - Carregamento otimizado de componentes pesados
+- ✅ **Error Boundary Global** - Tratamento robusto de erros
+- ✅ **Touch Interactions** - Gestos otimizados para mobile
+- ✅ **Adaptive Layouts** - Grids que se adaptam ao tamanho da tela
 
 ## 🎯 **Navegação da Plataforma**
 
 ### 📱 **Dashboard** - Visão Geral
+- Busca global inteligente (Ctrl+K ou Cmd+K)
 - Favoritos e notícias em destaque
 - Estatísticas de mercado principais
 - Lista de top cryptos com indicadores
 - Portfolio overview e alertas ativos
+- Pull-to-refresh para atualização rápida
 
 ### 💼 **Portfolio** - Gerenciamento de Investimentos
 - Tracking completo de assets
@@ -269,9 +280,11 @@ O projeto estará acessível em `http://[IP_DO_SERVIDOR]:5173`
 - **Análise de Suporte/Resistência** - Identificação inteligente de níveis
 
 ### 🔧 **Estado e Dados**
-- **React Query (TanStack Query)** - Gerenciamento de estado server
-- **React Hook Form** - Gerenciamento de formulários
+- **React Query (TanStack Query)** - Gerenciamento de estado server otimizado
+- **React Hook Form** - Gerenciamento de formulários performático
 - **Zod** - Validação de esquemas TypeScript
+- **React Suspense** - Carregamento assíncrono de componentes
+- **Lazy Loading** - Code splitting automático
 
 ### 💾 **Backend e Persistência**
 - **Supabase** - Backend as a Service (BaaS)
@@ -286,12 +299,28 @@ O projeto estará acessível em `http://[IP_DO_SERVIDOR]:5173`
 - **WebSocket connections** - Dados em tempo real
 
 ### 🎨 **UI/UX**
-- **Next Themes** - Sistema de temas (claro/escuro)
-- **Sonner** - Toast notifications elegantes
-- **Class Variance Authority** - Sistema de variantes CSS
+- **Next Themes** - Sistema de temas (claro/escuro) com persistência
+- **Sonner** - Toast notifications elegantes e não intrusivas
+- **Class Variance Authority** - Sistema de variantes CSS robusto
 - **Tailwind Merge** - Merge inteligente de classes CSS
+- **Radix UI** - Componentes acessíveis e customizáveis
+- **Sheet/Drawer** - Modais e menus laterais mobile-friendly
+- **Command Menu** - Interface de busca tipo spotlight
 
 ## 🎓 **Guia de Uso Avançado**
+
+### 🔍 **Busca Global**
+1. Pressione `Ctrl+K` (Windows/Linux) ou `Cmd+K` (Mac)
+2. Digite o nome da criptomoeda ou recurso
+3. Resultados categorizados em: Criptomoedas, Páginas, Recursos
+4. Use setas ↑↓ para navegar e Enter para selecionar
+5. ESC para fechar
+
+### 📱 **Navegação Mobile**
+1. Use o menu inferior fixo para acesso rápido
+2. Arraste para baixo (pull-to-refresh) para atualizar dados
+3. Menu hamburguer no topo para navegação completa
+4. Todos os recursos adaptados para toque
 
 ### 📈 **Como Usar o Trading Pro**
 1. Acesse a seção "Trading Pro" no menu lateral
