@@ -202,10 +202,17 @@ export function ProfessionalCandlestickChart() {
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
+    // Ensure container has dimensions before creating chart
+    const container = chartContainerRef.current;
+    if (container.clientWidth === 0 || container.clientHeight === 0) {
+      console.warn("Container has no dimensions, retrying...");
+      return;
+    }
+
     setLoading(true);
 
     // Criar gráfico
-    const chart = createChart(chartContainerRef.current, {
+    const chart = createChart(container, {
       layout: {
         background: { type: ColorType.Solid, color: '#0F172A' },
         textColor: '#94A3B8',
@@ -422,7 +429,7 @@ export function ProfessionalCandlestickChart() {
 
           {/* Gráfico */}
           <div className="relative border rounded-lg overflow-hidden bg-slate-900">
-            <div ref={chartContainerRef} className="w-full" />
+            <div ref={chartContainerRef} className="w-full h-[500px]" />
             {loading && (
               <div className="absolute inset-0 flex items-center justify-center bg-slate-900/80">
                 <RefreshCw className="w-8 h-8 animate-spin text-white" />
