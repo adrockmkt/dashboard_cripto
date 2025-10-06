@@ -2,7 +2,7 @@
   "name": "Ad Rock Cripto Dashboard",
   "short_name": "Cripto Dashboard",
   "description": "Dashboard profissional para acompanhamento de criptomoedas em tempo real",
-  "start_url": "/",
+  "start_url": "/cripto-dashboard/",
   "display": "standalone",
   "background_color": "#0F172A",
   "theme_color": "#3B82F6",
