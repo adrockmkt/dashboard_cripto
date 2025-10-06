@@ -1,9 +1,9 @@
 const CACHE_NAME = 'cripto-dashboard-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/src/main.tsx',
-  '/src/index.css'
+  '/cripto-dashboard/',
+  '/cripto-dashboard/index.html',
+  '/cripto-dashboard/src/main.tsx',
+  '/cripto-dashboard/src/index.css'
 ];
 
 self.addEventListener('install', (event) => {

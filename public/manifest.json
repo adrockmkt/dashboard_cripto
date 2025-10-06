@@ -2,20 +2,20 @@
   "name": "Ad Rock Cripto Dashboard",
   "short_name": "Cripto Dashboard",
   "description": "Dashboard profissional para acompanhamento de criptomoedas em tempo real",
-  "start_url": "/",
+  "start_url": "/cripto-dashboard/",
   "display": "standalone",
   "background_color": "#0F172A",
   "theme_color": "#3B82F6",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/lovable-uploads/f9adaae1-4eb9-43b8-9d30-50c6204dd06b.png",
+      "src": "/cripto-dashboard/lovable-uploads/f9adaae1-4eb9-43b8-9d30-50c6204dd06b.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/lovable-uploads/f9adaae1-4eb9-43b8-9d30-50c6204dd06b.png",
+      "src": "/cripto-dashboard/lovable-uploads/f9adaae1-4eb9-43b8-9d30-50c6204dd06b.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -26,7 +26,7 @@
   "shortcuts": [
     {
       "name": "Dashboard",
-      "url": "/",
+      "url": "/cripto-dashboard/",
       "description": "Ver dashboard principal"
     }
   ]
