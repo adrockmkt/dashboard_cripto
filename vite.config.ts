@@ -17,6 +17,15 @@ export default defineConfig(({ mode }) => ({
       '*.manusvm.computer',
     ],
   },
+  optimizeDeps: {
+    include: [
+      'i18next',
+      'react-i18next',
+      '@tanstack/react-virtual',
+      'jspdf',
+      'jspdf-autotable'
+    ],
+  },
   build: {
     sourcemap: true,
   },
