@@ -9,15 +9,14 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/lovable-uploads/f9adaae1-4eb9-43b8-9d30-50c6204dd06b.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
     },
     {
-      "src": "/lovable-uploads/f9adaae1-4eb9-43b8-9d30-50c6204dd06b.png",
-      "sizes": "512x512",
-      "type": "image/png",
+      "src": "/og-image.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ],
