@@ -2,28 +2,18 @@ import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { TrendingUp, TrendingDown, TriangleAlert as AlertTriangle, Volume2, VolumeX, RefreshCw, Settings, Target, Activity } from "lucide-react";
-
-interface CandleData {
-  timestamp: number;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-}
+import { createChart, ColorType, IChartApi, ISeriesApi, CandlestickData, Time } from 'lightweight-charts';
+import { TrendingUp, TrendingDown, TriangleAlert as AlertTriangle, RefreshCw, Activity } from "lucide-react";
 
 interface TechnicalPattern {
   name: string;
   type: 'bullish' | 'bearish' | 'neutral';
   confidence: number;
   description: string;
-  position: { x: number; y: number };
 }
 
 interface SupportResistance {
@@ -33,9 +23,8 @@ interface SupportResistance {
   touches: number;
 }
 
-export function CandlestickChart() {
+export function ProfessionalCandlestickChart() {
   const [timeframe, setTimeframe] = useState('1h');
-  const [candleData, setCandleData] = useState<CandleData[]>([]);
   const [patterns, setPatterns] = useState<TechnicalPattern[]>([]);
   const [supportResistance, setSupportResistance] = useState<SupportResistance[]>([]);
   const [indicators, setIndicators] = useState({
@@ -52,10 +41,14 @@ export function CandlestickChart() {
     breakouts: true
   });
   const [loading, setLoading] = useState(true);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<IChartApi | null>(null);
+  const candlestickSeriesRef = useRef<any>(null);
+  const volumeSeriesRef = useRef<any>(null);
 
-  // Gerar dados de velas simulados
-  const generateCandleData = (timeframe: string) => {
+  // Gerar dados de velas realistas
+  const generateCandleData = (timeframe: string): CandlestickData[] => {
     const intervals = {
       '1m': 1,
       '5m': 5,
@@ -67,33 +60,30 @@ export function CandlestickChart() {
 
     const interval = intervals[timeframe as keyof typeof intervals] || 60;
     const points = 200;
-    const data: CandleData[] = [];
-    let basePrice = 45000;
-    const now = Date.now();
+    const data: CandlestickData[] = [];
+    let basePrice = 48000;
+    const now = Math.floor(Date.now() / 1000);
 
     for (let i = 0; i < points; i++) {
-      const timestamp = now - (points - i) * interval * 60 * 1000;
+      const timestamp = (now - (points - i) * interval * 60) as Time;
       
-      // Simular movimento de preço mais realista
-      const volatility = 0.02;
-      const trend = Math.sin(i / 20) * 0.001;
+      const volatility = 0.015;
+      const trend = Math.sin(i / 25) * 0.002;
       const noise = (Math.random() - 0.5) * volatility;
       
       basePrice *= (1 + trend + noise);
       
       const open = basePrice;
-      const close = open * (1 + (Math.random() - 0.5) * 0.01);
-      const high = Math.max(open, close) * (1 + Math.random() * 0.005);
-      const low = Math.min(open, close) * (1 - Math.random() * 0.005);
-      const volume = Math.random() * 1000000;
+      const close = open * (1 + (Math.random() - 0.5) * 0.012);
+      const high = Math.max(open, close) * (1 + Math.random() * 0.008);
+      const low = Math.min(open, close) * (1 - Math.random() * 0.008);
 
       data.push({
-        timestamp,
-        open,
-        high,
-        low,
-        close,
-        volume
+        time: timestamp,
+        open: parseFloat(open.toFixed(2)),
+        high: parseFloat(high.toFixed(2)),
+        low: parseFloat(low.toFixed(2)),
+        close: parseFloat(close.toFixed(2)),
       });
 
       basePrice = close;
@@ -102,272 +92,237 @@ export function CandlestickChart() {
     return data;
   };
 
-  // Detectar padrões de candlestick
-  const detectCandlestickPatterns = (data: CandleData[]): TechnicalPattern[] => {
-    const patterns: TechnicalPattern[] = [];
-    const usedPositions: Set<string> = new Set();
-    
-    for (let i = 2; i < data.length - 1; i++) {
-      const prev2 = data[i - 2];
-      const prev = data[i - 1];
-      const current = data[i];
-      const next = data[i + 1];
+  // Gerar dados de volume
+  const generateVolumeData = (candleData: CandlestickData[]) => {
+    return candleData.map(candle => ({
+      time: candle.time,
+      value: Math.random() * 1000000 + 500000,
+      color: candle.close >= candle.open ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)'
+    }));
+  };
 
-      // Skip if too close to existing pattern
-      const positionKey = `${Math.floor(i / 5)}-${Math.floor(current.close / 1000)}`;
-      if (usedPositions.has(positionKey)) continue;
-      // Doji
+  // Detectar padrões técnicos
+  const detectPatterns = (data: CandlestickData[]): TechnicalPattern[] => {
+    const patterns: TechnicalPattern[] = [];
+    
+    for (let i = 10; i < data.length - 1; i += 15) {
+      const current = data[i];
+      const prev = data[i - 1];
+      
       const bodySize = Math.abs(current.close - current.open);
       const candleRange = current.high - current.low;
+      
+      // Doji
       if (bodySize / candleRange < 0.1) {
-        usedPositions.add(positionKey);
         patterns.push({
           name: 'Doji',
           type: 'neutral',
           confidence: 0.7,
-          description: 'Indecisão do mercado - possível reversão',
-          position: { x: i, y: current.close }
+          description: 'Indecisão do mercado'
         });
-        continue; // Only one pattern per position
       }
-
-      // Martelo (Hammer)
+      
+      // Martelo
       const lowerShadow = Math.min(current.open, current.close) - current.low;
       const upperShadow = current.high - Math.max(current.open, current.close);
       if (lowerShadow > bodySize * 2 && upperShadow < bodySize * 0.5) {
-        usedPositions.add(positionKey);
         patterns.push({
           name: 'Martelo',
           type: 'bullish',
           confidence: 0.8,
-          description: 'Padrão de reversão bullish',
-          position: { x: i, y: current.low }
+          description: 'Reversão bullish'
         });
-        continue;
       }
-
+      
       // Engolfo Bullish
       if (prev.close < prev.open && current.close > current.open &&
           current.close > prev.open && current.open < prev.close) {
-        usedPositions.add(positionKey);
         patterns.push({
           name: 'Engolfo Bullish',
           type: 'bullish',
           confidence: 0.85,
-          description: 'Forte sinal de reversão para alta',
-          position: { x: i, y: current.close }
+          description: 'Forte reversão para alta'
         });
-        continue;
       }
 
-      // Triângulo Ascendente (simplificado)
-      if (i > 10 && i % 10 === 0) { // Only check every 10 candles
-        const recentData = data.slice(i - 10, i);
+      // Triângulo Ascendente
+      if (i > 20 && i % 30 === 0) {
+        const recentData = data.slice(i - 20, i);
         const highs = recentData.map(d => d.high);
         const lows = recentData.map(d => d.low);
         
         const highsFlat = highs.every(h => Math.abs(h - highs[0]) / highs[0] < 0.02);
-        const lowsRising = lows[lows.length - 1] > lows[0];
+        const lowsRising = lows[lows.length - 1] > lows[0] * 1.01;
         
         if (highsFlat && lowsRising) {
-          usedPositions.add(positionKey);
           patterns.push({
             name: 'Triângulo Ascendente',
             type: 'bullish',
             confidence: 0.75,
-            description: 'Padrão de continuação bullish',
-            position: { x: i, y: current.high }
+            description: 'Continuação bullish'
           });
         }
       }
     }
 
-    // Limit to most significant patterns and spread them out
-    return patterns
-      .sort((a, b) => b.confidence - a.confidence)
-      .slice(0, 8) // Max 8 patterns
-      .filter((pattern, index, arr) => {
-        // Ensure minimum distance between patterns
-        return !arr.slice(0, index).some(existing => 
-          Math.abs(existing.position.x - pattern.position.x) < 10
-        );
-      });
+    return patterns.slice(0, 8);
   };
 
   // Calcular suporte e resistência
-  const calculateSupportResistance = (data: CandleData[]): SupportResistance[] => {
+  const calculateSupportResistance = (data: CandlestickData[]): SupportResistance[] => {
     const levels: SupportResistance[] = [];
-    const priceRanges = data.map(d => ({ high: d.high, low: d.low }));
-    
-    // Encontrar níveis de preço frequentes
     const priceFrequency: { [key: number]: number } = {};
     
-    priceRanges.forEach(range => {
-      const roundedHigh = Math.round(range.high / 100) * 100;
-      const roundedLow = Math.round(range.low / 100) * 100;
+    data.forEach(candle => {
+      const roundedHigh = Math.round(candle.high / 100) * 100;
+      const roundedLow = Math.round(candle.low / 100) * 100;
       
       priceFrequency[roundedHigh] = (priceFrequency[roundedHigh] || 0) + 1;
       priceFrequency[roundedLow] = (priceFrequency[roundedLow] || 0) + 1;
     });
 
-    // Identificar níveis significativos
     Object.entries(priceFrequency).forEach(([price, frequency]) => {
-      if (frequency >= 3) {
+      if (frequency >= 4) {
         const priceLevel = parseFloat(price);
         const currentPrice = data[data.length - 1].close;
         
         levels.push({
           level: priceLevel,
           type: priceLevel > currentPrice ? 'resistance' : 'support',
-          strength: Math.min(frequency / 10, 1),
+          strength: Math.min(frequency / 12, 1),
           touches: frequency
         });
       }
     });
 
-    return levels.sort((a, b) => b.strength - a.strength).slice(0, 6);
+    return levels.sort((a, b) => b.strength - a.strength).slice(0, 5);
   };
 
-  // Desenhar gráfico de velas no canvas
-  const drawCandlestickChart = () => {
-    const canvas = canvasRef.current;
-    if (!canvas || candleData.length === 0) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const { width, height } = canvas;
-    ctx.clearRect(0, 0, width, height);
-
-    // Configurações do gráfico
-    const padding = 40;
-    const chartWidth = width - padding * 2;
-    const chartHeight = height - padding * 2;
-    
-    const prices = candleData.flatMap(d => [d.high, d.low]);
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
-    const priceRange = maxPrice - minPrice;
-
-    // Função para converter preço em coordenada Y
-    const priceToY = (price: number) => {
-      return padding + (maxPrice - price) / priceRange * chartHeight;
-    };
-
-    // Função para converter índice em coordenada X
-    const indexToX = (index: number) => {
-      return padding + (index / (candleData.length - 1)) * chartWidth;
-    };
-
-    // Desenhar grid
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 0.5;
-    for (let i = 0; i <= 10; i++) {
-      const y = padding + (i / 10) * chartHeight;
-      ctx.beginPath();
-      ctx.moveTo(padding, y);
-      ctx.lineTo(width - padding, y);
-      ctx.stroke();
-    }
-
-    // Desenhar suporte e resistência
-    supportResistance.forEach(sr => {
-      const y = priceToY(sr.level);
-      ctx.strokeStyle = sr.type === 'support' ? '#22c55e' : '#ef4444';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([5, 5]);
-      ctx.beginPath();
-      ctx.moveTo(padding, y);
-      ctx.lineTo(width - padding, y);
-      ctx.stroke();
-      ctx.setLineDash([]);
-    });
-
-    // Desenhar velas
-    candleData.forEach((candle, index) => {
-      const x = indexToX(index);
-      const openY = priceToY(candle.open);
-      const closeY = priceToY(candle.close);
-      const highY = priceToY(candle.high);
-      const lowY = priceToY(candle.low);
-
-      const isBullish = candle.close > candle.open;
-      const candleWidth = Math.max(2, chartWidth / candleData.length * 0.8);
-
-      // Desenhar sombras
-      ctx.strokeStyle = isBullish ? '#22c55e' : '#ef4444';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x, highY);
-      ctx.lineTo(x, lowY);
-      ctx.stroke();
-
-      // Desenhar corpo da vela
-      ctx.fillStyle = isBullish ? '#22c55e' : '#ef4444';
-      const bodyHeight = Math.abs(closeY - openY);
-      const bodyY = Math.min(openY, closeY);
-      
-      if (bodyHeight < 1) {
-        // Doji - linha horizontal
-        ctx.fillRect(x - candleWidth / 2, bodyY - 0.5, candleWidth, 1);
-      } else {
-        ctx.fillRect(x - candleWidth / 2, bodyY, candleWidth, bodyHeight);
-      }
-    });
-
-    // Desenhar padrões detectados
-    patterns.forEach(pattern => {
-      const x = indexToX(pattern.position.x);
-      const y = priceToY(pattern.position.y);
-      
-      ctx.fillStyle = pattern.type === 'bullish' ? '#22c55e' : 
-                     pattern.type === 'bearish' ? '#ef4444' : '#f59e0b';
-      ctx.beginPath();
-      ctx.arc(x, y, 4, 0, 2 * Math.PI);
-      ctx.fill();
-      
-      // Label do padrão com background
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-      ctx.fillRect(x + 8, y - 20, pattern.name.length * 6 + 4, 16);
-      ctx.fillStyle = '#fff';
-      ctx.font = '9px Arial';
-      ctx.fillText(pattern.name, x + 10, y - 8);
-    });
-  };
-
+  // Inicializar gráfico
   useEffect(() => {
+    if (!chartContainerRef.current) return;
+
     setLoading(true);
-    const data = generateCandleData(timeframe);
-    setCandleData(data);
-    setPatterns(detectCandlestickPatterns(data));
-    setSupportResistance(calculateSupportResistance(data));
-    setLoading(false);
-  }, [timeframe]);
 
-  useEffect(() => {
-    if (!loading) {
-      drawCandlestickChart();
-    }
-  }, [candleData, patterns, supportResistance, loading]);
+    // Criar gráfico
+    const chart = createChart(chartContainerRef.current, {
+      layout: {
+        background: { type: ColorType.Solid, color: '#0F172A' },
+        textColor: '#94A3B8',
+      },
+      grid: {
+        vertLines: { color: '#1E293B' },
+        horzLines: { color: '#1E293B' },
+      },
+      width: chartContainerRef.current.clientWidth,
+      height: 500,
+      timeScale: {
+        timeVisible: true,
+        secondsVisible: false,
+        borderColor: '#334155',
+      },
+      rightPriceScale: {
+        borderColor: '#334155',
+      },
+      crosshair: {
+        mode: 1,
+        vertLine: {
+          color: '#64748B',
+          width: 1,
+          style: 3,
+        },
+        horzLine: {
+          color: '#64748B',
+          width: 1,
+          style: 3,
+        },
+      },
+    });
 
-  const handlePatternAlert = (pattern: TechnicalPattern) => {
-    if (alerts.sound) {
-      // Simular som de alerta
-      console.log(`🔊 Alerta sonoro: ${pattern.name} detectado!`);
-    }
+    chartRef.current = chart;
+
+    // Adicionar série de candlestick
+    const candlestickSeries = chart.addSeries({
+      type: 'Candlestick',
+      upColor: '#22C55E',
+      downColor: '#EF4444',
+      borderUpColor: '#22C55E',
+      borderDownColor: '#EF4444',
+      wickUpColor: '#22C55E',
+      wickDownColor: '#EF4444',
+    } as any);
+
+    candlestickSeriesRef.current = candlestickSeries;
+
+    // Adicionar série de volume
+    const volumeSeries = chart.addSeries({
+      type: 'Histogram',
+      color: '#26a69a',
+      priceFormat: {
+        type: 'volume',
+      },
+      priceScaleId: '',
+      priceScale: {
+        scaleMargins: {
+          top: 0.8,
+          bottom: 0,
+        },
+      },
+    } as any);
+
+    volumeSeriesRef.current = volumeSeries;
+
+    // Gerar e definir dados
+    const candleData = generateCandleData(timeframe);
+    const volumeData = generateVolumeData(candleData);
     
-    if (alerts.visual) {
-      // Trigger visual alert
-      console.log(`🚨 Alerta visual: ${pattern.name} - ${pattern.description}`);
-    }
-  };
+    candlestickSeries.setData(candleData);
+    volumeSeries.setData(volumeData);
+
+    // Detectar padrões e suporte/resistência
+    const detectedPatterns = detectPatterns(candleData);
+    const srLevels = calculateSupportResistance(candleData);
+    
+    setPatterns(detectedPatterns);
+    setSupportResistance(srLevels);
+
+    // Adicionar linhas de suporte e resistência
+    srLevels.forEach(sr => {
+      const priceLine = candlestickSeries.createPriceLine({
+        price: sr.level,
+        color: sr.type === 'support' ? '#22C55E' : '#EF4444',
+        lineWidth: 2,
+        lineStyle: 2,
+        axisLabelVisible: true,
+        title: sr.type === 'support' ? `Suporte ${sr.touches}x` : `Resistência ${sr.touches}x`,
+      });
+    });
+
+    chart.timeScale().fitContent();
+
+    // Responsividade
+    const handleResize = () => {
+      if (chartContainerRef.current && chartRef.current) {
+        chartRef.current.applyOptions({ 
+          width: chartContainerRef.current.clientWidth 
+        });
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    setLoading(false);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      chart.remove();
+    };
+  }, [timeframe]);
 
   return (
     <div className="space-y-6">
-      {/* Controles do Gráfico */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <CardTitle className="flex items-center gap-2">
               <Activity className="w-5 h-5" />
               Gráfico de Velas - Análise Técnica Avançada
@@ -394,7 +349,7 @@ export function CandlestickChart() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
-            {/* Indicadores Técnicos */}
+            {/* Indicadores */}
             <div className="space-y-2">
               <Label className="text-sm font-semibold">Indicadores</Label>
               <div className="space-y-2">
@@ -412,7 +367,7 @@ export function CandlestickChart() {
               </div>
             </div>
 
-            {/* Configurações de Alertas */}
+            {/* Alertas */}
             <div className="space-y-2">
               <Label className="text-sm font-semibold">Alertas</Label>
               <div className="space-y-2">
@@ -447,14 +402,14 @@ export function CandlestickChart() {
               </div>
             </div>
 
-            {/* Suporte e Resistência */}
+            {/* S&R Níveis */}
             <div className="space-y-2">
               <Label className="text-sm font-semibold">S&R Níveis</Label>
               <div className="space-y-1 max-h-32 overflow-y-auto">
                 {supportResistance.map((sr, index) => (
                   <div key={index} className="flex items-center justify-between text-xs">
                     <span className={sr.type === 'support' ? 'text-green-500' : 'text-red-500'}>
-                      {sr.type === 'support' ? '🟢' : '🔴'} ${sr.level.toLocaleString()}
+                      {sr.type === 'support' ? <TrendingUp className="w-3 h-3 inline" /> : <TrendingDown className="w-3 h-3 inline" />} ${sr.level.toLocaleString()}
                     </span>
                     <Badge variant="outline" className="text-xs">
                       {sr.touches}x
@@ -465,31 +420,25 @@ export function CandlestickChart() {
             </div>
           </div>
 
-          {/* Canvas do Gráfico */}
-          <div className="relative border rounded-lg bg-gray-900 p-4">
-            <canvas
-              ref={canvasRef}
-              width={800}
-              height={400}
-              className="w-full h-auto"
-              style={{ maxHeight: '400px' }}
-            />
+          {/* Gráfico */}
+          <div className="relative border rounded-lg overflow-hidden bg-slate-900">
+            <div ref={chartContainerRef} className="w-full" />
             {loading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50">
+              <div className="absolute inset-0 flex items-center justify-center bg-slate-900/80">
                 <RefreshCw className="w-8 h-8 animate-spin text-white" />
               </div>
             )}
           </div>
 
-          {/* Alertas de Padrões */}
+          {/* Alertas */}
           {patterns.length > 0 && alerts.visual && (
             <Alert className="mt-4">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
                 <strong>Padrões Detectados:</strong> {patterns.length} padrão(ões) identificado(s) no gráfico atual.
                 {patterns.filter(p => p.confidence > 0.8).length > 0 && (
-                  <span className="text-green-600 font-semibold">
-                    {' '}({patterns.filter(p => p.confidence > 0.8).length} com alta confiança)
+                  <span className="text-green-600 font-semibold ml-1">
+                    ({patterns.filter(p => p.confidence > 0.8).length} com alta confiança)
                   </span>
                 )}
               </AlertDescription>

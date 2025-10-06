@@ -21,7 +21,7 @@ import CryptoList from "@/components/CryptoList";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { CustomAlertsPanel } from "@/components/CustomAlertsPanel";
 import { AdvancedTechnicalIndicators } from "@/components/AdvancedTechnicalIndicators";
-import { CandlestickChart } from "@/components/advanced/CandlestickChart";
+import { ProfessionalCandlestickChart } from "@/components/advanced/ProfessionalCandlestickChart";
 import { OnChainMetrics } from "@/components/advanced/OnChainMetrics";
 import { DCASimulator } from "@/components/advanced/DCASimulator";
 import { StockToFlowModel } from "@/components/advanced/StockToFlowModel";
@@ -77,7 +77,7 @@ const Index = () => {
       case "trading":
         return (
           <div className="space-y-4 md:space-y-6 pb-20 md:pb-4">
-            <CandlestickChart />
+            <ProfessionalCandlestickChart />
           </div>
         );
 
