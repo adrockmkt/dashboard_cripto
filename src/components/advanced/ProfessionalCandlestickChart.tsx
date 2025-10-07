@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { createChart, ColorType, IChartApi, ISeriesApi, CandlestickData, Time } from 'lightweight-charts';
+import { createChart, ColorType, IChartApi, ISeriesApi, CandlestickData, Time, CandlestickSeries, HistogramSeries } from 'lightweight-charts';
 import { TrendingUp, TrendingDown, TriangleAlert as AlertTriangle, RefreshCw, Activity } from "lucide-react";
 
 interface TechnicalPattern {
@@ -207,20 +207,18 @@ export function ProfessionalCandlestickChart() {
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
-    const container = chartContainerRef.current;
-    
-    // Wait for container to have dimensions
-    const initializeChart = () => {
-      if (container.clientWidth === 0 || container.clientHeight === 0) {
-        console.warn("Container has no dimensions, waiting...");
-        setTimeout(initializeChart, 100);
-        return;
-      }
+    setLoading(true);
 
-      setLoading(true);
+    const handleResize = () => {
+      if (chartContainerRef.current && chartRef.current) {
+        chartRef.current.applyOptions({ 
+          width: chartContainerRef.current.clientWidth 
+        });
+      }
+    };
 
     // Criar gráfico
-    const chart = createChart(container, {
+    const chart = createChart(chartContainerRef.current, {
       layout: {
         background: { type: ColorType.Solid, color: '#0F172A' },
         textColor: '#94A3B8',
@@ -257,33 +255,33 @@ export function ProfessionalCandlestickChart() {
     chartRef.current = chart;
 
     // Adicionar série de candlestick
-    const candlestickSeries = chart.addSeries({
-      type: 'Candlestick',
+    const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#22C55E',
       downColor: '#EF4444',
       borderUpColor: '#22C55E',
       borderDownColor: '#EF4444',
       wickUpColor: '#22C55E',
       wickDownColor: '#EF4444',
-    } as any);
+    });
 
     candlestickSeriesRef.current = candlestickSeries;
 
     // Adicionar série de volume
-    const volumeSeries = chart.addSeries({
-      type: 'Histogram',
+    const volumeSeries = chart.addSeries(HistogramSeries, {
       color: '#26a69a',
       priceFormat: {
         type: 'volume',
       },
       priceScaleId: '',
-      priceScale: {
-        scaleMargins: {
-          top: 0.8,
-          bottom: 0,
-        },
+    });
+
+    // Apply scale margins to volume series
+    chart.priceScale('').applyOptions({
+      scaleMargins: {
+        top: 0.8,
+        bottom: 0,
       },
-    } as any);
+    });
 
     volumeSeriesRef.current = volumeSeries;
 
@@ -325,25 +323,13 @@ export function ProfessionalCandlestickChart() {
 
     chart.timeScale().fitContent();
 
-    // Responsividade
-    const handleResize = () => {
-      if (chartContainerRef.current && chartRef.current) {
-        chartRef.current.applyOptions({ 
-          width: chartContainerRef.current.clientWidth 
-        });
-      }
+    window.addEventListener('resize', handleResize);
+    setLoading(false);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      chart.remove();
     };
-
-      window.addEventListener('resize', handleResize);
-      setLoading(false);
-
-      return () => {
-        window.removeEventListener('resize', handleResize);
-        chart.remove();
-      };
-    };
-
-    initializeChart();
   }, [timeframe]);
 
   return (
