@@ -1,6 +1,12 @@
 # 🚀 Dashboard Cripto Avançado
 
-**Plataforma Profissional de Análise Cripto** com gráficos de velas avançados, métricas on-chain, modelos preditivos e sistema de alertas inteligente, desenvolvido por **Rafael Marques Lins** da **Ad Rock Digital Mkt**.
+**Plataforma Profissional de Análise de Criptomoedas** com gráficos de velas profissionais, métricas on-chain, modelos preditivos e sistema de alertas inteligente.
+
+Desenvolvido por **Rafael Marques Lins** - **Ad Rock Digital Mkt**
+
+[![GitHub](https://img.shields.io/badge/GitHub-adrockmkt-blue?logo=github)](https://github.com/adrockmkt/dashboard_cripto)
+[![Website](https://img.shields.io/badge/Website-adrock.com.br-orange)](https://adrock.com.br)
+[![WhatsApp](https://img.shields.io/badge/WhatsApp-+55%2041%2099125--5859-green?logo=whatsapp)](https://wa.me/5541991255859)
 
 ## 📊 Funcionalidades Implementadas
 
@@ -12,14 +18,18 @@
 - ✅ **Dominância do Bitcoin** - Percentual de dominância e market cap total
 - ✅ **Gráficos Interativos** - Charts avançados com TradingView widgets
 
-### 📈 **Trading Pro - Gráficos de Velas Avançados**
+### 📈 **Trading Pro - Gráficos de Velas Profissionais**
+- ✅ **Lightweight Charts by TradingView** - Biblioteca profissional de alta performance
 - ✅ **Candlestick Charts Personalizáveis** - Timeframes de 1min até 1d
+- ✅ **Volume Profile Integrado** - Análise de volume em histograma sincronizado
 - ✅ **Indicadores Técnicos Completos** - RSI, MACD, Bollinger Bands, Médias Móveis, Fibonacci
 - ✅ **Detecção Automática de Padrões** - Doji, Martelo, Engolfo, Triângulo Ascendente/Descendente
-- ✅ **Suporte e Resistência Automáticos** - Identificação inteligente de níveis críticos
+- ✅ **Suporte e Resistência Automáticos** - Identificação inteligente de níveis críticos com força
 - ✅ **Alertas de Rompimento** - Notificações sonoras e visuais para breakouts
-- ✅ **Canvas Nativo** - Renderização otimizada para performance máxima
+- ✅ **Renderização Otimizada** - Performance superior com canvas WebGL
 - ✅ **Análise de Padrões em Tempo Real** - Detecção contínua de formações gráficas
+- ✅ **Interface Responsiva** - Gráficos adaptáveis a qualquer tamanho de tela
+- ✅ **Zoom e Pan Interativos** - Navegação intuitiva nos dados históricos
 
 ### 🔗 **Métricas On-Chain Avançadas**
 - ✅ **Endereços Ativos** - Monitoramento da atividade da rede Bitcoin
@@ -90,6 +100,7 @@
 
 ### 🎨 **Interface e UX**
 - ✅ **Design Responsivo Mobile-First** - Otimizado para todas as resoluções
+- ✅ **Sidebar Profissional** - Menu lateral com logo Ad Rock e footer informativo
 - ✅ **Bottom Navigation Mobile** - Navegação rápida em dispositivos móveis
 - ✅ **Pull-to-Refresh** - Atualização intuitiva com gesto de arrastar
 - ✅ **Safe Areas iOS/Android** - Suporte para notch e barras do sistema
@@ -269,8 +280,8 @@ O projeto estará acessível em `http://[IP_DO_SERVIDOR]:5173`
 
 ### 📊 **Visualização de Dados**
 - **Recharts** - Gráficos interativos e responsivos
+- **Lightweight Charts (TradingView)** - Biblioteca profissional para candlestick charts
 - **TradingView Widgets** - Charts profissionais de trading
-- **Canvas API** - Gráficos de velas customizados de alta performance
 - **Lucide React** - Biblioteca de ícones moderna
 
 ### 🧮 **Análise e Algoritmos**
@@ -353,13 +364,23 @@ O projeto estará acessível em `http://[IP_DO_SERVIDOR]:5173`
 3. Use timeframes apropriados para sua estratégia
 4. Monitore o histórico de disparos para ajustes
 
-## 📞 Contato
+## 📞 Contato e Créditos
 
+### 👨‍💻 Desenvolvedor
 **Rafael Marques Lins**  
 Ad Rock Digital Mkt
 
-- 📱 WhatsApp: [+55 41 99125-5859](https://wa.me/5541991255859)
-- 📧 Email: [rafael@adrock.com.br](mailto:rafael@adrock.com.br)
-- 🌐 Blog: [adrock.com.br/blog](https://adrock.com.br/blog)
+### 📱 Formas de Contato
+- 🌐 Website: [adrock.com.br](https://adrock.com.br)
+- 📧 Email: [contato@adrock.com.br](mailto:contato@adrock.com.br)
+- 💬 WhatsApp: [+55 41 99125-5859](https://wa.me/5541991255859)
+- 💻 GitHub: [github.com/adrockmkt/dashboard_cripto](https://github.com/adrockmkt/dashboard_cripto)
+
+### 🏢 Sobre a Ad Rock Digital Mkt
+Agência especializada em marketing digital e desenvolvimento de soluções tecnológicas para o mercado financeiro e cripto.
 
 ---
+
+**© 2025 Ad Rock Digital Mkt - Todos os direitos reservados**
+
+*Dashboard desenvolvido com React, TypeScript, Tailwind CSS e as melhores práticas de desenvolvimento web moderno.*
