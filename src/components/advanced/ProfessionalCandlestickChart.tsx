@@ -202,14 +202,17 @@ export function ProfessionalCandlestickChart() {
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
-    // Ensure container has dimensions before creating chart
     const container = chartContainerRef.current;
-    if (container.clientWidth === 0 || container.clientHeight === 0) {
-      console.warn("Container has no dimensions, retrying...");
-      return;
-    }
+    
+    // Wait for container to have dimensions
+    const initializeChart = () => {
+      if (container.clientWidth === 0 || container.clientHeight === 0) {
+        console.warn("Container has no dimensions, waiting...");
+        setTimeout(initializeChart, 100);
+        return;
+      }
 
-    setLoading(true);
+      setLoading(true);
 
     // Criar gráfico
     const chart = createChart(container, {
@@ -316,13 +319,16 @@ export function ProfessionalCandlestickChart() {
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    setLoading(false);
+      window.addEventListener('resize', handleResize);
+      setLoading(false);
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      chart.remove();
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        chart.remove();
+      };
     };
+
+    initializeChart();
   }, [timeframe]);
 
   return (
