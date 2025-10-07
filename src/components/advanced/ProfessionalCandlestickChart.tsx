@@ -62,10 +62,15 @@ export function ProfessionalCandlestickChart() {
     const points = 200;
     const data: CandlestickData[] = [];
     let basePrice = 48000;
-    const now = Math.floor(Date.now() / 1000);
+    
+    // Use proper date-based timestamps to avoid duplicates
+    const endDate = new Date();
+    endDate.setSeconds(0, 0); // Reset seconds and milliseconds
+    const startTime = Math.floor(endDate.getTime() / 1000) - (points * interval * 60);
 
     for (let i = 0; i < points; i++) {
-      const timestamp = (now - (points - i) * interval * 60) as Time;
+      // Ensure each timestamp is unique and properly ordered
+      const timestamp = (startTime + (i * interval * 60)) as Time;
       
       const volatility = 0.015;
       const trend = Math.sin(i / 25) * 0.002;
@@ -284,9 +289,19 @@ export function ProfessionalCandlestickChart() {
 
     // Gerar e definir dados
     const candleData = generateCandleData(timeframe);
-    const volumeData = generateVolumeData(candleData);
     
-    candlestickSeries.setData(candleData);
+    // Validate data is properly ordered and has no duplicates
+    const sortedData = candleData.sort((a, b) => (a.time as number) - (b.time as number));
+    
+    // Remove any potential duplicates
+    const uniqueData = sortedData.filter((item, index, array) => {
+      if (index === 0) return true;
+      return item.time !== array[index - 1].time;
+    });
+    
+    const volumeData = generateVolumeData(uniqueData);
+    
+    candlestickSeries.setData(uniqueData);
     volumeSeries.setData(volumeData);
 
     // Detectar padrões e suporte/resistência
