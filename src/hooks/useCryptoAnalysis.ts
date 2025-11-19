@@ -32,11 +32,12 @@ export const useCryptoAnalysis = (autoRefresh: boolean = true) => {
     lastUpdate: null
   });
 
+  // Otimizado: useCallback previne re-criação da função a cada render
   const loadData = useCallback(async () => {
     try {
       setData(prev => ({ ...prev, isLoading: true, error: null }));
 
-      // Buscar dados em paralelo para melhor performance
+      // Otimizado: Promise.allSettled permite continuar mesmo com falhas parciais
       const [cryptoList, fearGreed, dominance, btcHistorical] = await Promise.allSettled([
         fetchCryptoData(),
         fetchFearGreedIndex(),
@@ -46,7 +47,7 @@ export const useCryptoAnalysis = (autoRefresh: boolean = true) => {
 
       let technicalIndicators: TechnicalIndicators | null = null;
       
-      // Processar dados históricos do Bitcoin para indicadores técnicos
+      // Processar indicadores técnicos apenas se houver dados
       if (btcHistorical.status === 'fulfilled' && btcHistorical.value?.prices) {
         const prices = btcHistorical.value.prices.map((item: [number, number]) => item[1]);
         technicalIndicators = calculateTechnicalIndicators(prices);
@@ -70,21 +71,22 @@ export const useCryptoAnalysis = (autoRefresh: boolean = true) => {
         error: error instanceof Error ? error.message : 'Erro desconhecido'
       }));
     }
-  }, []);
+  }, []); // Array vazio = função estável
 
-  // Carregar dados iniciais
+  // Carregar dados iniciais apenas uma vez
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  // Auto-refresh a cada 5 minutos se habilitado
+  // Auto-refresh otimizado - apenas se habilitado
   useEffect(() => {
     if (!autoRefresh) return;
 
-    const interval = setInterval(loadData, 5 * 60 * 1000);
-    return () => clearInterval(interval);
+    const interval = setInterval(loadData, 5 * 60 * 1000); // 5 minutos
+    return () => clearInterval(interval); // Limpar intervalo ao desmontar
   }, [autoRefresh, loadData]);
 
+  // Otimizado: useCallback para evitar re-criação
   const refreshData = useCallback(() => {
     loadData();
   }, [loadData]);

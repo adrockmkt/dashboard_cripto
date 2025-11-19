@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Search, TrendingUp, Activity, FileText, Bell } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useDebounce } from "@/hooks/useDebounce";
 
 interface SearchResult {
   id: string;
@@ -24,8 +25,11 @@ export function GlobalSearch({ onNavigate }: GlobalSearchProps) {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  
+  // Debounce da query para otimizar performance
+  const debouncedQuery = useDebounce(query, 200);
 
-  const allSearchableItems: SearchResult[] = [
+  const allSearchableItems: SearchResult[] = useMemo(() => [
     { id: "dashboard", title: "Dashboard", type: "tab", description: "Visão geral do mercado", icon: Activity, action: () => onNavigate("dashboard") },
     { id: "trading", title: "Trading Pro", type: "tab", description: "Gráficos candlestick avançados", icon: TrendingUp, action: () => onNavigate("trading") },
     { id: "onchain", title: "On-Chain", type: "tab", description: "Métricas on-chain", icon: Activity, action: () => onNavigate("onchain") },
@@ -36,7 +40,7 @@ export function GlobalSearch({ onNavigate }: GlobalSearchProps) {
     { id: "alerts", title: "Alertas", type: "tab", description: "Sistema de alertas", icon: Bell, action: () => onNavigate("alerts") },
     { id: "btc", title: "Bitcoin", type: "crypto", description: "BTC - Análise e preço", icon: TrendingUp, action: () => onNavigate("trading") },
     { id: "eth", title: "Ethereum", type: "crypto", description: "ETH - Análise e preço", icon: TrendingUp, action: () => onNavigate("trading") },
-  ];
+  ], [onNavigate]);
 
   const search = useCallback((searchQuery: string) => {
     if (!searchQuery.trim()) {
@@ -51,15 +55,11 @@ export function GlobalSearch({ onNavigate }: GlobalSearchProps) {
 
     setResults(filtered.slice(0, 6));
     setSelectedIndex(0);
-  }, []);
+  }, [allSearchableItems]);
 
   useEffect(() => {
-    const debounce = setTimeout(() => {
-      search(query);
-    }, 150);
-
-    return () => clearTimeout(debounce);
-  }, [query, search]);
+    search(debouncedQuery);
+  }, [debouncedQuery, search]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isOpen || results.length === 0) return;
