@@ -18,7 +18,7 @@ interface SearchResult {
 }
 
 interface GlobalSearchProps {
-  onNavigate: (tab: string) => void;
+  onNavigate: (tab: string, symbol?: string) => void;
 }
 
 export function GlobalSearch({ onNavigate }: GlobalSearchProps) {
@@ -40,8 +40,10 @@ export function GlobalSearch({ onNavigate }: GlobalSearchProps) {
     { id: "charts", title: t("nav.charts"), type: "tab", description: t("search.chartsDescription"), icon: Activity, action: () => onNavigate("charts") },
     { id: "report", title: t("nav.report"), type: "tab", description: t("search.reportDescription"), icon: FileText, action: () => onNavigate("report") },
     { id: "alerts", title: t("nav.alerts"), type: "tab", description: t("search.alertsDescription"), icon: Bell, action: () => onNavigate("alerts") },
-    { id: "btc", title: "Bitcoin", type: "crypto", description: t("search.bitcoinDescription"), icon: TrendingUp, action: () => onNavigate("trading") },
-    { id: "eth", title: "Ethereum", type: "crypto", description: t("search.ethereumDescription"), icon: TrendingUp, action: () => onNavigate("trading") },
+    { id: "btc", title: "Bitcoin", type: "crypto", description: t("search.bitcoinDescription"), icon: TrendingUp, action: () => onNavigate("trading", "BTC") },
+    { id: "eth", title: "Ethereum", type: "crypto", description: t("search.ethereumDescription"), icon: TrendingUp, action: () => onNavigate("trading", "ETH") },
+    { id: "sol", title: "Solana", type: "crypto", description: "SOL - Analysis and price", icon: TrendingUp, action: () => onNavigate("trading", "SOL") },
+    { id: "ada", title: "Cardano", type: "crypto", description: "ADA - Analysis and price", icon: TrendingUp, action: () => onNavigate("trading", "ADA") },
   ], [onNavigate, t]);
 
   const search = useCallback((searchQuery: string) => {

@@ -14,12 +14,14 @@ import {
   Trash2 
 } from "lucide-react";
 import { type TechnicalIndicators } from "@/services/cryptoApi";
+import { useTranslation } from "react-i18next";
 
 interface AlertsPanelProps {
   technicalIndicators: TechnicalIndicators | null;
 }
 
 const AlertsPanel = ({ technicalIndicators }: AlertsPanelProps) => {
+  const { t } = useTranslation();
   const { alerts, clearAlerts, removeAlert } = useCryptoAlerts(technicalIndicators);
   const [soundEnabled, setSoundEnabled] = useState(false);
 
@@ -65,7 +67,7 @@ const AlertsPanel = ({ technicalIndicators }: AlertsPanelProps) => {
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Bell className="w-5 h-5" />
-            Alertas em Tempo Real
+            {t("cards.realtimeAlerts")}
             {alerts.length > 0 && (
               <Badge variant="secondary">{alerts.length}</Badge>
             )}
@@ -95,8 +97,7 @@ const AlertsPanel = ({ technicalIndicators }: AlertsPanelProps) => {
           <Alert>
             <Info className="w-4 h-4" />
             <AlertDescription>
-              Nenhum alerta ativo no momento. Os alertas aparecerão automaticamente 
-              quando condições específicas do mercado forem detectadas.
+              {t("cards.noRealtimeAlerts")}
             </AlertDescription>
           </Alert>
         ) : (
@@ -116,8 +117,8 @@ const AlertsPanel = ({ technicalIndicators }: AlertsPanelProps) => {
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant={getBadgeVariant(alert.type)} className="text-xs">
-                    {alert.type === 'warning' ? 'Atenção' : 
-                     alert.type === 'success' ? 'Oportunidade' : 'Info'}
+                    {alert.type === 'warning' ? t("cards.attention") : 
+                     alert.type === 'success' ? t("cards.opportunity") : t("cards.info")}
                   </Badge>
                   <Button
                     variant="ghost"
@@ -136,7 +137,7 @@ const AlertsPanel = ({ technicalIndicators }: AlertsPanelProps) => {
         {/* Resumo dos indicadores principais */}
         {technicalIndicators && (
           <div className="mt-6 p-4 bg-muted/30 rounded-lg">
-            <h4 className="font-semibold text-sm mb-3">Resumo Rápido</h4>
+            <h4 className="font-semibold text-sm mb-3">{t("cards.quickSummary")}</h4>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="flex justify-between">
                 <span>RSI:</span>
@@ -164,7 +165,7 @@ const AlertsPanel = ({ technicalIndicators }: AlertsPanelProps) => {
                   technicalIndicators.sma50 > technicalIndicators.sma200 ? 
                   "text-green-500 font-semibold" : "text-red-500 font-semibold"
                 }>
-                  {technicalIndicators.sma50 > technicalIndicators.sma200 ? "Bullish" : "Bearish"}
+                  {technicalIndicators.sma50 > technicalIndicators.sma200 ? t("cards.trendBullish") : t("cards.trendBearish")}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -177,8 +178,8 @@ const AlertsPanel = ({ technicalIndicators }: AlertsPanelProps) => {
                    "text-red-500 font-semibold" : "text-yellow-500 font-semibold"
                 }>
                   {(technicalIndicators.rsi < 70 && technicalIndicators.momentum > 0 && 
-                    technicalIndicators.sma50 > technicalIndicators.sma200) ? "Compra" : 
-                    (technicalIndicators.rsi > 70 || technicalIndicators.momentum < -5) ? "Venda" : "Neutro"}
+                    technicalIndicators.sma50 > technicalIndicators.sma200) ? t("cards.buy") : 
+                    (technicalIndicators.rsi > 70 || technicalIndicators.momentum < -5) ? t("cards.sell") : t("cards.neutral")}
                 </span>
               </div>
             </div>

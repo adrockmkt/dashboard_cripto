@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Heart, TrendingUp, TrendingDown, Star, RefreshCw } from "lucide-react"
 import { useFavorites } from "@/hooks/useFavorites"
+import { useTranslation } from "react-i18next"
 
 export function FavoritesPanel() {
+  const { t } = useTranslation()
   const { favorites, isLoading, removeFromFavorites, refreshFavorites } = useFavorites()
 
   const formatPrice = (price: number) => {
@@ -27,13 +29,13 @@ export function FavoritesPanel() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Heart className="w-5 h-5 text-red-500" />
-            Favoritos
+            {t("cards.favorites")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-6">
             <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-muted-foreground" />
-            <p className="text-muted-foreground">Carregando favoritos...</p>
+            <p className="text-muted-foreground">{t("cards.loadingFavorites")}</p>
           </div>
         </CardContent>
       </Card>
@@ -46,7 +48,7 @@ export function FavoritesPanel() {
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Heart className="w-5 h-5 text-red-500" />
-            Favoritos
+            {t("cards.favorites")}
             {favorites.length > 0 && (
               <Badge variant="secondary">{favorites.length}</Badge>
             )}
@@ -64,9 +66,9 @@ export function FavoritesPanel() {
         {favorites.length === 0 ? (
           <div className="text-center py-6">
             <Star className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-            <p className="text-muted-foreground mb-2">Nenhum favorito ainda</p>
+            <p className="text-muted-foreground mb-2">{t("cards.noFavorites")}</p>
             <p className="text-sm text-muted-foreground">
-              Adicione suas criptomoedas favoritas clicando no ❤️ na lista de moedas
+              {t("cards.addFavoritesHint")}
             </p>
           </div>
         ) : (

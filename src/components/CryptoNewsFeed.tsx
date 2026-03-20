@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Newspaper, ExternalLink, RefreshCw, Clock } from "lucide-react"
 import { fetchCryptoNews } from "@/services/newsService"
 import type { CryptoNewsItem, DataSource } from "@/services/types"
+import { useTranslation } from "react-i18next"
 
 export function CryptoNewsFeed() {
+  const { t, i18n } = useTranslation()
   const [news, setNews] = useState<CryptoNewsItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [source, setSource] = useState<DataSource>("fallback")
@@ -32,11 +34,21 @@ export function CryptoNewsFeed() {
     const hours = Math.floor(diff / (1000 * 60 * 60))
 
     if (minutes < 60) {
-      return `${minutes}m atrás`
+      return i18n.resolvedLanguage === "en"
+        ? `${minutes}m ago`
+        : i18n.resolvedLanguage === "es"
+          ? `hace ${minutes}m`
+          : `${minutes}m atrás`
     } else if (hours < 24) {
-      return `${hours}h atrás`
+      return i18n.resolvedLanguage === "en"
+        ? `${hours}h ago`
+        : i18n.resolvedLanguage === "es"
+          ? `hace ${hours}h`
+          : `${hours}h atrás`
     } else {
-      return date.toLocaleDateString('pt-BR')
+      return date.toLocaleDateString(
+        i18n.resolvedLanguage === "en" ? "en-US" : i18n.resolvedLanguage === "es" ? "es-ES" : "pt-BR"
+      )
     }
   }
 
@@ -55,21 +67,21 @@ export function CryptoNewsFeed() {
     switch (category) {
       case 'bitcoin': return 'Bitcoin'
       case 'ethereum': return 'Ethereum'
-      case 'market': return 'Mercado'
-      case 'regulation': return 'Regulação'
-      case 'technology': return 'Tecnologia'
-      default: return 'Geral'
+      case 'market': return t("cards.marketCategory")
+      case 'regulation': return t("cards.regulationCategory")
+      case 'technology': return t("cards.technologyCategory")
+      default: return t("cards.generalCategory")
     }
   }
 
   const getSourceLabel = (currentSource: DataSource) => {
     switch (currentSource) {
       case "real":
-        return "Fonte real"
+        return t("cards.sourceReal")
       case "simulated":
-        return "Simulado"
+        return t("cards.sourceSimulated")
       default:
-        return "Fallback"
+        return t("cards.sourceFallback")
     }
   }
 
@@ -79,7 +91,7 @@ export function CryptoNewsFeed() {
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Newspaper className="w-5 h-5" />
-            Notícias Crypto
+            {t("cards.cryptoNews")}
             <Badge variant={source === "real" ? "default" : "secondary"}>
               {getSourceLabel(source)}
             </Badge>
@@ -110,8 +122,8 @@ export function CryptoNewsFeed() {
           </div>
         ) : news.length === 0 ? (
           <div className="py-6 text-sm text-muted-foreground">
-            <p>Nenhuma notícia disponível no momento.</p>
-            {error && <p className="mt-2 text-xs">Detalhe: {error}</p>}
+            <p>{t("cards.noNews")}</p>
+            {error && <p className="mt-2 text-xs">{t("cards.details")}: {error}</p>}
           </div>
         ) : (
           <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -142,7 +154,7 @@ export function CryptoNewsFeed() {
                   <a href={item.url} target="_blank" rel="noreferrer">
                     <Button variant="ghost" size="sm" className="h-8">
                       <ExternalLink className="w-3 h-3 mr-1" />
-                      Ler mais
+                      {t("cards.readMore")}
                     </Button>
                   </a>
                 </div>

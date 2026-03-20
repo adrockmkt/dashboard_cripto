@@ -40,6 +40,7 @@ const PortfolioManager = lazy(() => import("@/components/PortfolioManager").then
 const Index = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [selectedTradingSymbol, setSelectedTradingSymbol] = useState("BTC");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { 
     cryptoList, 
@@ -87,7 +88,7 @@ const Index = () => {
       case "trading":
         return (
           <div className="space-y-4 md:space-y-6 pb-20 md:pb-4">
-            <ProfessionalCandlestickChart />
+            <ProfessionalCandlestickChart symbol={selectedTradingSymbol} />
           </div>
         );
 
@@ -302,7 +303,7 @@ const Index = () => {
 
   const activeTabTitle =
     activeTab === "dashboard" ? t("nav.dashboard") :
-    activeTab === "trading" ? t("nav.trading") :
+    activeTab === "trading" ? `${t("nav.trading")} · ${selectedTradingSymbol}` :
     activeTab === "onchain" ? t("header.onchain") :
     activeTab === "models" ? t("header.models") :
     activeTab === "dca" ? t("header.dca") :
@@ -312,6 +313,13 @@ const Index = () => {
     activeTab === "report" ? t("header.report") :
     activeTab === "alerts" ? t("header.alerts") :
     t("header.legacy");
+
+  const handleNavigate = (tab: string, symbol?: string) => {
+    setActiveTab(tab);
+    if (tab === "trading" && symbol) {
+      setSelectedTradingSymbol(symbol.toUpperCase());
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -333,9 +341,7 @@ const Index = () => {
           </Sheet>
           
           <div className="flex-1 min-w-0 px-2">
-            <GlobalSearch onNavigate={(tab) => {
-              setActiveTab(tab);
-            }} />
+            <GlobalSearch onNavigate={handleNavigate} />
           </div>
           
           <div className="flex items-center gap-1 flex-shrink-0">
@@ -369,7 +375,7 @@ const Index = () => {
           <div className="hidden lg:flex justify-between items-center p-4 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 sticky top-0 z-30">
             <div className="flex items-center gap-4">
               <h1 className="font-bold text-xl whitespace-nowrap">{t("app.title")} - {activeTabTitle}</h1>
-              <GlobalSearch onNavigate={(tab) => setActiveTab(tab)} />
+              <GlobalSearch onNavigate={handleNavigate} />
             </div>
             <div className="flex items-center gap-2">
               {!isLoading && (

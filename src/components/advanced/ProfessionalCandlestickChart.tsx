@@ -25,7 +25,11 @@ interface SupportResistance {
   touches: number;
 }
 
-export function ProfessionalCandlestickChart() {
+interface ProfessionalCandlestickChartProps {
+  symbol?: string;
+}
+
+export function ProfessionalCandlestickChart({ symbol = "BTC" }: ProfessionalCandlestickChartProps) {
   const [timeframe, setTimeframe] = useState('1h');
   const [patterns, setPatterns] = useState<TechnicalPattern[]>([]);
   const [supportResistance, setSupportResistance] = useState<SupportResistance[]>([]);
@@ -235,7 +239,7 @@ export function ProfessionalCandlestickChart() {
     window.addEventListener('resize', handleResize);
 
     const loadCandles = async () => {
-      const result = await fetchOHLCVData("BTC", timeframe as any, 200);
+      const result = await fetchOHLCVData(symbol, timeframe as any, 200);
       if (isDisposed) return;
 
       setSource(result.source);
@@ -292,7 +296,7 @@ export function ProfessionalCandlestickChart() {
       window.removeEventListener('resize', handleResize);
       chart.remove();
     };
-  }, [timeframe, refreshKey]);
+  }, [timeframe, refreshKey, symbol]);
 
   const getSourceLabel = () => {
     switch (source) {
@@ -312,7 +316,7 @@ export function ProfessionalCandlestickChart() {
           <div className="flex items-center justify-between flex-wrap gap-4">
             <CardTitle className="flex items-center gap-2">
               <Activity className="w-5 h-5" />
-              Gráfico de Velas - Análise Técnica Avançada
+              Gráfico de Velas - Análise Técnica Avançada ({symbol})
             </CardTitle>
             <div className="flex items-center gap-2">
               <Badge variant={source === "real" ? "default" : "secondary"}>
