@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { createChart, ColorType, IChartApi, ISeriesApi, CandlestickData, Time, CandlestickSeries, HistogramSeries } from 'lightweight-charts';
 import { TrendingUp, TrendingDown, TriangleAlert as AlertTriangle, RefreshCw, Activity } from "lucide-react";
+import { fetchOHLCVData } from "@/services/chartService";
+import type { DataSource } from "@/services/types";
 
 interface TechnicalPattern {
   name: string;
@@ -41,70 +43,14 @@ export function ProfessionalCandlestickChart() {
     breakouts: true
   });
   const [loading, setLoading] = useState(true);
+  const [source, setSource] = useState<DataSource>("fallback");
+  const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
   
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candlestickSeriesRef = useRef<any>(null);
   const volumeSeriesRef = useRef<any>(null);
-
-  // Gerar dados de velas realistas
-  const generateCandleData = (timeframe: string): CandlestickData[] => {
-    const intervals = {
-      '1m': 1,
-      '5m': 5,
-      '15m': 15,
-      '1h': 60,
-      '4h': 240,
-      '1d': 1440
-    };
-
-    const interval = intervals[timeframe as keyof typeof intervals] || 60;
-    const points = 200;
-    const data: CandlestickData[] = [];
-    let basePrice = 48000;
-    
-    // Use proper date-based timestamps to avoid duplicates
-    const endDate = new Date();
-    endDate.setSeconds(0, 0); // Reset seconds and milliseconds
-    const startTime = Math.floor(endDate.getTime() / 1000) - (points * interval * 60);
-
-    for (let i = 0; i < points; i++) {
-      // Ensure each timestamp is unique and properly ordered
-      const timestamp = (startTime + (i * interval * 60)) as Time;
-      
-      const volatility = 0.015;
-      const trend = Math.sin(i / 25) * 0.002;
-      const noise = (Math.random() - 0.5) * volatility;
-      
-      basePrice *= (1 + trend + noise);
-      
-      const open = basePrice;
-      const close = open * (1 + (Math.random() - 0.5) * 0.012);
-      const high = Math.max(open, close) * (1 + Math.random() * 0.008);
-      const low = Math.min(open, close) * (1 - Math.random() * 0.008);
-
-      data.push({
-        time: timestamp,
-        open: parseFloat(open.toFixed(2)),
-        high: parseFloat(high.toFixed(2)),
-        low: parseFloat(low.toFixed(2)),
-        close: parseFloat(close.toFixed(2)),
-      });
-
-      basePrice = close;
-    }
-
-    return data;
-  };
-
-  // Gerar dados de volume
-  const generateVolumeData = (candleData: CandlestickData[]) => {
-    return candleData.map(candle => ({
-      time: candle.time,
-      value: Math.random() * 1000000 + 500000,
-      color: candle.close >= candle.open ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)'
-    }));
-  };
 
   // Detectar padrões técnicos
   const detectPatterns = (data: CandlestickData[]): TechnicalPattern[] => {
@@ -208,6 +154,7 @@ export function ProfessionalCandlestickChart() {
     if (!chartContainerRef.current) return;
 
     setLoading(true);
+    let isDisposed = false;
 
     const handleResize = () => {
       if (chartContainerRef.current && chartRef.current) {
@@ -285,52 +232,78 @@ export function ProfessionalCandlestickChart() {
 
     volumeSeriesRef.current = volumeSeries;
 
-    // Gerar e definir dados
-    const candleData = generateCandleData(timeframe);
-    
-    // Validate data is properly ordered and has no duplicates
-    const sortedData = candleData.sort((a, b) => (a.time as number) - (b.time as number));
-    
-    // Remove any potential duplicates
-    const uniqueData = sortedData.filter((item, index, array) => {
-      if (index === 0) return true;
-      return item.time !== array[index - 1].time;
-    });
-    
-    const volumeData = generateVolumeData(uniqueData);
-    
-    candlestickSeries.setData(uniqueData);
-    volumeSeries.setData(volumeData);
-
-    // Detectar padrões e suporte/resistência
-    const detectedPatterns = detectPatterns(candleData);
-    const srLevels = calculateSupportResistance(candleData);
-    
-    setPatterns(detectedPatterns);
-    setSupportResistance(srLevels);
-
-    // Adicionar linhas de suporte e resistência
-    srLevels.forEach(sr => {
-      const priceLine = candlestickSeries.createPriceLine({
-        price: sr.level,
-        color: sr.type === 'support' ? '#22C55E' : '#EF4444',
-        lineWidth: 2,
-        lineStyle: 2,
-        axisLabelVisible: true,
-        title: sr.type === 'support' ? `Suporte ${sr.touches}x` : `Resistência ${sr.touches}x`,
-      });
-    });
-
-    chart.timeScale().fitContent();
-
     window.addEventListener('resize', handleResize);
-    setLoading(false);
+
+    const loadCandles = async () => {
+      const result = await fetchOHLCVData("BTC", timeframe as any, 200);
+      if (isDisposed) return;
+
+      setSource(result.source);
+      setError(result.error || null);
+
+      const candleData: CandlestickData[] = (result.data || []).map((item) => ({
+        time: item.time as Time,
+        open: item.open,
+        high: item.high,
+        low: item.low,
+        close: item.close,
+      }));
+
+      const sortedData = candleData.sort((a, b) => (a.time as number) - (b.time as number));
+      const uniqueData = sortedData.filter((item, index, array) => {
+        if (index === 0) return true;
+        return item.time !== array[index - 1].time;
+      });
+
+      const volumeData = (result.data || []).map((candle) => ({
+        time: candle.time as Time,
+        value: candle.volume,
+        color: candle.close >= candle.open ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)'
+      }));
+
+      candlestickSeries.setData(uniqueData);
+      volumeSeries.setData(volumeData);
+
+      const detectedPatterns = detectPatterns(uniqueData);
+      const srLevels = calculateSupportResistance(uniqueData);
+
+      setPatterns(detectedPatterns);
+      setSupportResistance(srLevels);
+
+      srLevels.forEach(sr => {
+        candlestickSeries.createPriceLine({
+          price: sr.level,
+          color: sr.type === 'support' ? '#22C55E' : '#EF4444',
+          lineWidth: 2,
+          lineStyle: 2,
+          axisLabelVisible: true,
+          title: sr.type === 'support' ? `Suporte ${sr.touches}x` : `Resistência ${sr.touches}x`,
+        });
+      });
+
+      chart.timeScale().fitContent();
+      setLoading(false);
+    };
+
+    loadCandles();
 
     return () => {
+      isDisposed = true;
       window.removeEventListener('resize', handleResize);
       chart.remove();
     };
-  }, [timeframe]);
+  }, [timeframe, refreshKey]);
+
+  const getSourceLabel = () => {
+    switch (source) {
+      case "real":
+        return "Fonte real";
+      case "simulated":
+        return "Simulado";
+      default:
+        return "Fallback";
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -342,6 +315,9 @@ export function ProfessionalCandlestickChart() {
               Gráfico de Velas - Análise Técnica Avançada
             </CardTitle>
             <div className="flex items-center gap-2">
+              <Badge variant={source === "real" ? "default" : "secondary"}>
+                {getSourceLabel()}
+              </Badge>
               <Select value={timeframe} onValueChange={setTimeframe}>
                 <SelectTrigger className="w-24">
                   <SelectValue />
@@ -355,7 +331,7 @@ export function ProfessionalCandlestickChart() {
                   <SelectItem value="1d">1d</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
+              <Button variant="outline" size="sm" onClick={() => setRefreshKey((prev) => prev + 1)}>
                 <RefreshCw className="w-4 h-4" />
               </Button>
             </div>
@@ -455,6 +431,15 @@ export function ProfessionalCandlestickChart() {
                     ({patterns.filter(p => p.confidence > 0.8).length} com alta confiança)
                   </span>
                 )}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {error && (
+            <Alert className="mt-4">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                A API principal de candles falhou e o gráfico usou um caminho alternativo. Detalhe: {error}
               </AlertDescription>
             </Alert>
           )}

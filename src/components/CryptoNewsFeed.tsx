@@ -1,75 +1,16 @@
-
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Newspaper, ExternalLink, RefreshCw, Clock } from "lucide-react"
-
-interface NewsItem {
-  id: string
-  title: string
-  description: string
-  url: string
-  source: string
-  publishedAt: Date
-  category: 'bitcoin' | 'ethereum' | 'market' | 'regulation' | 'technology'
-}
+import { fetchCryptoNews } from "@/services/newsService"
+import type { CryptoNewsItem, DataSource } from "@/services/types"
 
 export function CryptoNewsFeed() {
-  const [news, setNews] = useState<NewsItem[]>([])
+  const [news, setNews] = useState<CryptoNewsItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
-
-  // Simulated news data - in a real app, this would come from a news API
-  const generateMockNews = (): NewsItem[] => {
-    const mockNews = [
-      {
-        id: '1',
-        title: 'Bitcoin atinge nova resistência em $45,000',
-        description: 'O preço do Bitcoin encontrou resistência técnica importante na faixa dos $45,000, com volume de negociação aumentando significativamente.',
-        url: '#',
-        source: 'CryptoNews',
-        publishedAt: new Date(Date.now() - 1000 * 60 * 30), // 30 min ago
-        category: 'bitcoin' as const
-      },
-      {
-        id: '2',
-        title: 'Ethereum 2.0: Próximas atualizações prometem maior eficiência',
-        description: 'A rede Ethereum continua sua evolução com melhorias significativas em escalabilidade e redução de taxas de transação.',
-        url: '#',
-        source: 'EthereumDaily',
-        publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-        category: 'ethereum' as const
-      },
-      {
-        id: '3',
-        title: 'Regulamentação cripto: Novidades do mercado brasileiro',
-        description: 'Banco Central anuncia novas diretrizes para exchanges de criptomoedas no Brasil, visando maior segurança para investidores.',
-        url: '#',
-        source: 'CriptoFacil',
-        publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 4), // 4 hours ago
-        category: 'regulation' as const
-      },
-      {
-        id: '4',
-        title: 'Análise: Mercado cripto mostra sinais de recuperação',
-        description: 'Indicadores técnicos sugerem possível reversão de tendência, com aumento do interesse institucional.',
-        url: '#',
-        source: 'MarketWatch',
-        publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 6), // 6 hours ago
-        category: 'market' as const
-      },
-      {
-        id: '5',
-        title: 'Inovação em DeFi: Novos protocolos ganham destaque',
-        description: 'Protocolos de finanças descentralizadas apresentam soluções inovadoras para yield farming e staking.',
-        url: '#',
-        source: 'DeFiPulse',
-        publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 8), // 8 hours ago
-        category: 'technology' as const
-      }
-    ]
-    return mockNews
-  }
+  const [source, setSource] = useState<DataSource>("fallback")
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     loadNews()
@@ -77,11 +18,11 @@ export function CryptoNewsFeed() {
 
   const loadNews = async () => {
     setIsLoading(true)
-    // Simulate API delay
-    setTimeout(() => {
-      setNews(generateMockNews())
-      setIsLoading(false)
-    }, 1000)
+    const result = await fetchCryptoNews(10)
+    setNews(result.data || [])
+    setSource(result.source)
+    setError(result.error || null)
+    setIsLoading(false)
   }
 
   const formatTimeAgo = (date: Date) => {
@@ -121,6 +62,17 @@ export function CryptoNewsFeed() {
     }
   }
 
+  const getSourceLabel = (currentSource: DataSource) => {
+    switch (currentSource) {
+      case "real":
+        return "Fonte real"
+      case "simulated":
+        return "Simulado"
+      default:
+        return "Fallback"
+    }
+  }
+
   return (
     <Card className="glass-card">
       <CardHeader>
@@ -128,6 +80,9 @@ export function CryptoNewsFeed() {
           <div className="flex items-center gap-2">
             <Newspaper className="w-5 h-5" />
             Notícias Crypto
+            <Badge variant={source === "real" ? "default" : "secondary"}>
+              {getSourceLabel(source)}
+            </Badge>
             {news.length > 0 && (
               <Badge variant="secondary">{news.length}</Badge>
             )}
@@ -152,6 +107,11 @@ export function CryptoNewsFeed() {
                 <div className="h-3 bg-muted rounded w-1/2"></div>
               </div>
             ))}
+          </div>
+        ) : news.length === 0 ? (
+          <div className="py-6 text-sm text-muted-foreground">
+            <p>Nenhuma notícia disponível no momento.</p>
+            {error && <p className="mt-2 text-xs">Detalhe: {error}</p>}
           </div>
         ) : (
           <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -179,10 +139,12 @@ export function CryptoNewsFeed() {
                   <span className="text-xs text-muted-foreground">
                     {item.source}
                   </span>
-                  <Button variant="ghost" size="sm" className="h-8">
-                    <ExternalLink className="w-3 h-3 mr-1" />
-                    Ler mais
-                  </Button>
+                  <a href={item.url} target="_blank" rel="noreferrer">
+                    <Button variant="ghost" size="sm" className="h-8">
+                      <ExternalLink className="w-3 h-3 mr-1" />
+                      Ler mais
+                    </Button>
+                  </a>
                 </div>
               </div>
             ))}

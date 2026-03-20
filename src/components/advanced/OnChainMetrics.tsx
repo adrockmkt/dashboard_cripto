@@ -6,160 +6,49 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
-  LineChart, Line, AreaChart, Area, BarChart, Bar,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
+  LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
 } from "recharts";
 import { 
   Activity, 
   Zap, 
-  ArrowUpDown, 
   Users, 
-  Wallet, 
-  TrendingUp,
-  TrendingDown,
   AlertTriangle,
   RefreshCw,
   Database,
   Network
 } from "lucide-react";
-
-interface OnChainData {
-  activeAddresses: number;
-  hashrate: number;
-  exchangeInflow: number;
-  exchangeOutflow: number;
-  mempoolSize: number;
-  avgFee: number;
-  whaleMovements: WhaleMovement[];
-  networkHealth: NetworkHealth;
-  institutionalFlow: InstitutionalFlow;
-}
-
-interface WhaleMovement {
-  amount: number;
-  type: 'inflow' | 'outflow';
-  exchange: string;
-  timestamp: Date;
-  significance: 'low' | 'medium' | 'high';
-}
-
-interface NetworkHealth {
-  score: number;
-  factors: {
-    decentralization: number;
-    security: number;
-    activity: number;
-    adoption: number;
-  };
-}
-
-interface InstitutionalFlow {
-  weeklyFlow: number;
-  monthlyFlow: number;
-  trend: 'accumulating' | 'distributing' | 'neutral';
-  confidence: number;
-}
+import { fetchOnChainSnapshot } from "@/services/onChainService";
+import type { DataSource, OnChainHistoryPoint, OnChainOverview } from "@/services/types";
 
 export function OnChainMetrics() {
-  const [onChainData, setOnChainData] = useState<OnChainData | null>(null);
-  const [historicalData, setHistoricalData] = useState<any[]>([]);
+  const [onChainData, setOnChainData] = useState<OnChainOverview | null>(null);
+  const [historicalData, setHistoricalData] = useState<OnChainHistoryPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMetric, setSelectedMetric] = useState('addresses');
-
-  // Simular dados on-chain realistas
-  const generateOnChainData = (): OnChainData => {
-    const baseActiveAddresses = 800000;
-    const baseHashrate = 450; // EH/s
-    
-    return {
-      activeAddresses: baseActiveAddresses + Math.floor(Math.random() * 100000),
-      hashrate: baseHashrate + (Math.random() - 0.5) * 50,
-      exchangeInflow: Math.random() * 5000,
-      exchangeOutflow: Math.random() * 8000,
-      mempoolSize: Math.floor(Math.random() * 200000),
-      avgFee: 15 + Math.random() * 30,
-      whaleMovements: generateWhaleMovements(),
-      networkHealth: {
-        score: 85 + Math.random() * 10,
-        factors: {
-          decentralization: 88 + Math.random() * 8,
-          security: 95 + Math.random() * 5,
-          activity: 75 + Math.random() * 20,
-          adoption: 80 + Math.random() * 15
-        }
-      },
-      institutionalFlow: {
-        weeklyFlow: (Math.random() - 0.5) * 10000,
-        monthlyFlow: (Math.random() - 0.5) * 50000,
-        trend: Math.random() > 0.6 ? 'accumulating' : Math.random() > 0.3 ? 'distributing' : 'neutral',
-        confidence: 70 + Math.random() * 25
-      }
-    };
-  };
-
-  const generateWhaleMovements = (): WhaleMovement[] => {
-    const movements: WhaleMovement[] = [];
-    const exchanges = ['Binance', 'Coinbase', 'Kraken', 'Bitfinex', 'OKX'];
-    
-    for (let i = 0; i < 10; i++) {
-      const amount = 100 + Math.random() * 2000;
-      movements.push({
-        amount,
-        type: Math.random() > 0.5 ? 'inflow' : 'outflow',
-        exchange: exchanges[Math.floor(Math.random() * exchanges.length)],
-        timestamp: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000),
-        significance: amount > 1000 ? 'high' : amount > 500 ? 'medium' : 'low'
-      });
-    }
-    
-    return movements.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-  };
-
-  const generateHistoricalData = () => {
-    const data = [];
-    const now = Date.now();
-    
-    for (let i = 30; i >= 0; i--) {
-      const timestamp = now - (i * 24 * 60 * 60 * 1000);
-      const basePrice = 45000;
-      const price = basePrice + (Math.random() - 0.5) * 10000;
-      
-      data.push({
-        date: new Date(timestamp).toLocaleDateString('pt-BR'),
-        timestamp,
-        price,
-        activeAddresses: 750000 + Math.random() * 150000,
-        hashrate: 400 + Math.random() * 100,
-        exchangeFlow: (Math.random() - 0.5) * 10000,
-        mempoolSize: Math.random() * 300000,
-        fees: 10 + Math.random() * 40,
-        whaleActivity: Math.random() * 100
-      });
-    }
-    
-    return data;
-  };
+  const [source, setSource] = useState<DataSource>("fallback");
+  const [error, setError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      
-      // Simular delay de API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setOnChainData(generateOnChainData());
-      setHistoricalData(generateHistoricalData());
+      const result = await fetchOnChainSnapshot();
+      setOnChainData(result.data?.overview || null);
+      setHistoricalData(result.data?.history || []);
+      setSource(result.source);
+      setError(result.error || null);
       setLoading(false);
     };
 
     loadData();
-    
+
     // Atualizar dados a cada 30 segundos
     const interval = setInterval(loadData, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [reloadKey]);
 
   const formatNumber = (num: number, suffix: string = '') => {
+    if (!Number.isFinite(num)) return "N/A";
     if (num >= 1e9) return `${(num / 1e9).toFixed(2)}B${suffix}`;
     if (num >= 1e6) return `${(num / 1e6).toFixed(2)}M${suffix}`;
     if (num >= 1e3) return `${(num / 1e3).toFixed(2)}K${suffix}`;
@@ -172,18 +61,10 @@ export function OnChainMetrics() {
     return "text-red-500";
   };
 
-  const getFlowTrendIcon = (trend: string) => {
-    switch (trend) {
-      case 'accumulating':
-        return <TrendingUp className="w-4 h-4 text-green-500" />;
-      case 'distributing':
-        return <TrendingDown className="w-4 h-4 text-red-500" />;
-      default:
-        return <ArrowUpDown className="w-4 h-4 text-yellow-500" />;
-    }
-  };
+  const getSourceLabel = (currentSource: DataSource) =>
+    currentSource === "real" ? "Fonte real" : currentSource === "simulated" ? "Simulado" : "Fallback";
 
-  if (loading || !onChainData) {
+  if (loading) {
     return (
       <Card>
         <CardContent className="p-6">
@@ -196,8 +77,33 @@ export function OnChainMetrics() {
     );
   }
 
+  if (!onChainData) {
+    return (
+      <Card>
+        <CardContent className="p-6 space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Não foi possível carregar métricas on-chain.
+          </p>
+          {error && <p className="text-xs text-muted-foreground">{error}</p>}
+          <Button variant="outline" onClick={() => setReloadKey((prev) => prev + 1)}>
+            Tentar novamente
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-2">
+        <Badge variant={source === "real" ? "default" : "secondary"}>
+          {getSourceLabel(source)}
+        </Badge>
+        <span className="text-sm text-muted-foreground">
+          Dados on-chain vindos de Blockchain.com Charts e mempool.space.
+        </span>
+      </div>
+
       {/* Métricas Principais */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
@@ -205,8 +111,10 @@ export function OnChainMetrics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Endereços Ativos</p>
-                <p className="text-2xl font-bold">{formatNumber(onChainData.activeAddresses)}</p>
-                <p className="text-xs text-green-500">+2.3% (24h)</p>
+                <p className="text-2xl font-bold">
+                  {onChainData.activeAddresses === null ? "N/A" : formatNumber(onChainData.activeAddresses)}
+                </p>
+                <p className="text-xs text-muted-foreground">Último ponto disponível</p>
               </div>
               <Users className="w-8 h-8 text-blue-500" />
             </div>
@@ -218,8 +126,8 @@ export function OnChainMetrics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Hashrate</p>
-                <p className="text-2xl font-bold">{onChainData.hashrate.toFixed(1)} EH/s</p>
-                <p className="text-xs text-green-500">+1.8% (24h)</p>
+                <p className="text-2xl font-bold">{onChainData.hashrate?.toFixed(1) ?? "N/A"} EH/s</p>
+                <p className="text-xs text-muted-foreground">Série histórica real</p>
               </div>
               <Zap className="w-8 h-8 text-yellow-500" />
             </div>
@@ -231,8 +139,8 @@ export function OnChainMetrics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Mempool</p>
-                <p className="text-2xl font-bold">{formatNumber(onChainData.mempoolSize)}</p>
-                <p className="text-xs text-red-500">+15.2% (1h)</p>
+                <p className="text-2xl font-bold">{formatNumber(onChainData.mempoolTransactions ?? 0)}</p>
+                <p className="text-xs text-muted-foreground">Transações pendentes</p>
               </div>
               <Database className="w-8 h-8 text-purple-500" />
             </div>
@@ -244,8 +152,8 @@ export function OnChainMetrics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Taxa Média</p>
-                <p className="text-2xl font-bold">${onChainData.avgFee.toFixed(2)}</p>
-                <p className="text-xs text-yellow-500">-5.1% (24h)</p>
+                <p className="text-2xl font-bold">${onChainData.averageFeeUsd?.toFixed(2) ?? "N/A"}</p>
+                <p className="text-xs text-muted-foreground">USD por transação</p>
               </div>
               <Activity className="w-8 h-8 text-orange-500" />
             </div>
@@ -253,59 +161,32 @@ export function OnChainMetrics() {
         </Card>
       </div>
 
-      {/* Fluxo de Exchanges */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <ArrowUpDown className="w-5 h-5" />
-              Fluxo de Exchanges (24h)
+              <Activity className="w-5 h-5" />
+              Taxas Recomendadas
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-red-500/10 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <TrendingDown className="w-4 h-4 text-red-500" />
-                  <span className="text-sm">Entrada (Inflow)</span>
-                </div>
-                <span className="font-bold text-red-500">
-                  {formatNumber(onChainData.exchangeInflow)} BTC
-                </span>
+              <div className="flex items-center justify-between p-3 bg-orange-500/10 rounded-lg">
+                <span className="text-sm">Confirmação rápida</span>
+                <span className="font-bold">{onChainData.recommendedFees.fastestFee ?? "N/A"} sat/vB</span>
               </div>
-              
+              <div className="flex items-center justify-between p-3 bg-yellow-500/10 rounded-lg">
+                <span className="text-sm">Até 30 minutos</span>
+                <span className="font-bold">{onChainData.recommendedFees.halfHourFee ?? "N/A"} sat/vB</span>
+              </div>
               <div className="flex items-center justify-between p-3 bg-green-500/10 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-green-500" />
-                  <span className="text-sm">Saída (Outflow)</span>
-                </div>
-                <span className="font-bold text-green-500">
-                  {formatNumber(onChainData.exchangeOutflow)} BTC
-                </span>
-              </div>
-
-              <div className="pt-2 border-t">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Fluxo Líquido:</span>
-                  <span className={`font-bold ${
-                    onChainData.exchangeOutflow > onChainData.exchangeInflow 
-                      ? 'text-green-500' : 'text-red-500'
-                  }`}>
-                    {onChainData.exchangeOutflow > onChainData.exchangeInflow ? '+' : '-'}
-                    {formatNumber(Math.abs(onChainData.exchangeOutflow - onChainData.exchangeInflow))} BTC
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {onChainData.exchangeOutflow > onChainData.exchangeInflow 
-                    ? '🟢 Sinal bullish - Retirada de exchanges' 
-                    : '🔴 Sinal bearish - Acúmulo em exchanges'}
-                </p>
+                <span className="text-sm">Até 1 hora</span>
+                <span className="font-bold">{onChainData.recommendedFees.hourFee ?? "N/A"} sat/vB</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Saúde da Rede */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -326,7 +207,7 @@ export function OnChainMetrics() {
                 {Object.entries(onChainData.networkHealth.factors).map(([key, value]) => (
                   <div key={key}>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="capitalize">{key}</span>
+                      <span className="capitalize">{key === "fees" ? "Eficiência de taxas" : key}</span>
                       <span>{value.toFixed(1)}%</span>
                     </div>
                     <Progress value={value} className="h-2" />
@@ -337,95 +218,6 @@ export function OnChainMetrics() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Movimentações de Baleias */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Wallet className="w-5 h-5" />
-            Movimentações de Baleias (24h)
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3 max-h-64 overflow-y-auto">
-            {onChainData.whaleMovements.map((movement, index) => (
-              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className={`w-3 h-3 rounded-full ${
-                    movement.type === 'inflow' ? 'bg-red-500' : 'bg-green-500'
-                  }`} />
-                  <div>
-                    <p className="font-medium">
-                      {formatNumber(movement.amount)} BTC
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {movement.exchange} • {movement.timestamp.toLocaleTimeString('pt-BR')}
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <Badge variant={
-                    movement.type === 'inflow' ? 'destructive' : 'default'
-                  }>
-                    {movement.type === 'inflow' ? 'Entrada' : 'Saída'}
-                  </Badge>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {movement.significance === 'high' ? '🔥 Alto' : 
-                     movement.significance === 'medium' ? '⚠️ Médio' : '📊 Baixo'}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Fluxo Institucional */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5" />
-            Fluxo Institucional
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">Fluxo Semanal</p>
-              <p className={`text-2xl font-bold ${
-                onChainData.institutionalFlow.weeklyFlow > 0 ? 'text-green-500' : 'text-red-500'
-              }`}>
-                {onChainData.institutionalFlow.weeklyFlow > 0 ? '+' : ''}
-                {formatNumber(onChainData.institutionalFlow.weeklyFlow)} BTC
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">Fluxo Mensal</p>
-              <p className={`text-2xl font-bold ${
-                onChainData.institutionalFlow.monthlyFlow > 0 ? 'text-green-500' : 'text-red-500'
-              }`}>
-                {onChainData.institutionalFlow.monthlyFlow > 0 ? '+' : ''}
-                {formatNumber(onChainData.institutionalFlow.monthlyFlow)} BTC
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">Tendência</p>
-              <div className="flex items-center justify-center gap-2 mt-2">
-                {getFlowTrendIcon(onChainData.institutionalFlow.trend)}
-                <span className="font-bold capitalize">
-                  {onChainData.institutionalFlow.trend === 'accumulating' ? 'Acumulando' :
-                   onChainData.institutionalFlow.trend === 'distributing' ? 'Distribuindo' : 'Neutro'}
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Confiança: {onChainData.institutionalFlow.confidence.toFixed(0)}%
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Gráfico Histórico */}
       <Card>
@@ -459,7 +251,7 @@ export function OnChainMetrics() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
-                  <Tooltip formatter={(value: number) => [`${value.toFixed(2)} EH/s`, 'Hashrate']} />
+                  <Tooltip formatter={(value: number) => [`${Number(value).toFixed(2)} EH/s`, 'Hashrate']} />
                   <Area type="monotone" dataKey="hashrate" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.3} />
                 </AreaChart>
               </ResponsiveContainer>
@@ -467,13 +259,13 @@ export function OnChainMetrics() {
             
             <TabsContent value="flow" className="mt-4">
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={historicalData}>
+                <AreaChart data={historicalData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
-                  <Tooltip formatter={(value: number) => [formatNumber(value), 'Fluxo de Exchange']} />
-                  <Bar dataKey="exchangeFlow" fill="#22c55e" />
-                </BarChart>
+                  <Tooltip formatter={(value: number) => [formatNumber(value), 'Mempool']} />
+                  <Area type="monotone" dataKey="mempoolSize" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.3} />
+                </AreaChart>
               </ResponsiveContainer>
             </TabsContent>
             
@@ -492,17 +284,22 @@ export function OnChainMetrics() {
         </CardContent>
       </Card>
 
-      {/* Alertas Importantes */}
-      {onChainData.exchangeOutflow > onChainData.exchangeInflow * 2 && (
+      {onChainData.recommendedFees.fastestFee !== null && onChainData.recommendedFees.fastestFee > 20 && (
         <Alert>
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            <strong>🚨 Alerta de Fluxo:</strong> Saída massiva de BTC das exchanges detectada! 
-            Fluxo líquido de +{formatNumber(onChainData.exchangeOutflow - onChainData.exchangeInflow)} BTC 
-            pode indicar acúmulo institucional.
+            <strong>🚨 Alerta de rede:</strong> A taxa recomendada para confirmação rápida está acima de {onChainData.recommendedFees.fastestFee} sat/vB, indicando pressão recente na rede.
           </AlertDescription>
         </Alert>
       )}
+
+      <Alert>
+        <AlertTriangle className="h-4 w-4" />
+        <AlertDescription>
+          Exchange flow, baleias e fluxo institucional ficaram fora desta primeira integração por dependerem de provedores adicionais ou pagos. Nesta Sprint 1, o módulo foi migrado para métricas on-chain reais e verificáveis.
+          {error ? ` Detalhe técnico: ${error}` : ""}
+        </AlertDescription>
+      </Alert>
     </div>
   );
 }
