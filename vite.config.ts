@@ -29,6 +29,41 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+
+          if (id.includes("react") || id.includes("scheduler")) {
+            return "react-vendor";
+          }
+
+          if (id.includes("@tanstack")) {
+            return "query-vendor";
+          }
+
+          if (id.includes("recharts") || id.includes("d3-")) {
+            return "charts-vendor";
+          }
+
+          if (id.includes("@radix-ui")) {
+            return "ui-vendor";
+          }
+
+          if (id.includes("html2canvas")) {
+            return "html2canvas-vendor";
+          }
+
+          if (id.includes("jspdf")) {
+            return "jspdf-vendor";
+          }
+
+          if (id.includes("lightweight-charts") || id.includes("react-ts-tradingview-widgets")) {
+            return "trading-vendor";
+          }
+        },
+      },
+    },
   },
   plugins: [
     react(),

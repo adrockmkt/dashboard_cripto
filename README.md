@@ -52,7 +52,7 @@ Hoje o produto se divide em 3 blocos:
 ## O que existe, mas ainda esta parcial
 
 ### Alertas avancados
-O motor e as regras ja funcionam com dados reais na sessao atual do usuario, mas ainda nao existe backend dedicado para execucao server-side em background ou entrega por email de ponta a ponta.
+O motor e as regras ja funcionam com dados reais na sessao atual do usuario. A Sprint 4 passa a incluir notificacoes nativas do navegador e a base de persistencia para evoluir essa execucao para backend dedicado, mas ainda nao existe uma automacao server-side completa fora da sessao do navegador.
 
 ### Camada social
 O relatorio ja usa uma proxy editorial baseada em noticias para validar sentimento de contexto, mas ainda nao ha integracao direta com X/Twitter, Reddit ou outras fontes sociais proprietarias.
@@ -65,6 +65,7 @@ Ja existe uma primeira camada educacional contextual, mas ainda nao ha glossario
 - Integracao social direta com X/Twitter ou outras fontes de buzz
 - Secao educacional completa com glossario e trilhas
 - Backend dedicado para avaliacao continua de alertas fora da sessao do navegador
+- Entrega de email transacional de ponta a ponta
 
 ## Estrutura principal do app
 
@@ -210,6 +211,15 @@ As 3 sprints principais ja foram executadas no produto atual:
 1. Integracao de dados reais nas telas existentes
 2. Transformacao dos modulos analiticos e alertas em recursos confiaveis
 3. Adicao de comparativos, rankings, relatorio refinado e camada educacional inicial
+
+### Sprint 4 em andamento
+
+Foco atual:
+
+1. robustez de producao para alertas
+2. notificacoes nativas do navegador
+3. preparacao de persistencia para backend futuro
+4. otimizacao de bundle e carregamento inicial
 
 O detalhamento completo esta em `ROADMAP.md`.
 

@@ -24,9 +24,14 @@ import {
   CheckCircle,
   RefreshCw,
   Link2,
+  MonitorSmartphone,
 } from "lucide-react";
 import { useAdvancedAlerts } from "@/hooks/useAdvancedAlerts";
 import type { AdvancedAlert } from "@/services/advancedAlertsEngine";
+import {
+  getBrowserNotificationPermission,
+  requestBrowserNotificationPermission,
+} from "@/services/browserNotifications";
 
 const metricOptions = [
   { value: "btc_price", label: "Preço BTC" },
@@ -59,6 +64,7 @@ export function AdvancedAlertsSystem() {
     dismissActiveAlert,
     refreshSnapshot,
   } = useAdvancedAlerts();
+  const [browserPermission, setBrowserPermission] = useState(getBrowserNotificationPermission());
 
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newAlert, setNewAlert] = useState({
@@ -78,6 +84,19 @@ export function AdvancedAlertsSystem() {
     ],
     webhookUrl: "",
   });
+
+  const enableBrowserNotifications = async () => {
+    const permission = await requestBrowserNotificationPermission();
+    setBrowserPermission(permission);
+    if (permission === "granted") {
+      setGlobalSettings((prev) => ({ ...prev, browserNotificationsEnabled: true }));
+      return;
+    }
+
+    if (permission !== "unsupported") {
+      setGlobalSettings((prev) => ({ ...prev, browserNotificationsEnabled: false }));
+    }
+  };
 
   const technicalSignals = useMemo(() => {
     if (!snapshot) return [];
@@ -258,6 +277,39 @@ export function AdvancedAlertsSystem() {
                 <Link2 className="w-4 h-4" />
                 Webhook
               </Label>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 rounded-lg border border-border/60 p-4 md:grid-cols-[1fr_auto] md:items-center">
+            <div>
+              <div className="flex items-center gap-2 font-medium">
+                <MonitorSmartphone className="h-4 w-4" />
+                Notificações do navegador
+                <Badge variant={browserPermission === "granted" ? "default" : "secondary"}>
+                  {browserPermission === "granted"
+                    ? "Permitidas"
+                    : browserPermission === "denied"
+                      ? "Bloqueadas"
+                      : browserPermission === "unsupported"
+                        ? "Indisponíveis"
+                        : "Não configuradas"}
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Ativa avisos nativos quando um alerta disparar, mesmo que você esteja em outra aba do navegador.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={globalSettings.browserNotificationsEnabled}
+                disabled={browserPermission === "denied" || browserPermission === "unsupported"}
+                onCheckedChange={(checked) =>
+                  setGlobalSettings((prev) => ({ ...prev, browserNotificationsEnabled: checked }))
+                }
+              />
+              <Button variant="outline" size="sm" onClick={enableBrowserNotifications}>
+                Permitir
+              </Button>
             </div>
           </div>
 

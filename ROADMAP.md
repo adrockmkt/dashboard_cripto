@@ -11,8 +11,47 @@ Transformar o dashboard atual, que ja possui uma boa base de interface e navegac
 - Sprint 1: concluida
 - Sprint 2: concluida
 - Sprint 3: concluida na primeira fase de produto
+- Sprint 4: em andamento
 
 As secoes abaixo preservam o desenho original de execucao e servem como historico de planejamento. O que segue como backlog agora e a expansao da camada social, da parte educacional e de uma infraestrutura mais robusta para alertas fora da sessao do usuario.
+
+## Sprint 4
+
+### Nome
+Producao, robustez e acabamento final
+
+### Objetivo
+Levar o projeto de um dashboard funcional para uma base mais pronta para operacao continua, com foco em alertas mais robustos, notificacoes nativas, melhoria de performance e transparência operacional.
+
+### Entregas planejadas
+- Notificacoes nativas do navegador via service worker
+- Persistencia estruturada para historico e fila de alertas visando backend futuro
+- Base de schema para execucao de alertas fora da sessao
+- Otimizacao do bundle principal com code splitting manual
+- Melhor sinalizacao de estados de execucao e permissao de notificacao
+
+### Melhorias propostas para esta sprint
+- Separar execucao local de alertas da futura execucao backend
+- Registrar alertas disparados em uma fila persistente
+- Preparar uma tabela de jobs e historico no schema SQL
+- Reduzir peso do chunk principal do Vite
+- Tornar notificacoes do navegador uma acao explicita e reutilizavel
+
+### Criterios de pronto
+- Usuario pode ativar notificacoes nativas no navegador
+- Alertas disparados podem gerar notificacoes fora da aba ativa enquanto a aplicacao estiver aberta
+- Projeto passa a ter base de schema para workers ou edge functions futuras
+- Build reduz o acoplamento do bundle principal em chunks manuais mais coerentes
+
+### Riscos
+- Limitacoes do navegador para notificacoes sem backend push
+- Diferencas de permissao entre browsers
+- Necessidade posterior de credenciais server-side para execucao realmente autonoma
+
+### Dependencias
+- Estrutura de service worker
+- Persistencia opcional via Supabase
+- Revisao de configuracao de build no Vite
 
 ## Principios do roadmap
 
