@@ -6,7 +6,7 @@ Este README descreve o estado atual real do projeto. Para planejamento de evoluc
 
 ## Status atual do projeto
 
-O projeto ja possui uma interface rica e funcional, com varias areas navegaveis e integracao real para parte dos dados de mercado.
+O projeto ja possui uma interface rica e funcional, com varias areas navegaveis e integracao real para os modulos centrais de mercado, analise e relatorio.
 
 Hoje o produto se divide em 3 blocos:
 
@@ -23,42 +23,48 @@ Hoje o produto se divide em 3 blocos:
 - Tema claro/escuro
 - Loading states, lazy loading e error boundary
 
-### Dados de mercado
+### Dados de mercado e analise
 - Lista das top criptomoedas
 - Preco e variacao em 24h
 - Fear & Greed Index atual
 - Dominancia do Bitcoin
 - Grafico historico basico de BTC
+- Candlestick profissional com dados reais como caminho principal
+- Metricas on-chain com integracao real e fallback por metrica
+- Comparativo entre ativos com performance relativa em 7 dias
+- Rankings de mercado por variacao, liquidez relativa e market cap
 
 ### Recursos de usuario
 - Favoritos com persistencia em Supabase ou `localStorage`
 - Alertas basicos com persistencia em Supabase ou `localStorage`
 - Portfolio com calculo de P&L
 - Exportacao de dados em CSV, PDF e JSON
+- Alertas avancados com motor de regras reais e webhook
+- Centro de notificacoes com persistencia consistente
+
+### Modelos e inteligencia
+- DCA com historico real
+- Stock-to-Flow com historico real separado da projecao
+- Relatorio diario com resumo dinamico, camada editorial e leitura tatica
+- Camada educacional inicial integrada ao produto
+- Feed de noticias com fonte real e fallback editorial
 
 ## O que existe, mas ainda esta parcial
 
-### Trading Pro
-O modulo de candlestick profissional existe, mas hoje ainda usa geracao local de candles para demonstracao. A interface e a estrutura estao prontas, porem falta integrar dados OHLCV reais.
-
-### On-Chain
-O modulo on-chain ja possui layout, graficos e visualizacoes, mas os dados ainda sao simulados localmente. Falta integrar provedores reais para metricas como enderecos ativos, hashrate, fluxo de exchanges e mempool.
-
-### DCA e Stock-to-Flow
-Os modulos existem e estao navegaveis, mas ainda usam simulacoes locais para parte relevante dos calculos. A proxima etapa e conectar historicos reais para transformar esses modulos em ferramentas mais confiaveis.
-
 ### Alertas avancados
-Existe uma tela para configuracao de alertas avancados, mas as acoes externas ainda nao estao implementadas de ponta a ponta. Hoje o comportamento e majoritariamente demonstrativo.
+O motor e as regras ja funcionam com dados reais na sessao atual do usuario, mas ainda nao existe backend dedicado para execucao server-side em background ou entrega por email de ponta a ponta.
 
-### Noticias
-O feed de noticias existe, mas ainda usa dados mockados.
+### Camada social
+O relatorio ja usa uma proxy editorial baseada em noticias para validar sentimento de contexto, mas ainda nao ha integracao direta com X/Twitter, Reddit ou outras fontes sociais proprietarias.
+
+### Educacional
+Ja existe uma primeira camada educacional contextual, mas ainda nao ha glossario completo, trilhas ou biblioteca editorial dedicada.
 
 ## O que ainda nao esta implementado
 
-- Comparativo real entre tokens
-- Integracao social com X/Twitter ou outras fontes de buzz
-- Secao educacional e glossario
-- Motor real de alertas estrategicos com avaliacao continua baseada em dados externos
+- Integracao social direta com X/Twitter ou outras fontes de buzz
+- Secao educacional completa com glossario e trilhas
+- Backend dedicado para avaliacao continua de alertas fora da sessao do navegador
 
 ## Estrutura principal do app
 
@@ -79,12 +85,15 @@ O feed de noticias existe, mas ainda usa dados mockados.
 - `src/components/advanced/DCASimulator.tsx`
 - `src/components/advanced/StockToFlowModel.tsx`
 - `src/components/advanced/AdvancedAlertsSystem.tsx`
+- `src/components/MarketInsights.tsx`
 
 ### Servicos e persistencia
 - `src/services/cryptoApi.ts`
+- `src/services/insightsService.ts`
 - `src/lib/supabase.ts`
 - `src/hooks/useFavorites.ts`
 - `src/hooks/useCustomAlerts.ts`
+- `src/hooks/useAdvancedAlerts.ts`
 - `src/sql/schema.sql`
 
 ## Tecnologias
@@ -156,6 +165,7 @@ npm run lint
 - CoinGecko
 - CryptoCompare como fallback para lista de mercado
 - Alternative.me para Fear & Greed
+- Blockchain.com Charts e mempool.space para on-chain
 - Supabase para persistencia opcional
 
 ### Variaveis de ambiente
@@ -195,11 +205,11 @@ pm2 startup
 
 ## Roadmap resumido
 
-As proximas 3 sprints planejadas sao:
+As 3 sprints principais ja foram executadas no produto atual:
 
-1. Integrar dados reais nas telas ja existentes
-2. Transformar simulacoes analiticas e alertas em recursos confiaveis
-3. Adicionar comparativos, sentimento social e diferenciais de produto
+1. Integracao de dados reais nas telas existentes
+2. Transformacao dos modulos analiticos e alertas em recursos confiaveis
+3. Adicao de comparativos, rankings, relatorio refinado e camada educacional inicial
 
 O detalhamento completo esta em `ROADMAP.md`.
 

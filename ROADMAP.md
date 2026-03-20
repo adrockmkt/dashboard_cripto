@@ -6,6 +6,14 @@ Este documento foi convertido para um roadmap de produto e execucao. Ele nao des
 
 Transformar o dashboard atual, que ja possui uma boa base de interface e navegacao, em uma plataforma mais confiavel para analise cripto, trocando modulos demonstrativos por integracoes reais e adicionando diferenciais de produto nas etapas seguintes.
 
+## Status de execucao
+
+- Sprint 1: concluida
+- Sprint 2: concluida
+- Sprint 3: concluida na primeira fase de produto
+
+As secoes abaixo preservam o desenho original de execucao e servem como historico de planejamento. O que segue como backlog agora e a expansao da camada social, da parte educacional e de uma infraestrutura mais robusta para alertas fora da sessao do usuario.
+
 ## Principios do roadmap
 
 - Priorizar aproveitamento da UI que ja existe
