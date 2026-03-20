@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useTranslation } from "react-i18next";
 
 interface SearchResult {
   id: string;
@@ -21,6 +22,7 @@ interface GlobalSearchProps {
 }
 
 export function GlobalSearch({ onNavigate }: GlobalSearchProps) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -30,17 +32,17 @@ export function GlobalSearch({ onNavigate }: GlobalSearchProps) {
   const debouncedQuery = useDebounce(query, 200);
 
   const allSearchableItems: SearchResult[] = useMemo(() => [
-    { id: "dashboard", title: "Dashboard", type: "tab", description: "Visão geral do mercado", icon: Activity, action: () => onNavigate("dashboard") },
-    { id: "trading", title: "Trading Pro", type: "tab", description: "Gráficos candlestick avançados", icon: TrendingUp, action: () => onNavigate("trading") },
-    { id: "onchain", title: "On-Chain", type: "tab", description: "Métricas on-chain", icon: Activity, action: () => onNavigate("onchain") },
-    { id: "models", title: "Modelos", type: "tab", description: "DCA e Stock-to-Flow", icon: TrendingUp, action: () => onNavigate("models") },
-    { id: "portfolio", title: "Portfolio", type: "tab", description: "Gerencie seus investimentos", icon: TrendingUp, action: () => onNavigate("portfolio") },
-    { id: "charts", title: "Gráficos", type: "tab", description: "Análise técnica avançada", icon: Activity, action: () => onNavigate("charts") },
-    { id: "report", title: "Relatório", type: "tab", description: "Relatório diário completo", icon: FileText, action: () => onNavigate("report") },
-    { id: "alerts", title: "Alertas", type: "tab", description: "Sistema de alertas", icon: Bell, action: () => onNavigate("alerts") },
-    { id: "btc", title: "Bitcoin", type: "crypto", description: "BTC - Análise e preço", icon: TrendingUp, action: () => onNavigate("trading") },
-    { id: "eth", title: "Ethereum", type: "crypto", description: "ETH - Análise e preço", icon: TrendingUp, action: () => onNavigate("trading") },
-  ], [onNavigate]);
+    { id: "dashboard", title: t("nav.dashboard"), type: "tab", description: t("search.dashboardDescription"), icon: Activity, action: () => onNavigate("dashboard") },
+    { id: "trading", title: t("nav.trading"), type: "tab", description: t("search.tradingDescription"), icon: TrendingUp, action: () => onNavigate("trading") },
+    { id: "onchain", title: t("nav.onchain"), type: "tab", description: t("search.onchainDescription"), icon: Activity, action: () => onNavigate("onchain") },
+    { id: "models", title: t("nav.models"), type: "tab", description: t("search.modelsDescription"), icon: TrendingUp, action: () => onNavigate("models") },
+    { id: "portfolio", title: t("nav.portfolio"), type: "tab", description: t("search.portfolioDescription"), icon: TrendingUp, action: () => onNavigate("portfolio") },
+    { id: "charts", title: t("nav.charts"), type: "tab", description: t("search.chartsDescription"), icon: Activity, action: () => onNavigate("charts") },
+    { id: "report", title: t("nav.report"), type: "tab", description: t("search.reportDescription"), icon: FileText, action: () => onNavigate("report") },
+    { id: "alerts", title: t("nav.alerts"), type: "tab", description: t("search.alertsDescription"), icon: Bell, action: () => onNavigate("alerts") },
+    { id: "btc", title: "Bitcoin", type: "crypto", description: t("search.bitcoinDescription"), icon: TrendingUp, action: () => onNavigate("trading") },
+    { id: "eth", title: "Ethereum", type: "crypto", description: t("search.ethereumDescription"), icon: TrendingUp, action: () => onNavigate("trading") },
+  ], [onNavigate, t]);
 
   const search = useCallback((searchQuery: string) => {
     if (!searchQuery.trim()) {
@@ -103,7 +105,7 @@ export function GlobalSearch({ onNavigate }: GlobalSearchProps) {
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Buscar... (Ctrl+K)"
+          placeholder={t("search.placeholder")}
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -145,7 +147,13 @@ export function GlobalSearch({ onNavigate }: GlobalSearchProps) {
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{result.title}</span>
                           <Badge variant="secondary" className={cn("text-xs", getTypeColor(result.type))}>
-                            {result.type}
+                            {result.type === "crypto"
+                              ? t("search.typeCrypto")
+                              : result.type === "tab"
+                                ? t("search.typeTab")
+                                : result.type === "alert"
+                                  ? t("search.typeAlert")
+                                  : t("search.typeReport")}
                           </Badge>
                         </div>
                         {result.description && (
@@ -170,7 +178,7 @@ export function GlobalSearch({ onNavigate }: GlobalSearchProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
-        document.querySelector<HTMLInputElement>('input[placeholder*="Buscar"]')?.focus();
+        document.querySelector<HTMLInputElement>('input[placeholder]')?.focus();
       }
     };
 

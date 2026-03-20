@@ -12,6 +12,7 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import { DashboardSkeleton, ChartSkeleton, CardSkeleton } from "@/components/LoadingSkeleton";
 import { useCryptoAnalysis } from "@/hooks/useCryptoAnalysis";
 import { Menu, RefreshCw } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 // Eager load critical components
 import { FavoritesPanel } from "@/components/FavoritesPanel";
@@ -37,6 +38,7 @@ const CryptoChart = lazy(() => import("@/components/CryptoChart"));
 const PortfolioManager = lazy(() => import("@/components/PortfolioManager").then(m => ({ default: m.PortfolioManager })));
 
 const Index = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { 
@@ -71,6 +73,14 @@ const Index = () => {
             <Suspense fallback={<CardSkeleton />}>
               <PortfolioCard />
             </Suspense>
+
+            <Card className="glass-card">
+              <CardContent className="p-0">
+                <Suspense fallback={<ChartSkeleton />}>
+                  <CryptoChart />
+                </Suspense>
+              </CardContent>
+            </Card>
           </div>
         );
 
@@ -286,9 +296,22 @@ const Index = () => {
         );
 
       default:
-        return <div>Página não encontrada</div>;
+        return <div>{t("app.notFound")}</div>;
     }
   };
+
+  const activeTabTitle =
+    activeTab === "dashboard" ? t("nav.dashboard") :
+    activeTab === "trading" ? t("nav.trading") :
+    activeTab === "onchain" ? t("header.onchain") :
+    activeTab === "models" ? t("header.models") :
+    activeTab === "dca" ? t("header.dca") :
+    activeTab === "s2f" ? t("header.s2f") :
+    activeTab === "portfolio" ? t("nav.portfolio") :
+    activeTab === "charts" ? t("nav.charts") :
+    activeTab === "report" ? t("header.report") :
+    activeTab === "alerts" ? t("header.alerts") :
+    t("header.legacy");
 
   return (
     <div className="min-h-screen bg-background">
@@ -322,7 +345,7 @@ const Index = () => {
                 size="icon"
                 onClick={refreshData}
                 className="h-9 w-9"
-                aria-label="Atualizar dados"
+                aria-label={t("dashboard.refresh")}
               >
                 <RefreshCw className="h-4 w-4" />
               </Button>
@@ -345,16 +368,7 @@ const Index = () => {
           {/* Desktop Header with Search */}
           <div className="hidden lg:flex justify-between items-center p-4 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 sticky top-0 z-30">
             <div className="flex items-center gap-4">
-              <h1 className="font-bold text-xl whitespace-nowrap">CryptoTracker Pro - {activeTab === "dashboard" ? "Dashboard" : 
-                activeTab === "trading" ? "Trading Pro" :
-                activeTab === "onchain" ? "Métricas On-Chain" :
-                activeTab === "models" ? "Modelos Preditivos" :
-                activeTab === "dca" ? "Simulador DCA" :
-                activeTab === "s2f" ? "Stock-to-Flow" :
-                activeTab === "portfolio" ? "Portfolio" : 
-                activeTab === "charts" ? "Gráficos" : 
-                activeTab === "report" ? "Relatório" : 
-                activeTab === "alerts" ? "Alertas" : "Visão Clássica"}</h1>
+              <h1 className="font-bold text-xl whitespace-nowrap">{t("app.title")} - {activeTabTitle}</h1>
               <GlobalSearch onNavigate={(tab) => setActiveTab(tab)} />
             </div>
             <div className="flex items-center gap-2">
@@ -363,8 +377,8 @@ const Index = () => {
                   variant="outline" 
                   size="icon"
                   onClick={refreshData}
-                  title="Atualizar dados"
-                  aria-label="Atualizar dados"
+                  title={t("dashboard.refresh")}
+                  aria-label={t("dashboard.refresh")}
                 >
                   <RefreshCw className="h-4 w-4" />
                 </Button>
@@ -384,7 +398,7 @@ const Index = () => {
                   <p className="text-destructive mb-4">{error}</p>
                   <Button onClick={refreshData}>
                     <RefreshCw className="h-4 w-4 mr-2" />
-                    Tentar novamente
+                    {t("app.retry")}
                   </Button>
                 </CardContent>
               </Card>

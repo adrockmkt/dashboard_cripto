@@ -22,7 +22,7 @@ export const LanguageSelector = () => {
     localStorage.setItem('language', lng);
   };
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const currentLanguage = languages.find(lang => lang.code === i18n.resolvedLanguage) || languages[0];
 
   return (
     <DropdownMenu>
@@ -36,7 +36,7 @@ export const LanguageSelector = () => {
           <DropdownMenuItem
             key={lang.code}
             onClick={() => changeLanguage(lang.code)}
-            className={i18n.language === lang.code ? 'bg-accent' : ''}
+            className={i18n.resolvedLanguage === lang.code ? 'bg-accent' : ''}
           >
             <span className="mr-2">{lang.flag}</span>
             {lang.name}

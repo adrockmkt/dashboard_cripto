@@ -3,26 +3,28 @@ import { ChartBar as BarChart3, TrendingUp, TriangleAlert as AlertTriangle, Sett
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import adRockLogo from "@/assets/adrock-logo.png"
+import { useTranslation } from "react-i18next"
 
 interface SidebarProps {
   activeTab: string
   onTabChange: (tab: string) => void
 }
 
-const sidebarItems = [
-  { id: "dashboard", label: "Dashboard", icon: Home },
-  { id: "trading", label: "Trading Pro", icon: BarChart3 },
-  { id: "onchain", label: "On-Chain", icon: Activity },
-  { id: "models", label: "Modelos", icon: TrendingUp },
-  { id: "portfolio", label: "Portfolio", icon: PieChart },
-  { id: "charts", label: "Gráficos", icon: BarChart3 },
-  { id: "report", label: "Relatório", icon: FileText },
-  { id: "alerts", label: "Alertas", icon: AlertTriangle },
-  { id: "legacy", label: "Clássica", icon: TrendingUp },
-]
-
 export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false)
+  const { t } = useTranslation()
+
+  const sidebarItems = [
+    { id: "dashboard", label: t("nav.dashboard"), icon: Home },
+    { id: "trading", label: t("nav.trading"), icon: BarChart3 },
+    { id: "onchain", label: t("nav.onchain"), icon: Activity },
+    { id: "models", label: t("nav.models"), icon: TrendingUp },
+    { id: "portfolio", label: t("nav.portfolio"), icon: PieChart },
+    { id: "charts", label: t("nav.charts"), icon: BarChart3 },
+    { id: "report", label: t("nav.report"), icon: FileText },
+    { id: "alerts", label: t("nav.alerts"), icon: AlertTriangle },
+    { id: "legacy", label: t("nav.legacy"), icon: TrendingUp },
+  ]
 
   return (
     <div 
@@ -34,7 +36,7 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
       {/* Header */}
       <div className="p-4 border-b border-border flex items-center justify-between">
         {!collapsed && (
-          <h2 className="font-semibold text-sm">Navigation</h2>
+          <h2 className="font-semibold text-sm">{t("nav.navigation")}</h2>
         )}
         <Button
           variant="ghost"
