@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import {
   Zap,
   Activity
 } from "lucide-react";
+import { compressMonthlySeries, fetchBitcoinHistoricalRange } from "@/services/modelsService";
 
 interface S2FData {
   date: Date;
@@ -55,6 +56,7 @@ export function StockToFlowModel() {
     daysToHalving: 0
   });
   const [loading, setLoading] = useState(true);
+  const [historySource, setHistorySource] = useState<"real" | "fallback">("real");
 
   // Eventos de halving históricos e futuros
   const generateHalvingEvents = (): HalvingEvent[] => {
@@ -131,42 +133,19 @@ export function StockToFlowModel() {
   };
 
   // Gerar dados históricos do S2F
-  const generateS2FData = (): S2FData[] => {
+  const generateS2FData = (actualSeries: Array<{ date: Date; price: number }>): S2FData[] => {
     const data: S2FData[] = [];
-    const startDate = new Date('2010-01-01');
-    const endDate = new Date();
-    
-    let currentDate = new Date(startDate);
-    let basePrice = 0.1;
-    
-    while (currentDate <= endDate) {
+    actualSeries.forEach(({ date, price }) => {
+      const currentDate = new Date(date);
       const stockToFlow = calculateStockToFlow(currentDate);
       const s2fPrice = calculateS2FPrice(stockToFlow);
-      
-      // Simular preço real com volatilidade
-      const timeProgress = (currentDate.getTime() - startDate.getTime()) / (endDate.getTime() - startDate.getTime());
-      const trend = Math.pow(timeProgress, 2) * 60000; // Crescimento exponencial
-      const volatility = (Math.random() - 0.5) * 0.3;
-      const cyclical = Math.sin(timeProgress * Math.PI * 8) * 0.2; // Ciclos de 4 anos
-      
-      basePrice = Math.max(0.1, trend * (1 + volatility + cyclical));
-      
-      // Ajustar para eventos de halving
-      const halvingEffect = halvingEvents.reduce((effect, halving) => {
-        const daysSinceHalving = (currentDate.getTime() - halving.date.getTime()) / (1000 * 60 * 60 * 24);
-        if (daysSinceHalving > 0 && daysSinceHalving < 365) {
-          return effect * (1 + (365 - daysSinceHalving) / 365 * 0.5); // Boost pós-halving
-        }
-        return effect;
-      }, 1);
-      
-      const actualPrice = basePrice * halvingEffect;
+      const actualPrice = price;
       const deviation = ((actualPrice - s2fPrice) / s2fPrice) * 100;
-      
+
       let phase: 'undervalued' | 'fair' | 'overvalued' = 'fair';
       if (deviation < -20) phase = 'undervalued';
       else if (deviation > 20) phase = 'overvalued';
-      
+
       data.push({
         date: new Date(currentDate),
         actualPrice,
@@ -175,11 +154,8 @@ export function StockToFlowModel() {
         deviation,
         phase
       });
-      
-      // Próximo mês
-      currentDate.setMonth(currentDate.getMonth() + 1);
-    }
-    
+    });
+
     return data;
   };
 
@@ -221,12 +197,15 @@ export function StockToFlowModel() {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      
-      // Simular carregamento
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
+      const startDate = new Date("2010-01-01");
+      const endDate = new Date();
+      const historicalSeries = await fetchBitcoinHistoricalRange(startDate, endDate);
+      const monthlySeries = compressMonthlySeries(historicalSeries);
+      setHistorySource(monthlySeries.length > 0 ? "real" : "fallback");
+
       const halvings = generateHalvingEvents();
-      const s2fHistorical = generateS2FData();
+      const s2fHistorical = generateS2FData(monthlySeries);
       const futurePredictions = generatePredictions();
       
       setHalvingEvents(halvings);
@@ -277,6 +256,27 @@ export function StockToFlowModel() {
     }
   };
 
+  const predictionChartData = useMemo(() => {
+    const grouped = new Map<
+      string,
+      {
+        date: number;
+        conservative?: number;
+        base?: number;
+        optimistic?: number;
+      }
+    >();
+
+    predictions.forEach((prediction) => {
+      const key = prediction.date.toISOString();
+      const existing = grouped.get(key) || { date: prediction.date.getTime() };
+      existing[prediction.scenario] = prediction.predictedPrice;
+      grouped.set(key, existing);
+    });
+
+    return Array.from(grouped.values()).sort((a, b) => a.date - b.date);
+  }, [predictions]);
+
   if (loading) {
     return (
       <Card>
@@ -292,6 +292,15 @@ export function StockToFlowModel() {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-2">
+        <Badge variant={historySource === "real" ? "default" : "secondary"}>
+          {historySource === "real" ? "Histórico real" : "Fallback"}
+        </Badge>
+        <span className="text-sm text-muted-foreground">
+          O preço histórico é separado da projeção do modelo.
+        </span>
+      </div>
+
       {/* Métricas Atuais */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
@@ -464,48 +473,58 @@ export function StockToFlowModel() {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
-                <LineChart>
+                <LineChart data={predictionChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="date" 
                     tickFormatter={(date) => new Date(date).getFullYear().toString()}
                   />
                   <YAxis 
-                    scale="log"
+                    domain={["dataMin - 1", "dataMax + 1"]}
                     tickFormatter={(value) => formatPrice(value)}
                   />
                   <Tooltip 
                     labelFormatter={(date) => new Date(date).toLocaleDateString('pt-BR')}
-                    formatter={(value: number) => [formatPrice(value), 'Previsão']}
+                    formatter={(value: number, name: string) => [
+                      formatPrice(value),
+                      name === "conservative" ? "Conservador" :
+                      name === "base" ? "Base" : "Otimista"
+                    ]}
                   />
                   <Legend />
                   
                   {/* Linhas de previsão por cenário */}
                   <Line 
-                    data={predictions.filter(p => p.scenario === 'conservative')}
                     type="monotone" 
-                    dataKey="predictedPrice" 
+                    dataKey="conservative" 
                     stroke="#22c55e" 
                     strokeWidth={2}
                     name="Conservador"
                     strokeDasharray="5 5"
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 5 }}
+                    connectNulls
                   />
                   <Line 
-                    data={predictions.filter(p => p.scenario === 'base')}
                     type="monotone" 
-                    dataKey="predictedPrice" 
+                    dataKey="base" 
                     stroke="#3b82f6" 
                     strokeWidth={3}
                     name="Base"
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 5 }}
+                    connectNulls
                   />
                   <Line 
-                    data={predictions.filter(p => p.scenario === 'optimistic')}
                     type="monotone" 
-                    dataKey="predictedPrice" 
+                    dataKey="optimistic" 
                     stroke="#f59e0b" 
                     strokeWidth={2}
                     name="Otimista"
                     strokeDasharray="5 5"
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 5 }}
+                    connectNulls
                   />
                 </LineChart>
               </ResponsiveContainer>

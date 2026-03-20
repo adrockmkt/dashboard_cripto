@@ -21,6 +21,7 @@ import {
   Percent,
   PiggyBank
 } from "lucide-react";
+import { fetchBitcoinHistoricalRange, findClosestPrice, type HistoricalPricePoint } from "@/services/modelsService";
 
 interface DCAResult {
   totalInvested: number;
@@ -56,6 +57,7 @@ export function DCASimulator() {
   const [result, setResult] = useState<DCAResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedScenario, setSelectedScenario] = useState<string>('custom');
+  const [historySource, setHistorySource] = useState<"real" | "fallback">("real");
 
   // Cenários pré-definidos
   const scenarios: DCAScenario[] = [
@@ -85,48 +87,10 @@ export function DCASimulator() {
     }
   ];
 
-  // Gerar dados históricos de preço do Bitcoin
-  const generateHistoricalPrices = (startDate: Date, endDate: Date) => {
-    const prices: { date: Date; price: number }[] = [];
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    
-    let currentPrice = 16000; // Preço inicial aproximado
-    const totalDays = Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-    
-    for (let i = 0; i <= totalDays; i++) {
-      const date = new Date(start.getTime() + i * 24 * 60 * 60 * 1000);
-      
-      // Simular movimento de preço mais realista
-      const dayOfYear = (date.getTime() - new Date(date.getFullYear(), 0, 1).getTime()) / (1000 * 60 * 60 * 24);
-      const yearProgress = dayOfYear / 365;
-      
-      // Tendência geral de alta com volatilidade
-      const trend = Math.sin(yearProgress * Math.PI * 2) * 0.001 + 0.0005;
-      const volatility = (Math.random() - 0.5) * 0.05;
-      const weeklyPattern = Math.sin(i / 7 * Math.PI * 2) * 0.01;
-      
-      currentPrice *= (1 + trend + volatility + weeklyPattern);
-      
-      // Eventos específicos (halvings, crashes, etc.)
-      if (date.getMonth() === 2 && date.getDate() === 15) { // Crash simulado em março
-        currentPrice *= 0.85;
-      }
-      if (date.getMonth() === 10 && date.getDate() === 1) { // Rally simulado em novembro
-        currentPrice *= 1.15;
-      }
-      
-      prices.push({ date: new Date(date), price: Math.max(currentPrice, 15000) });
-    }
-    
-    return prices;
-  };
-
   // Calcular DCA
-  const calculateDCA = (weeklyAmount: number, startDate: string, endDate: string): DCAResult => {
+  const calculateDCA = (weeklyAmount: number, startDate: string, endDate: string, historicalPrices: HistoricalPricePoint[]): DCAResult => {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    const historicalPrices = generateHistoricalPrices(start, end);
     
     const purchases: DCAPurchase[] = [];
     let totalInvested = 0;
@@ -135,11 +99,8 @@ export function DCASimulator() {
     // Compras semanais
     let currentDate = new Date(start);
     while (currentDate <= end) {
-      // Encontrar preço mais próximo da data
-      const closestPrice = historicalPrices.reduce((prev, curr) => {
-        return Math.abs(curr.date.getTime() - currentDate.getTime()) < 
-               Math.abs(prev.date.getTime() - currentDate.getTime()) ? curr : prev;
-      });
+      const closestPrice = findClosestPrice(historicalPrices, currentDate);
+      if (!closestPrice) break;
       
       const btcBought = weeklyAmount / closestPrice.price;
       totalBTC += btcBought;
@@ -180,13 +141,16 @@ export function DCASimulator() {
   };
 
   // Executar simulação
-  const runSimulation = () => {
+  const runSimulation = async () => {
     setLoading(true);
-    setTimeout(() => {
-      const dcaResult = calculateDCA(weeklyAmount, startDate, endDate);
+    try {
+      const history = await fetchBitcoinHistoricalRange(new Date(startDate), new Date(endDate));
+      setHistorySource(history.length > 0 ? "real" : "fallback");
+      const dcaResult = calculateDCA(weeklyAmount, startDate, endDate, history);
       setResult(dcaResult);
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   // Aplicar cenário pré-definido
@@ -341,6 +305,12 @@ export function DCASimulator() {
       ) : result ? (
         <>
           {/* Métricas Principais */}
+          <div className="flex items-center gap-2">
+            <Badge variant={historySource === "real" ? "default" : "secondary"}>
+              {historySource === "real" ? "Histórico real" : "Fallback"}
+            </Badge>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <Card>
               <CardContent className="p-4">

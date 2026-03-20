@@ -1,245 +1,242 @@
-import { useState, useEffect } from "react"
-import { Bell, X, TriangleAlert as AlertTriangle, CircleCheck as CheckCircle, Info } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
-import { supabase, isSupabaseConfigured } from "@/lib/supabase"
+import { useEffect, useState } from "react";
+import { Bell, X, TriangleAlert as AlertTriangle, CircleCheck as CheckCircle, Info } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 interface Notification {
-  id: string
-  type: "success" | "warning" | "error" | "info"
-  title: string
-  message: string
-  timestamp: Date
-  read: boolean
+  id: string;
+  type: "success" | "warning" | "error" | "info";
+  title: string;
+  message: string;
+  timestamp: Date;
+  read: boolean;
 }
 
-export function NotificationCenter() {
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [isOpen, setIsOpen] = useState(false)
+const STORAGE_KEY = "crypto-notifications";
 
-  // Load notifications from Supabase
+export function NotificationCenter() {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+
   useEffect(() => {
-    loadNotifications()
-    
-    // Listen for real-time notifications only if Supabase is configured
-    let channel = null
+    loadNotifications();
+
+    const handleAddNotification = (event: Event) => {
+      const customEvent = event as CustomEvent<Omit<Notification, "id" | "timestamp" | "read">>;
+      addNotification(customEvent.detail);
+    };
+
+    let channel = null;
     if (isSupabaseConfigured() && supabase) {
       channel = supabase
-        .channel('notifications')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, (payload) => {
-          const newNotification = {
-            id: payload.new.id,
-            type: payload.new.type,
-            title: payload.new.title,
-            message: payload.new.message,
-            timestamp: new Date(payload.new.created_at),
-            read: payload.new.read
+        .channel("notifications")
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "notifications" },
+          (payload) => {
+            const newNotification: Notification = {
+              id: payload.new.id,
+              type: payload.new.type,
+              title: payload.new.title,
+              message: payload.new.message,
+              timestamp: new Date(payload.new.created_at),
+              read: payload.new.read,
+            };
+
+            setNotifications((prev) => {
+              const alreadyExists = prev.some((notification) => notification.id === newNotification.id);
+              return alreadyExists ? prev : [newNotification, ...prev].slice(0, 50);
+            });
           }
-          setNotifications(prev => [newNotification, ...prev].slice(0, 50))
-        })
-        .subscribe()
+        )
+        .subscribe();
     }
+
+    window.addEventListener("add-notification", handleAddNotification as EventListener);
 
     return () => {
+      window.removeEventListener("add-notification", handleAddNotification as EventListener);
       if (channel) {
-        channel.unsubscribe()
+        channel.unsubscribe();
       }
-    }
-  }, [])
+    };
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
+  }, [notifications]);
 
   const loadNotifications = async () => {
-    // Skip Supabase if not configured
-    if (!isSupabaseConfigured() || !supabase) {
-      console.log('⚠️ Supabase not configured, using localStorage only')
-      const saved = localStorage.getItem("crypto-notifications")
-      if (saved) {
-        const parsed = JSON.parse(saved).map((n: any) => ({
-          ...n,
-          timestamp: new Date(n.timestamp)
-        }))
-        setNotifications(parsed)
+    const loadLocal = () => {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) {
+        setNotifications([]);
+        return;
       }
-      return
+
+      const parsed = JSON.parse(saved).map((notification: any) => ({
+        ...notification,
+        timestamp: new Date(notification.timestamp),
+      }));
+      setNotifications(parsed);
+    };
+
+    if (!isSupabaseConfigured() || !supabase) {
+      loadLocal();
+      return;
     }
 
     try {
       const { data, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(50)
+        .from("notifications")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(50);
 
       if (error) {
-        console.error('Erro ao carregar notificações:', error)
-        // Fallback para localStorage
-        const saved = localStorage.getItem("crypto-notifications")
-        if (saved) {
-          const parsed = JSON.parse(saved).map((n: any) => ({
-            ...n,
-            timestamp: new Date(n.timestamp)
-          }))
-          setNotifications(parsed)
-        }
-        return
+        console.error("Erro ao carregar notificações:", error);
+        loadLocal();
+        return;
       }
 
-      if (data) {
-        const notifications = data.map(item => ({
-          id: item.id,
-          type: item.type,
-          title: item.title,
-          message: item.message,
-          timestamp: new Date(item.created_at),
-          read: item.read
-        }))
-        setNotifications(notifications)
-      }
+      const nextNotifications: Notification[] = (data || []).map((item) => ({
+        id: item.id,
+        type: item.type,
+        title: item.title,
+        message: item.message,
+        timestamp: new Date(item.created_at),
+        read: item.read,
+      }));
+
+      setNotifications(nextNotifications);
     } catch (error) {
-      console.error('Erro ao conectar com Supabase:', error)
-      // Fallback para localStorage
-      const saved = localStorage.getItem("crypto-notifications")
-      if (saved) {
-        const parsed = JSON.parse(saved).map((n: any) => ({
-          ...n,
-          timestamp: new Date(n.timestamp)
-        }))
-        setNotifications(parsed)
-      }
+      console.error("Erro ao conectar com Supabase:", error);
+      loadLocal();
     }
-  }
-
-  // Save notifications to localStorage
-  useEffect(() => {
-    localStorage.setItem("crypto-notifications", JSON.stringify(notifications))
-  }, [notifications])
+  };
 
   const addNotification = async (notification: Omit<Notification, "id" | "timestamp" | "read">) => {
     const newNotification: Notification = {
       ...notification,
       id: Date.now().toString(),
       timestamp: new Date(),
-      read: false
-    }
-    
-    // Always add to local state first for immediate UI feedback
-    setNotifications(prev => [newNotification, ...prev].slice(0, 50))
-    
-    // Skip Supabase if not configured
-    if (!isSupabaseConfigured() || !supabase) {
-      console.log('⚠️ Supabase not configured, saving to localStorage only')
-      const currentNotifications = [newNotification, ...notifications].slice(0, 50)
-      localStorage.setItem('crypto-notifications', JSON.stringify(currentNotifications))
-      return
-    }
+      read: false,
+    };
+
+    setNotifications((prev) => [newNotification, ...prev].slice(0, 50));
+
+    if (!isSupabaseConfigured() || !supabase) return;
 
     try {
-      const { error } = await supabase
-        .from('notifications')
-        .insert({
-          id: newNotification.id,
-          type: newNotification.type,
-          title: newNotification.title,
-          message: newNotification.message,
-          read: newNotification.read
-        })
+      const { error } = await supabase.from("notifications").insert({
+        id: newNotification.id,
+        type: newNotification.type,
+        title: newNotification.title,
+        message: newNotification.message,
+        read: newNotification.read,
+      });
 
       if (error) {
-        console.log('⚠️ Supabase error, usando localStorage:', error.message)
-        // Save to localStorage as backup
-        const currentNotifications = [newNotification, ...notifications].slice(0, 50)
-        localStorage.setItem('crypto-notifications', JSON.stringify(currentNotifications))
+        console.error("Erro ao salvar notificação:", error);
       }
-      
     } catch (error) {
-      if (error.name === 'AbortError') {
-        console.log('⏰ Supabase timeout, usando localStorage')
-      } else {
-        console.log('🌐 Network error, usando localStorage:', error.message || error)
-      }
-      // Save to localStorage as backup
-      const currentNotifications = [newNotification, ...notifications].slice(0, 50)
-      localStorage.setItem('crypto-notifications', JSON.stringify(currentNotifications))
+      console.error("Erro ao sincronizar notificação:", error);
     }
-  }
+  };
+
+  const updateReadStatus = async (ids: string[], read: boolean) => {
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        ids.includes(notification.id) ? { ...notification, read } : notification
+      )
+    );
+
+    if (!isSupabaseConfigured() || !supabase || ids.length === 0) return;
+
+    try {
+      const { error } = await supabase.from("notifications").update({ read }).in("id", ids);
+      if (error) {
+        console.error("Erro ao atualizar notificações:", error);
+      }
+    } catch (error) {
+      console.error("Erro ao sincronizar leitura:", error);
+    }
+  };
 
   const markAsRead = (id: string) => {
-    setNotifications(prev => prev.map(n => 
-      n.id === id ? { ...n, read: true } : n
-    ))
-  }
+    updateReadStatus([id], true);
+  };
 
   const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })))
-  }
+    const unreadIds = notifications
+      .filter((notification) => !notification.read)
+      .map((notification) => notification.id);
 
-  const removeNotification = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id))
-  }
+    if (unreadIds.length === 0) return;
+    updateReadStatus(unreadIds, true);
+  };
 
-  const clearAll = () => {
-    setNotifications([])
-  }
+  const removeNotification = async (id: string) => {
+    setNotifications((prev) => prev.filter((notification) => notification.id !== id));
 
-  const unreadCount = notifications.filter(n => !n.read).length
+    if (!isSupabaseConfigured() || !supabase) return;
+
+    try {
+      const { error } = await supabase.from("notifications").delete().eq("id", id);
+      if (error) {
+        console.error("Erro ao remover notificação:", error);
+      }
+    } catch (error) {
+      console.error("Erro ao sincronizar remoção:", error);
+    }
+  };
+
+  const clearAll = async () => {
+    const ids = notifications.map((notification) => notification.id);
+    setNotifications([]);
+
+    if (!isSupabaseConfigured() || !supabase || ids.length === 0) return;
+
+    try {
+      const { error } = await supabase.from("notifications").delete().in("id", ids);
+      if (error) {
+        console.error("Erro ao limpar notificações:", error);
+      }
+    } catch (error) {
+      console.error("Erro ao sincronizar limpeza:", error);
+    }
+  };
+
+  const unreadCount = notifications.filter((notification) => !notification.read).length;
 
   const getIcon = (type: Notification["type"]) => {
     switch (type) {
       case "success":
-        return <CheckCircle className="h-4 w-4 text-green-500" />
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
       case "warning":
-        return <AlertTriangle className="h-4 w-4 text-yellow-500" />
+        return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
       case "error":
-        return <AlertTriangle className="h-4 w-4 text-red-500" />
+        return <AlertTriangle className="h-4 w-4 text-red-500" />;
       case "info":
-        return <Info className="h-4 w-4 text-blue-500" />
+        return <Info className="h-4 w-4 text-blue-500" />;
     }
-  }
+  };
 
   const formatTime = (date: Date) => {
-    const now = new Date()
-    const diff = now.getTime() - date.getTime()
-    const minutes = Math.floor(diff / (1000 * 60))
-    const hours = Math.floor(diff / (1000 * 60 * 60))
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-    if (minutes < 1) return "Agora"
-    if (minutes < 60) return `${minutes}m atrás`
-    if (hours < 24) return `${hours}h atrás`
-    return `${days}d atrás`
-  }
-
-  // Generate sample notifications for demo and real alerts
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (notifications.length === 0) {
-        addNotification({
-          type: "info",
-          title: "Bem-vindo!",
-          message: "Central de notificações ativada. Você receberá alertas importantes aqui."
-        })
-      }
-    }, 2000)
-
-    // Generate periodic market alerts
-    const marketTimer = setInterval(() => {
-      const alerts = [
-        { type: "warning" as const, title: "Bitcoin Alert", message: "BTC quebrou resistência de $45,000!" },
-        { type: "success" as const, title: "Ethereum Rally", message: "ETH subiu 5% nas últimas 2 horas" },
-        { type: "info" as const, title: "Market Update", message: "Volume de trading aumentou 20% hoje" },
-        { type: "error" as const, title: "Risk Alert", message: "High volatility detected nos últimos 30min" }
-      ]
-      
-      const randomAlert = alerts[Math.floor(Math.random() * alerts.length)]
-      addNotification(randomAlert)
-    }, 30000) // Nova notificação a cada 30 segundos
-
-    return () => {
-      clearTimeout(timer)
-      clearInterval(marketTimer)
-    }
-  }, [])
+    if (minutes < 1) return "Agora";
+    if (minutes < 60) return `${minutes}m atrás`;
+    if (hours < 24) return `${hours}h atrás`;
+    return `${days}d atrás`;
+  };
 
   return (
     <div className="relative">
@@ -251,7 +248,7 @@ export function NotificationCenter() {
       >
         <Bell className="h-4 w-4" />
         {unreadCount > 0 && (
-          <Badge 
+          <Badge
             className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
             variant="destructive"
           >
@@ -262,112 +259,100 @@ export function NotificationCenter() {
 
       {isOpen && (
         <>
-          {/* Overlay para fechar ao clicar fora */}
-          <div 
-            className="fixed inset-0 z-40" 
-            onClick={() => setIsOpen(false)}
-          />
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
           <Card className="absolute right-0 top-12 w-80 max-h-96 z-50 shadow-lg">
             <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm">Notificações</CardTitle>
-              <div className="flex items-center space-x-2">
-                {unreadCount > 0 && (
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm">Notificações</CardTitle>
+                <div className="flex items-center space-x-2">
+                  {unreadCount > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={markAllAsRead}
+                      className="text-xs"
+                    >
+                      Marcar todas como lidas
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
-                    size="sm"
-                    onClick={markAllAsRead}
-                    className="text-xs"
+                    size="icon"
+                    onClick={() => setIsOpen(false)}
+                    className="h-8 w-8"
                   >
-                    Marcar todas
+                    <X className="h-4 w-4" />
                   </Button>
-                )}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsOpen(false)}
-                  className="h-8 w-8"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="max-h-80 overflow-y-auto">
-              {notifications.length === 0 ? (
-                <div className="p-4 text-center text-muted-foreground text-sm">
-                  Nenhuma notificação
                 </div>
-              ) : (
-                <div className="space-y-1">
-                  {notifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      className={cn(
-                        "p-3 border-b border-border hover:bg-muted/50 cursor-pointer",
-                        !notification.read && "bg-primary/5"
-                      )}
-                      onClick={() => markAsRead(notification.id)}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start space-x-2 flex-1">
-                          {getIcon(notification.type)}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">
-                              {notification.title}
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {notification.message}
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {formatTime(notification.timestamp)}
-                            </p>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="max-h-80 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="p-4 text-center text-muted-foreground text-sm">
+                    Nenhuma notificação
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    {notifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        className={cn(
+                          "p-3 border-b border-border hover:bg-muted/50 cursor-pointer",
+                          !notification.read && "bg-primary/5"
+                        )}
+                        onClick={() => markAsRead(notification.id)}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start space-x-2 flex-1">
+                            {getIcon(notification.type)}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{notification.title}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {notification.message}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {formatTime(notification.timestamp)}
+                              </p>
+                            </div>
                           </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              removeNotification(notification.id);
+                            }}
+                            className="h-6 w-6 opacity-50 hover:opacity-100"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            removeNotification(notification.id)
-                          }}
-                          className="h-6 w-6 opacity-50 hover:opacity-100"
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                )}
+              </div>
+              {notifications.length > 0 && (
+                <div className="p-3 border-t border-border">
+                  <Button variant="ghost" size="sm" onClick={clearAll} className="w-full text-xs">
+                    Limpar todas
+                  </Button>
                 </div>
               )}
-            </div>
-            {notifications.length > 0 && (
-              <div className="p-3 border-t border-border">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearAll}
-                  className="w-full text-xs"
-                >
-                  Limpar todas
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
         </>
       )}
     </div>
-  )
+  );
 }
 
-// Export function to add notifications from other components
 export const useNotifications = () => {
   const addNotification = (notification: Omit<Notification, "id" | "timestamp" | "read">) => {
-    const event = new CustomEvent("add-notification", { detail: notification })
-    window.dispatchEvent(event)
-  }
+    const event = new CustomEvent("add-notification", { detail: notification });
+    window.dispatchEvent(event);
+  };
 
-  return { addNotification }
-}
+  return { addNotification };
+};
