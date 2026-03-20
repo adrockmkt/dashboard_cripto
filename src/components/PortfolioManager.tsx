@@ -5,10 +5,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, TrendingUp, TrendingDown, DollarSign, Percent } from "lucide-react"
+import { Plus, TrendingUp, TrendingDown, DollarSign } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase, isSupabaseConfigured, type Portfolio } from "@/lib/supabase"
 import { ExportMenu } from "@/components/ExportMenu"
+import { fetchCryptoData } from "@/services/cryptoApi"
 
 interface PortfolioItem {
   id: string
@@ -116,11 +117,14 @@ export function PortfolioManager() {
     if (portfolioData.length === 0) return
 
     try {
-      // Simulate price updates - in real app, fetch from API
+      const marketData = await fetchCryptoData()
+      const marketBySymbol = new Map(
+        marketData.map((asset) => [asset.symbol.toUpperCase(), asset])
+      )
+
       const updatedPortfolio = portfolioData.map(item => {
-        // Simulate price change (±5%)
-        const priceChange = (Math.random() - 0.5) * 0.1
-        const currentPrice = item.avgPrice * (1 + priceChange)
+        const marketAsset = marketBySymbol.get(item.symbol.toUpperCase())
+        const currentPrice = marketAsset?.current_price || item.currentPrice || item.avgPrice
         const totalValue = currentPrice * item.quantity
         const totalInvested = item.avgPrice * item.quantity
         const pnl = totalValue - totalInvested
@@ -128,6 +132,7 @@ export function PortfolioManager() {
 
         return {
           ...item,
+          name: marketAsset?.name || item.name,
           currentPrice,
           totalValue,
           pnl,

@@ -29,6 +29,7 @@ Levar o projeto de um dashboard funcional para uma base mais pronta para operaca
 - Base de schema para execucao de alertas fora da sessao
 - Otimizacao do bundle principal com code splitting manual
 - Melhor sinalizacao de estados de execucao e permissao de notificacao
+- Revisao final das areas ainda parciais de frontend e portfolio
 
 ### Melhorias propostas para esta sprint
 - Separar execucao local de alertas da futura execucao backend
@@ -42,6 +43,8 @@ Levar o projeto de um dashboard funcional para uma base mais pronta para operaca
 - Alertas disparados podem gerar notificacoes fora da aba ativa enquanto a aplicacao estiver aberta
 - Projeto passa a ter base de schema para workers ou edge functions futuras
 - Build reduz o acoplamento do bundle principal em chunks manuais mais coerentes
+- Portfolio deixa de recalcular preco com simulacao local
+- Documentacao passa a refletir com precisao o que ainda e parcial e o que fica para a proxima fase
 
 ### Riscos
 - Limitacoes do navegador para notificacoes sem backend push
@@ -52,6 +55,15 @@ Levar o projeto de um dashboard funcional para uma base mais pronta para operaca
 - Estrutura de service worker
 - Persistencia opcional via Supabase
 - Revisao de configuracao de build no Vite
+
+## Proxima fase recomendada
+
+Depois da Sprint 4, o backlog de maior impacto fica concentrado em 4 frentes:
+
+1. backend real para execucao de alertas fora da sessao, com scheduler e entrega persistente
+2. email transacional e canal externo confiavel para alertas
+3. integracao social direta para sentimento, separada da proxy editorial
+4. remocao das simulacoes restantes em componentes auxiliares como `AdvancedCharts` e `AdvancedTechnicalIndicators`
 
 ## Principios do roadmap
 

@@ -37,7 +37,7 @@ Hoje o produto se divide em 3 blocos:
 ### Recursos de usuario
 - Favoritos com persistencia em Supabase ou `localStorage`
 - Alertas basicos com persistencia em Supabase ou `localStorage`
-- Portfolio com calculo de P&L
+- Portfolio com calculo de P&L e preco atual vindo do mercado
 - Exportacao de dados em CSV, PDF e JSON
 - Alertas avancados com motor de regras reais e webhook
 - Centro de notificacoes com persistencia consistente
@@ -54,6 +54,9 @@ Hoje o produto se divide em 3 blocos:
 ### Alertas avancados
 O motor e as regras ja funcionam com dados reais na sessao atual do usuario. A Sprint 4 passa a incluir notificacoes nativas do navegador e a base de persistencia para evoluir essa execucao para backend dedicado, mas ainda nao existe uma automacao server-side completa fora da sessao do navegador.
 
+### Graficos e analise complementar
+Os modulos principais de candles, portfolio, dashboard e relatorio ja usam dados reais ou fallback controlado. Ainda restam componentes secundarios com partes simuladas, especialmente em visualizacoes auxiliares como `AdvancedCharts` e `AdvancedTechnicalIndicators`.
+
 ### Camada social
 O relatorio ja usa uma proxy editorial baseada em noticias para validar sentimento de contexto, mas ainda nao ha integracao direta com X/Twitter, Reddit ou outras fontes sociais proprietarias.
 
@@ -66,6 +69,7 @@ Ja existe uma primeira camada educacional contextual, mas ainda nao ha glossario
 - Secao educacional completa com glossario e trilhas
 - Backend dedicado para avaliacao continua de alertas fora da sessao do navegador
 - Entrega de email transacional de ponta a ponta
+- Eliminacao total de simulacoes em componentes auxiliares de analise
 
 ## Estrutura principal do app
 
@@ -220,6 +224,7 @@ Foco atual:
 2. notificacoes nativas do navegador
 3. preparacao de persistencia para backend futuro
 4. otimizacao de bundle e carregamento inicial
+5. fechamento das ultimas areas parciais de frontend e portfolio
 
 O detalhamento completo esta em `ROADMAP.md`.
 
