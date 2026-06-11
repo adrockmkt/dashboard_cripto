@@ -4,6 +4,19 @@ Dashboard web para analise de criptomoedas com foco em mercado, indicadores tecn
 
 Este README descreve o estado atual real do projeto. Para planejamento de evolucao e roadmap, consulte `ROADMAP.md`.
 
+## Documentacao Flutter mobile
+
+Foi adicionada uma trilha de documentacao especifica para evoluir este produto
+para Android e iOS com Flutter em:
+
+- `docs/flutter-mobile/README.md`
+- `docs/flutter-mobile/AGENTS.md`
+- `docs/flutter-mobile/CONTRIBUTING.md`
+- `docs/flutter-mobile/AI_PROJECT_STACK.md`
+- `docs/flutter-mobile/design.md`
+- `docs/flutter-mobile/design/DESIGN.md`
+- `docs/flutter-mobile/specs/`
+
 ## Status atual do projeto
 
 O projeto ja possui uma interface rica e funcional, com varias areas navegaveis e integracao real para os modulos centrais de mercado, analise e relatorio.
