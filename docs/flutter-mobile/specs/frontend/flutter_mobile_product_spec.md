@@ -17,6 +17,16 @@ O MVP mobile deve focar em:
 - comparativo simples
 - relatorio tatico resumido
 
+## Regra de produto enxuto
+
+O app mobile deve refletir o repositorio atual, mas com a disciplina do
+`ponytail`:
+
+- nao portar tudo da web para o mobile de uma vez
+- nao transformar cada componente web em uma tela
+- nao criar UI pesada quando um fluxo curto resolver
+- priorizar tarefas frequentes do usuario em vez de completude visual
+
 ## Features por prioridade
 
 ### P0
@@ -183,6 +193,8 @@ Conteudo:
 - a tela de ativo e o coracao do produto mobile
 - modulos analiticos profundos entram por contexto, nao todos na tela inicial
 - indicadores avancados devem ser opcionais ou expansivos
+- se um fluxo puder ser resolvido com componente nativo simples, preferir isso
+  antes de widgets customizados complexos
 
 ## Estados obrigatorios
 
@@ -212,3 +224,4 @@ Idiomas obrigatorios:
 - social sentiment de varias redes sem fonte robusta
 - estrategias complexas de automacao local
 - bibliotecas pesadas de dezenas de widgets pouco usados
+- parity cega com cada detalhe visual do dashboard web

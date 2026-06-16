@@ -8,6 +8,26 @@ repositorio Flutter do Cripto Dashboard Mobile.
 Este documento herda a governanca padrao da Ad Rock e adapta os comandos e as
 regras para um app Android/iOS feito em Flutter.
 
+## Filosofia Ponytail aplicada
+
+Este projeto deve adotar a escada de decisao inspirada no `ponytail`:
+
+1. isso realmente precisa ser construido?
+2. o Dart/Flutter SDK ja resolve?
+3. a plataforma nativa ja cobre?
+4. alguma dependencia ja instalada resolve?
+5. o problema cabe na menor implementacao correta?
+6. so depois disso criar codigo novo
+
+Regras derivadas:
+
+- sem abstractions nao pedidas
+- sem plugin novo se o SDK ou Flutter resolverem
+- sem boilerplate decorativo
+- simplificar e deletar vale mais do que empilhar camadas
+- quando um atalho consciente for adotado, marcar com `ponytail:` e explicar
+  limite e caminho de upgrade
+
 ## Ambiente de desenvolvimento
 
 ### Requisitos
@@ -82,6 +102,7 @@ Quando existir:
 - manter separacao entre UI, estado, dados e integracoes
 - preferir PRs pequenos e rastreaveis
 - atualizar `docs/flutter-mobile/` quando a arquitetura mudar
+- questionar escopo inflado quando uma solucao menor cobrir o caso
 
 ## Regras de implementacao
 
@@ -90,6 +111,7 @@ Quando existir:
 - sem segredos embutidos no app
 - sem push notification acoplada a logica local apenas
 - sem dependencias de webview como caminho principal do produto
+- sem plugin para algo que um widget nativo do Flutter ja entregue bem
 
 ## Politica de dados e ambiente
 

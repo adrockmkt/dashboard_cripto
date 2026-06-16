@@ -17,6 +17,14 @@ para Android e iOS com Flutter em:
 - `docs/flutter-mobile/design/DESIGN.md`
 - `docs/flutter-mobile/specs/`
 
+Essa trilha agora tambem se apoia na filosofia do projeto `ponytail` como guia
+de implementacao enxuta para o app mobile:
+
+- primeiro usar o que Flutter/Dart ja entrega
+- reduzir dependencias e boilerplate
+- simplificar antes de abstrair
+- documentar atalhos conscientes e seus limites
+
 ## Status atual do projeto
 
 O projeto ja possui uma interface rica e funcional, com varias areas navegaveis e integracao real para os modulos centrais de mercado, analise e relatorio.

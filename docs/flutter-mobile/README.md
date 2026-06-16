@@ -9,6 +9,34 @@ o produto atual em uma experiencia mobile consistente, escalavel e segura,
 preservando o que ja funciona e corrigindo os limites naturais da implementacao
 web.
 
+## Referencia metodologica adicional
+
+Esta documentacao passa a refletir tambem a filosofia do projeto `ponytail`
+([DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail)),
+principalmente na disciplina de implementacao enxuta:
+
+- primeiro questionar se a feature precisa mesmo existir
+- preferir Dart/Flutter SDK antes de escrever codigo novo
+- preferir recurso nativo da plataforma antes de plugin adicional
+- preferir dependencia ja instalada antes de adicionar outra
+- so escrever codigo novo quando os niveis anteriores nao resolverem
+
+Aplicacao pratica no app Flutter:
+
+- usar o maximo possivel de widgets e capacidades nativas do Flutter
+- evitar bibliotecas redundantes de UI, estado e charting
+- reduzir wrappers e abstractions sem ganho real
+- documentar simplificacoes conscientes com marcador `ponytail:`
+
+Limites desta filosofia:
+
+- seguranca
+- acessibilidade
+- validacao em fronteiras de confianca
+- prevencao de perda de dados
+
+Esses pontos nao entram em modo "lazy" e devem continuar tratados com rigor.
+
 ## Contexto de origem
 
 Produto atual de referencia:

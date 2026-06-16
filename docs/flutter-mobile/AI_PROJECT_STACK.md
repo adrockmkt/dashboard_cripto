@@ -3,6 +3,18 @@
 Este documento adapta o padrao de stack AI-assisted da Ad Rock para a criacao
 do app Flutter do Cripto Dashboard.
 
+## Regra orientadora
+
+O repo `ponytail` passa a ser referencia de filosofia de implementacao:
+
+- menos codigo
+- menos dependencias
+- mais aproveitamento do que ja existe
+- nenhuma camada nova sem motivo claro
+
+Isso muda a leitura desta stack: as escolhas abaixo sao preferenciais, nao
+licenca para empilhar tooling.
+
 ## Objetivos desta stack
 
 - acelerar o nascimento do repo mobile com contexto persistente
@@ -19,6 +31,7 @@ Base do app mobile:
 - Flutter 3.24+
 - Dart 3.5+
 - Android e iOS a partir do mesmo codigo
+- priorizar o que vier do SDK antes de expandir a pilha
 
 ### 2. Navegacao
 
@@ -110,6 +123,8 @@ Direcao recomendada:
 - `fl_chart` para series simples
 - biblioteca financeira/candlestick avaliada em spike tecnico
 - evitar depender de WebView como grafico principal
+- se uma interacao puder nascer com menos camadas e melhor performance nativa,
+  preferir isso a wrappers complexos
 
 ## Estrutura recomendada
 
@@ -131,6 +146,7 @@ docs/flutter-mobile/
 - seguranca-first para integracoes
 - backend de suporte sempre que o cliente ficar vulneravel a rate limit,
   segredo exposto ou logica critica
+- economia de dependencias como regra de projeto
 
 ## Anti-patterns proibidos
 
@@ -139,3 +155,4 @@ docs/flutter-mobile/
 - empilhar providers globais sem modularizacao
 - usar cache sem politica de expiracao
 - misturar DTO e entidade de dominio indiscriminadamente
+- adicionar plugin so porque ele parece "mais pronto" sem provar ganho real

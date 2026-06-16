@@ -16,6 +16,23 @@ Construir um app modular, com:
 - push e alertas pensados para execucao fora da sessao
 - capacidade de crescer sem virar um espelho do web
 
+## Principio arquitetural adicional
+
+Seguir a logica do `ponytail`: a melhor arquitetura para este app nao e a mais
+abstrata, e sim a menor arquitetura que sustenta:
+
+- seguranca
+- legibilidade
+- testabilidade
+- evolucao futura previsivel
+
+Consequencias praticas:
+
+- nao criar camada "enterprise" desnecessaria no MVP
+- usar recursos do Flutter e do Dart antes de plugins
+- manter poucos arquivos por feature quando isso nao comprometer clareza
+- evitar wrappers de wrappers para UI e rede
+
 ## Arquitetura recomendada
 
 Padrao:
@@ -24,6 +41,7 @@ Padrao:
 - clean-ish architecture pragmatica
 - repository pattern
 - providers por feature
+- sem sobre-engenharia ritualistica
 
 ## Camadas
 
@@ -211,6 +229,19 @@ No mobile, o ideal e encapsular isso atras de:
 - cache local estruturado
 - push nativo
 - backend de suporte para alertas e agregacao
+
+## Regras de simplificacao consciente
+
+Quando uma simplificacao for aceita no codigo futuro do app:
+
+- marcar com `ponytail:`
+- dizer qual e o limite conhecido
+- dizer qual seria o caminho de upgrade
+
+Exemplos:
+
+- `ponytail: cache local simples por TTL; migrar para reconciliacao por entidade quando portfolio multi-device exigir sync forte`
+- `ponytail: comparativo limitado a 3 ativos no MVP; expandir quando UX e performance forem validadas`
 
 ## Riscos arquiteturais
 

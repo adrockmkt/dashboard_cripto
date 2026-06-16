@@ -43,6 +43,19 @@ flutter test integration_test
 - repositorios e datasources separados
 - modelos tipados e serializacao automatizada
 - nada de regras de negocio escondidas em widgets
+- aplicar a escada do `ponytail` antes de adicionar codigo ou dependencia nova
+
+## Regra de decisao enxuta
+
+Antes de propor plugin, helper, wrapper ou camada nova, validar:
+
+1. o problema precisa mesmo existir no app?
+2. o Flutter SDK resolve?
+3. Android/iOS nativo resolve via integracao pequena?
+4. ja temos uma dependencia instalada que resolve?
+5. da para manter a menor implementacao correta?
+
+Se a resposta parar antes do item 5, nao adicionar arquitetura extra.
 
 ## Convencoes de commit
 
@@ -64,6 +77,7 @@ flutter test integration_test
 - evitar PRs gigantes
 - nao alterar estrategia de notificacao ou auth sem atualizar specs
 - nao assumir backend pronto quando ele estiver marcado como futuro
+- marcar simplificacoes conscientes com `ponytail:` quando houver limite claro
 
 ## Regras de revisao
 
