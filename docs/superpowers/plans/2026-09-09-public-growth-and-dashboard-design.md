@@ -16,6 +16,8 @@
 - Publicar conteúdo financeiro somente com data de atualização, fonte, autoria e aviso de risco.
 - Não indexar portfolio, alertas, configurações nem qualquer dado específico do usuário.
 - Não adicionar anúncios até a revisão manual da Fase 6.
+- Identificar as páginas institucionais como Ad Rock Digital Mkt, CNPJ 12.520.651/0001-91 e contato@adrock.com.br.
+- Aplicar GA4 apenas com consentimento analítico e seguir `docs/ga4-tracking-plan.md`.
 - Cada tarefa deve preservar `npm run build`; corrigir o lint antes de usá-lo como critério de pronto.
 
 ---
@@ -80,6 +82,7 @@ git commit -m "docs: define public growth baseline"
 - Create: `src/pages/public/ContactPage.tsx`
 - Create: `src/pages/public/PrivacyPage.tsx`
 - Create: `src/pages/public/TermsPage.tsx`
+- Create: `src/pages/public/AiPolicyPage.tsx`
 - Create: `src/pages/public/RiskDisclosurePage.tsx`
 - Create: `src/components/public/PublicLayout.tsx`
 - Create: `src/components/public/EditorialMeta.tsx`
@@ -104,6 +107,10 @@ Expected: FAIL porque a rota e o componente ainda não existem.
 
 `PublicLayout` recebe `children`, `title` e `updatedAt`; renderiza cabeçalho com marca, navegação, rodapé, autoria da Ad Rock e links institucionais. Cada página legal usa texto aprovado pelo responsável jurídico antes do deploy.
 
+As páginas devem identificar Ad Rock Digital Mkt, CNPJ 12.520.651/0001-91 e
+contato@adrock.com.br. Incluir `/politica-de-ia`, com limites, transparência e
+supervisão humana de qualquer funcionalidade assistida por IA.
+
 - [ ] **Step 4: Verificar navegação e semântica**
 
 Run: `npm run test -- AboutPage.test.tsx && npm run build`
@@ -115,6 +122,82 @@ Expected: testes verdes e build concluída.
 ```bash
 git add src/pages/public src/components/public src/App.tsx package.json package-lock.json
 git commit -m "feat: add public institutional foundation"
+```
+
+### Fase 1.5: Consentimento e tracking GA4
+
+**Files:**
+- Create: `src/lib/analytics.ts`
+- Create: `src/components/privacy/CookieConsent.tsx`
+- Create: `src/lib/analytics.test.ts`
+- Modify: `.env.example`
+- Modify: `src/main.tsx`
+- Modify: `src/pages/Index.tsx`
+- Modify: `docs/ga4-tracking-plan.md`
+
+- [ ] **Step 1: Escrever testes para consentimento e eventos**
+
+Criar testes que provem que `trackEvent` não envia nada antes de
+`updateAnalyticsConsent("granted")` e que remove quaisquer propriedades não
+permitidas dos eventos.
+
+```ts
+expect(trackEvent("dashboard_tab_view", { tab_name: "trading" })).toBe(false);
+updateAnalyticsConsent("granted");
+expect(trackEvent("dashboard_tab_view", { tab_name: "trading" })).toBe(true);
+```
+
+- [ ] **Step 2: Executar o teste e confirmar falha**
+
+Run: `npm run test -- analytics.test.ts`
+
+Expected: FAIL porque a biblioteca de tracking ainda não existe.
+
+- [ ] **Step 3: Implementar biblioteca GA4 com consentimento**
+
+Implementar as interfaces abaixo; aceitar somente os eventos e parâmetros
+documentados em `docs/ga4-tracking-plan.md`.
+
+```ts
+export type AnalyticsConsent = "granted" | "denied";
+export function initializeAnalytics(measurementId: string): void;
+export function updateAnalyticsConsent(consent: AnalyticsConsent): void;
+export function trackEvent(name: AnalyticsEventName, params: AnalyticsEventParams): boolean;
+```
+
+O estado inicial precisa ser `denied`. Nenhum evento pode conter PII, valores de
+portfolio, texto de busca, endereço de carteira ou chave de API.
+
+- [ ] **Step 4: Implementar banner de preferências**
+
+`CookieConsent` oferece aceitar, recusar e reabrir preferências. Persistir apenas
+a decisão localmente e linkar `/privacidade`; o dashboard permanece funcional
+independentemente da escolha.
+
+- [ ] **Step 5: Conectar somente os eventos aprovados**
+
+Instrumentar conclusão/início do onboarding, visualização de abas, alterações
+de timeframe, exportações e alertas. A busca global pode registrar
+`search_scope: "global"`, mas nunca o termo pesquisado.
+
+- [ ] **Step 6: Verificar no ambiente local**
+
+Run: `npm run test -- analytics.test.ts && npm run build`
+
+Expected: teste verde, build concluída e nenhum identificador GA4 no HTML antes
+da interação de consentimento.
+
+- [ ] **Step 7: Validar na propriedade GA4 antes do deploy**
+
+Usar DebugView e Realtime para conferir somente eventos e parâmetros previstos.
+Configurar tráfego interno e dimensões customizadas descritas em
+`docs/ga4-tracking-plan.md`; esta etapa exige acesso à propriedade GA4.
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add src/lib/analytics.ts src/lib/analytics.test.ts src/components/privacy/CookieConsent.tsx .env.example src/main.tsx src/pages/Index.tsx docs/ga4-tracking-plan.md
+git commit -m "feat: add consented GA4 tracking"
 ```
 
 ### Fase 2: Rotas públicas, pré-renderização e SEO técnico

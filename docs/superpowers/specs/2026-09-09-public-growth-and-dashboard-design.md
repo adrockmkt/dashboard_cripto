@@ -34,7 +34,7 @@ Essa separação evita transformar a tela operacional em uma página carregada d
 - `/simulador-dca`: explicação do método, riscos e acesso ao simulador.
 - `/indice-fear-greed`: explicação, dado atualizado, histórico resumido e limites do indicador.
 - `/glossario`: índice de termos; cada termo relevante ganha URL própria quando houver conteúdo suficiente.
-- `/metodologia`, `/sobre`, `/contato`, `/privacidade`, `/termos` e `/aviso-de-risco`.
+- `/metodologia`, `/sobre`, `/contato`, `/privacidade`, `/termos`, `/politica-de-ia` e `/aviso-de-risco`.
 
 ### Aplicativo
 
@@ -62,6 +62,14 @@ O design preserva Tailwind, Radix e shadcn/ui. A mudança é de hierarquia, não
 ## AdSense
 
 AdSense é uma consequência, não uma entrega da primeira fase. Antes da inscrição, o domínio deverá ter conteúdo original e útil, páginas de transparência e políticas, propriedade técnica do site e layout que reserve espaços de anúncio sem empurrar ou cobrir a informação. Anúncios nunca devem aparecer em telas de portfolio, configurações ou áreas em que confundam análise com recomendação financeira.
+
+## Privacidade, IA e medição
+
+- A empresa identificada nas páginas institucionais é **Ad Rock Digital Mkt**, CNPJ **12.520.651/0001-91**, com canal de contato **contato@adrock.com.br**.
+- A Política de Privacidade, os Termos de Uso, a Política de IA e o Aviso de Risco possuem uma rota e URL próprios.
+- A Política de IA explica que eventuais recursos assistidos por IA são informativos, podem falhar e não substituem análise humana nem recomendação profissional.
+- GA4 usa a propriedade `G-YKRNDXXP3S` somente após consentimento analítico. Não enviar PII, dados de portfolio, chaves, termos de busca livres ou valores financeiros.
+- O plano de eventos, parâmetros permitidos e critérios de aceite está em `docs/ga4-tracking-plan.md`.
 
 ## Critérios de sucesso
 
