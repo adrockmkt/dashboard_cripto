@@ -37,4 +37,15 @@ describe("analytics", () => {
       tab_name: "trading",
     });
   });
+
+  it("creates the standard gtag queue when the Google script has not loaded yet", () => {
+    delete (window as Window & { gtag?: unknown }).gtag;
+    window.dataLayer = [];
+
+    initializeAnalytics("G-TEST123");
+    updateAnalyticsConsent("granted");
+
+    expect(window.gtag).toEqual(expect.any(Function));
+    expect(window.dataLayer).toHaveLength(3);
+  });
 });

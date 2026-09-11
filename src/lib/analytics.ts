@@ -37,15 +37,21 @@ const EVENT_PARAMETERS: Record<AnalyticsEventName, string[]> = {
 let measurementId = "";
 let consent: AnalyticsConsent = "denied";
 let isLoaded = false;
+const isDebugMode = import.meta.env.VITE_GA_DEBUG_MODE === "true";
+
+function ensureGtagQueue() {
+  window.dataLayer = window.dataLayer ?? [];
+
+  if (typeof window.gtag !== "function") {
+    window.gtag = function () {
+      window.dataLayer?.push(arguments);
+    };
+  }
+}
 
 function gtag(...args: unknown[]) {
-  if (typeof window.gtag === "function") {
-    window.gtag(...args);
-    return;
-  }
-
-  window.dataLayer = window.dataLayer ?? [];
-  window.dataLayer.push(args);
+  ensureGtagQueue();
+  window.gtag?.(...args);
 }
 
 function loadGoogleTag() {
@@ -60,7 +66,10 @@ function loadGoogleTag() {
   document.head.appendChild(script);
 
   gtag("js", new Date());
-  gtag("config", measurementId, { send_page_view: true });
+  gtag("config", measurementId, {
+    send_page_view: true,
+    ...(isDebugMode ? { debug_mode: true } : {}),
+  });
   isLoaded = true;
 }
 

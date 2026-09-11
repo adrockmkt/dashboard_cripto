@@ -58,6 +58,8 @@ customizadas necessárias na interface da propriedade.
 
 1. Expor `VITE_GA_MEASUREMENT_ID` em `.env.example`; o ID real será o informado
    acima em produção.
+   `VITE_GA_DEBUG_MODE=true` pode ser usado temporariamente em uma publicação de
+   diagnóstico para exibir eventos no DebugView; deve voltar a `false` depois.
 2. Criar `src/lib/analytics.ts` com `initializeAnalytics`, `updateAnalyticsConsent`
    e `trackEvent` tipados.
 3. Criar `src/components/privacy/CookieConsent.tsx` com persistência local do
