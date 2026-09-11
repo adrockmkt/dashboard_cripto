@@ -117,6 +117,64 @@ O review produz uma lista priorizada de ajustes visuais. Ajustes que mudem a
 estrutura da navegação são aplicados antes dos links profundos e das novas
 landings, para que a arquitetura pública aponte para uma UX já estabilizada.
 
+## Auditoria funcional obrigatória
+
+Antes da revisão visual, executar uma auditoria de todos os controles
+interativos acessíveis sem login. O resultado será uma matriz versionada com:
+controle, tela, viewport, ação esperada, resultado observado, evidência,
+gravidade e decisão. A matriz cobre desktop e mobile, em sessão nova e sem
+dados pessoais.
+
+O escopo mínimo inclui:
+
+- links do cabeçalho, rodapé, sidebar, navegação inferior e páginas públicas;
+- botões de troca de aba, abertura de menu, retorno ao dashboard, busca,
+  atualização, tema, idioma e notificações;
+- onboarding, banner de consentimento, preferências e links de privacidade;
+- filtros, timeframes, indicadores, gráficos, simulador DCA, Stock-to-Flow,
+  alertas, relatórios, exportações e CTAs de cada ferramenta;
+- links externos, e-mail e WhatsApp, verificando URL, `noopener` e destino;
+- fluxo por teclado: tabulação, foco visível, Enter, Espaço e Escape em
+  dialogs, sheets e menus.
+
+Nenhum botão será marcado como validado apenas por estar renderizado. A
+auditoria deve confirmar o efeito observável: alteração correta de tela,
+estado, URL, download, mensagem de erro ou ação externa. Controles que sejam
+intencionalmente indisponíveis precisam de rótulo e explicação, não de uma
+ação silenciosa. Defeitos críticos de navegação, consentimento, exportação ou
+ação financeira são bloqueadores da publicação seguinte.
+
+## Revisão de segurança obrigatória
+
+A revisão de segurança ocorre antes das novas landings e novamente antes de
+qualquer código AdSense. Ela é uma avaliação, não autorização automática para
+alterações destrutivas ou mudança de infraestrutura. Cada achado terá
+evidência, impacto, prioridade, recomendação e responsável.
+
+O escopo mínimo inclui:
+
+- verificação de segredos no repositório, no bundle publicado e em arquivos de
+  ambiente; nenhuma chave privada, token de serviço ou credencial pode chegar
+  ao cliente;
+- inventário de dependências, vulnerabilidades conhecidas e versões
+  descontinuadas;
+- validação de entradas de URL, busca, alertas, exportações e parâmetros de
+  ferramenta contra XSS, redirecionamento aberto e estado inválido;
+- revisão do consentimento GA4, armazenamento local e ausência de PII nos
+  eventos;
+- cabeçalhos HTTP, HTTPS/TLS, redirecionamento, CSP, proteção contra framing,
+  `nosniff`, política de referrer e cache de arquivos sensíveis no Nginx;
+- confirmação de que `robots.txt`, sitemap e páginas pré-renderizadas não
+  expõem portfolio, preferências, tokens, dados de carteira ou rotas privadas;
+- teste de links externos com `rel="noopener noreferrer"` e análise das
+  integrações de terceiros, incluindo fontes de dados de mercado;
+- nova revisão de consentimento publicitário, cookies e Política de
+  Privacidade antes de inserir qualquer script de anúncios.
+
+Achados críticos ou altos precisam ser corrigidos e verificados antes do
+deploy. Achados médios e baixos entram em backlog com justificativa, prazo e
+risco residual documentados.
+
 ## Linha de base do PageSpeed Insights
 
 Medição fornecida em 11 de setembro de 2026 para
@@ -156,11 +214,14 @@ tráfego, Search Console e CrUX serão a referência de Core Web Vitals reais.
 ## Critérios de pronto da futura entrega
 
 1. A revisão visual foi aprovada e seus ajustes críticos foram concluídos.
-2. Cada landing publicada representa uma ferramenta que funciona sem login.
-3. Cada CTA abre a aba correta por URL e valores inválidos são seguros.
-4. Páginas públicas são pré-renderizadas, canônicas, indexáveis quando
+2. A auditoria funcional foi concluída, com evidência para todos os controles
+   no escopo e sem defeitos bloqueadores abertos.
+3. A revisão de segurança foi concluída, sem achados críticos ou altos abertos.
+4. Cada landing publicada representa uma ferramenta que funciona sem login.
+5. Cada CTA abre a aba correta por URL e valores inválidos são seguros.
+6. Páginas públicas são pré-renderizadas, canônicas, indexáveis quando
    apropriado e aparecem no sitemap.
-5. Todas incluem explicação original, limitações, fontes e aviso de risco.
-6. Nenhum anúncio ou requisição publicitária é carregado.
-7. As metas de qualidade são avaliadas com os dados detalhados do PageSpeed;
+7. Todas incluem explicação original, limitações, fontes e aviso de risco.
+8. Nenhum anúncio ou requisição publicitária é carregado.
+9. As metas de qualidade são avaliadas com os dados detalhados do PageSpeed;
    exceções ficam documentadas antes do deploy.
