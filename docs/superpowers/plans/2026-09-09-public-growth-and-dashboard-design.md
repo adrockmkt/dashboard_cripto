@@ -273,7 +273,7 @@ git commit -m "feat: add public routes and SEO foundation"
 - Create: `src/components/public/SourceList.tsx`
 - Create: `src/components/public/RiskDisclosure.tsx`
 
-- [ ] **Step 1: Escrever teste de artigo**
+- [x] **Step 1: Escrever teste de artigo**
 
 Exigir título, autoria, data de atualização, pelo menos uma fonte e o aviso de risco na página Bitcoin.
 
@@ -283,13 +283,13 @@ expect(screen.getByRole("heading", { name: /fontes/i })).toBeInTheDocument();
 expect(screen.getByText(/não constitui recomendação de investimento/i)).toBeInTheDocument();
 ```
 
-- [ ] **Step 2: Executar teste e confirmar falha**
+- [x] **Step 2: Executar teste e confirmar falha**
 
 Run: `npm run test -- BitcoinTodayPage.test.tsx`
 
 Expected: FAIL porque a página e o conteúdo ainda não existem.
 
-- [ ] **Step 3: Implementar modelo editorial tipado**
+- [x] **Step 3: Implementar modelo editorial tipado**
 
 ```ts
 export interface EditorialPage {
@@ -305,7 +305,7 @@ export interface EditorialPage {
 
 Criar conteúdo escrito pela Ad Rock; dados de mercado devem declarar fonte e horário. Não replicar notícias de terceiros.
 
-- [ ] **Step 4: Verificar conteúdo e build**
+- [x] **Step 4: Verificar conteúdo e build**
 
 Run: `npm run test -- BitcoinTodayPage.test.tsx && npm run build`
 

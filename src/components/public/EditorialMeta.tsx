@@ -1,12 +1,11 @@
 interface EditorialMetaProps {
   author: string;
-  updatedAt: string;
 }
 
-export function EditorialMeta({ author, updatedAt }: EditorialMetaProps) {
+export function EditorialMeta({ author }: EditorialMetaProps) {
   return (
     <p className="text-sm text-muted-foreground">
-      Por {author} · Atualizado em {updatedAt}
+      Por {author}
     </p>
   );
 }

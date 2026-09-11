@@ -40,6 +40,31 @@ const publicSeoPages = [
     title: "Aviso de risco",
     description: "Entenda os riscos de criptoativos e os limites informacionais do Cripto Dashboard.",
   },
+  {
+    path: "bitcoin-hoje",
+    title: "Bitcoin hoje: como interpretar o mercado",
+    description: "Guia original da Ad Rock para organizar a leitura de Bitcoin com contexto, fontes e aviso de risco.",
+  },
+  {
+    path: "ethereum-hoje",
+    title: "Ethereum hoje: como acompanhar a rede",
+    description: "Guia da Ad Rock para observar Ethereum e indicadores de rede sem transformar informação em recomendação.",
+  },
+  {
+    path: "fear-greed-cripto",
+    title: "Índice de medo e ganância cripto",
+    description: "Entenda limites e usos responsáveis de índices de sentimento no mercado de criptoativos.",
+  },
+  {
+    path: "guia-dca-cripto",
+    title: "Guia de DCA em cripto",
+    description: "Conteúdo educativo sobre aportes periódicos, simulações e riscos de criptoativos.",
+  },
+  {
+    path: "glossario-cripto",
+    title: "Glossário cripto",
+    description: "Definições claras para conceitos de blockchain, liquidez e custódia.",
+  },
 ];
 
 const publicSiteUrl = "https://mobiledelivery.com.br/cripto-dashboard";

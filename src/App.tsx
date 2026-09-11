@@ -10,6 +10,11 @@ import { PrivacyPage } from "./pages/public/PrivacyPage";
 import { RiskDisclosurePage } from "./pages/public/RiskDisclosurePage";
 import { TermsPage } from "./pages/public/TermsPage";
 import { SeoHead } from "./components/public/SeoHead";
+import { BitcoinTodayPage } from "./pages/public/BitcoinTodayPage";
+import { EthereumTodayPage } from "./pages/public/EthereumTodayPage";
+import { FearGreedPage } from "./pages/public/FearGreedPage";
+import { DcaGuidePage } from "./pages/public/DcaGuidePage";
+import { GlossaryIndexPage } from "./pages/public/GlossaryIndexPage";
 
 const App = () => (
   <ErrorBoundary>
@@ -24,6 +29,11 @@ const App = () => (
         <Route path="/termos" element={<TermsPage />} />
         <Route path="/politica-de-ia" element={<AiPolicyPage />} />
         <Route path="/aviso-de-risco" element={<RiskDisclosurePage />} />
+        <Route path="/bitcoin-hoje" element={<BitcoinTodayPage />} />
+        <Route path="/ethereum-hoje" element={<EthereumTodayPage />} />
+        <Route path="/fear-greed-cripto" element={<FearGreedPage />} />
+        <Route path="/guia-dca-cripto" element={<DcaGuidePage />} />
+        <Route path="/glossario-cripto" element={<GlossaryIndexPage />} />
       </Routes>
     </TooltipProvider>
   </ErrorBoundary>
