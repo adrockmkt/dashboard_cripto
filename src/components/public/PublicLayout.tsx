@@ -1,13 +1,15 @@
 import { Link } from "react-router-dom";
 import adRockLogo from "@/assets/adrock-logo.png";
+import { AdPlaceholder } from "@/components/public/AdPlaceholder";
 
 interface PublicLayoutProps {
   title: string;
   updatedAt?: string;
+  showAdPlaceholder?: boolean;
   children: React.ReactNode;
 }
 
-export function PublicLayout({ title, updatedAt, children }: PublicLayoutProps) {
+export function PublicLayout({ title, updatedAt, showAdPlaceholder = false, children }: PublicLayoutProps) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border bg-card/95 backdrop-blur">
@@ -33,6 +35,7 @@ export function PublicLayout({ title, updatedAt, children }: PublicLayoutProps) 
             {updatedAt && <p className="text-sm text-muted-foreground">Atualizado em {updatedAt}</p>}
           </header>
           <div className="space-y-6 text-base leading-7 text-muted-foreground">{children}</div>
+          {showAdPlaceholder && <AdPlaceholder />}
         </article>
       </main>
 

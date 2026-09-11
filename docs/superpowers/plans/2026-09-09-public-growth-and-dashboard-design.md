@@ -404,19 +404,19 @@ git commit -m "perf: split public and dashboard bundles"
 - Modify: `src/components/public/PublicLayout.tsx`
 - Modify: `src/lib/seo.ts`
 
-- [ ] **Step 1: Criar checklist de elegibilidade**
+- [x] **Step 1: Criar checklist de elegibilidade**
 
 Documentar: domínio próprio e acessível, política de privacidade, termos, contato, sobre, aviso de risco, conteúdo original, autoria, fontes, sitemap validado e ausência de anúncios invasivos.
 
-- [ ] **Step 2: Definir zonas de anúncio sem ativá-las**
+- [x] **Step 2: Definir zonas de anúncio sem ativá-las**
 
 Criar somente slots sem script de terceiros em páginas editoriais, abaixo de conteúdo substancial e fora de CTAs, gráficos e telas privadas. Os slots recebem `aria-label="Espaço reservado para publicidade"` e ficam desativados por padrão.
 
-- [ ] **Step 3: Fazer auditoria de pronto para inscrição**
+- [x] **Step 3: Fazer auditoria de pronto para inscrição**
 
 Verificar Search Console, sitemap, Mobile Friendly, Core Web Vitals e a checklist. Registrar decisão "apto" ou "não apto" com data e evidências no documento.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add docs/adsense-readiness.md src/components/public/PublicLayout.tsx src/lib/seo.ts

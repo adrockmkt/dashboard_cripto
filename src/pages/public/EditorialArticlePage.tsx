@@ -6,7 +6,7 @@ import type { EditorialPage } from "@/content/editorial";
 
 export function EditorialArticlePage({ page }: { page: EditorialPage }) {
   return (
-    <PublicLayout title={page.title} updatedAt={page.updatedAt}>
+    <PublicLayout title={page.title} updatedAt={page.updatedAt} showAdPlaceholder>
       <EditorialMeta author={page.author} />
       <p>{page.description}</p>
       {page.sections.map((section) => (
