@@ -41,11 +41,11 @@
 - Modify: `ROADMAP.md`
 - Create: `.env.example`
 
-- [ ] **Step 1: Registrar o domínio canônico e os ambientes**
+- [x] **Step 1: Registrar o domínio canônico e os ambientes**
 
 Definir em `README.md` uma única URL de produção, o caminho final do aplicativo e os responsáveis por conteúdo e infraestrutura. Não usar `localhost` como valor de produção.
 
-- [ ] **Step 2: Criar o contrato de ambiente**
+- [x] **Step 2: Criar o contrato de ambiente**
 
 Criar `.env.example` com as chaves públicas já esperadas pelo produto, sem valores reais:
 
@@ -55,11 +55,11 @@ VITE_SUPABASE_URL=
 VITE_SUPABASE_ANON_KEY=
 ```
 
-- [ ] **Step 3: Registrar métricas iniciais**
+- [x] **Step 3: Registrar métricas iniciais**
 
 Anotar no `ROADMAP.md`: páginas indexadas, impressões, cliques orgânicos, CWV, tamanho gzip do chunk inicial e data da primeira medição no Search Console.
 
-- [ ] **Step 4: Verificar a linha de base**
+- [x] **Step 4: Verificar a linha de base**
 
 Run: `npm run build`
 

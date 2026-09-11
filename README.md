@@ -4,6 +4,17 @@ Dashboard web para analise de criptomoedas com foco em mercado, indicadores tecn
 
 Este README descreve o estado atual real do projeto. Para planejamento de evolucao e roadmap, consulte `ROADMAP.md`.
 
+## Publicacao e responsabilidade
+
+- URL publica canonica: `https://mobiledelivery.com.br/cripto-dashboard/`
+- Caminho publico da ferramenta: `/cripto-dashboard/`
+- Responsavel pelo produto e conteudo: Ad Rock Digital Mkt
+- Responsavel pela infraestrutura e publicacao: a definir antes da primeira rota editorial publica
+
+O arquivo `.env.example` documenta as variaveis publicas esperadas em cada
+ambiente. Ele nunca deve receber chaves reais; use um arquivo `.env.local`
+ignorado pelo Git para dados de desenvolvimento.
+
 ## Documentacao Flutter mobile
 
 Foi adicionada uma trilha de documentacao especifica para evoluir este produto

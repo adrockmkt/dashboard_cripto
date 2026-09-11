@@ -6,6 +6,23 @@ Este documento foi convertido para um roadmap de produto e execucao. Ele nao des
 
 Transformar o dashboard atual, que ja possui uma boa base de interface e navegacao, em uma plataforma mais confiavel para analise cripto, trocando modulos demonstrativos por integracoes reais e adicionando diferenciais de produto nas etapas seguintes.
 
+## Linha de base para crescimento publico
+
+Medicao inicial em 2026-09-11, antes das rotas editoriais e da otimizacao de
+bundle:
+
+| Metrica | Valor inicial | Fonte | Proxima medicao |
+| --- | --- | --- | --- |
+| URL canonica | `https://mobiledelivery.com.br/cripto-dashboard/` | Publicacao atual | Apos a Fase 2 |
+| Paginas indexadas | A medir no Google Search Console | Search Console | Apos envio do sitemap |
+| Impressoes e cliques organicos | A medir no Google Search Console | Search Console | 28 dias apos publicacao editorial |
+| Core Web Vitals | A medir no PageSpeed Insights e Search Console | Google | Apos a Fase 5 |
+| Chunk JavaScript inicial | 481.502 bytes gzip | `npm run build`, 2026-09-11 | Apos code splitting da Fase 5 |
+
+O build inicial concluiu em 2026-09-11. O tamanho acima e a referencia para a
+meta de reducao de carregamento inicial; ele nao e uma meta de experiencia de
+usuario por si so.
+
 ## Status de execucao
 
 - Sprint 1: concluida
