@@ -17,11 +17,12 @@ bundle:
 | Paginas indexadas | A medir no Google Search Console | Search Console | Apos envio do sitemap |
 | Impressoes e cliques organicos | A medir no Google Search Console | Search Console | 28 dias apos publicacao editorial |
 | Core Web Vitals | A medir no PageSpeed Insights e Search Console | Google | Apos a Fase 5 |
-| Chunk JavaScript inicial | 481.502 bytes gzip | `npm run build`, 2026-09-11 | Apos code splitting da Fase 5 |
+| Chunk JavaScript inicial | 121,0 kB gzip (`index`) | `npm run analyze:bundle`, 2026-09-11 | Medir no PageSpeed após deploy |
 
-O build inicial concluiu em 2026-09-11. O tamanho acima e a referencia para a
-meta de reducao de carregamento inicial; ele nao e uma meta de experiencia de
-usuario por si so.
+O build inicial concluiu em 2026-09-11. Após a Fase 5, o dashboard passou a
+ser carregado sob demanda e bibliotecas de gráficos e exportação foram
+separadas; o número acima descreve a rota pública inicial, não uma métrica de
+experiência de usuário por si só.
 
 ## Status de execucao
 

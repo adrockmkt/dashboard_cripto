@@ -372,19 +372,19 @@ git commit -m "feat: prioritize market context and trading chart"
 - Modify: `eslint.config.js`
 - Modify: `package.json`
 
-- [ ] **Step 1: Corrigir a base de lint**
+- [x] **Step 1: Corrigir a base de lint**
 
 Fixar versões compatíveis de ESLint e `@typescript-eslint/*`, ou ajustar a configuração da regra `@typescript-eslint/no-unused-expressions` para receber opções válidas.
 
-- [ ] **Step 2: Criar uma medição de bundle repetível**
+- [x] **Step 2: Criar uma medição de bundle repetível**
 
 Adicionar script `analyze:bundle` que executa o build e lista os arquivos JavaScript de `dist/assets` por tamanho gzip.
 
-- [ ] **Step 3: Separar dependências pesadas**
+- [x] **Step 3: Separar dependências pesadas**
 
 Configurar `manualChunks` para bibliotecas de gráficos, exportação PDF e Supabase. Manter o código da rota pública inicial fora dos módulos de charts e portfolio.
 
-- [ ] **Step 4: Verificar qualidade**
+- [x] **Step 4: Verificar qualidade**
 
 Run: `npm run lint && npm run test && npm run build && npm run analyze:bundle`
 

@@ -102,6 +102,18 @@ export function GlobalSearch({ onNavigate }: GlobalSearchProps) {
     }
   };
 
+  useEffect(() => {
+    const handleShortcut = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "k") {
+        event.preventDefault();
+        document.querySelector<HTMLInputElement>("input[placeholder]")?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
+  }, []);
+
   return (
     <div className="relative w-full max-w-xl">
       <div className="relative">
@@ -175,16 +187,4 @@ export function GlobalSearch({ onNavigate }: GlobalSearchProps) {
     </div>
   );
 
-  // Keyboard shortcut
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        document.querySelector<HTMLInputElement>('input[placeholder]')?.focus();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 }

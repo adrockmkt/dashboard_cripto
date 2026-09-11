@@ -1,7 +1,7 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import Index from "./pages/Index";
 import { AboutPage } from "./pages/public/AboutPage";
 import { AiPolicyPage } from "./pages/public/AiPolicyPage";
 import { ContactPage } from "./pages/public/ContactPage";
@@ -16,12 +16,14 @@ import { FearGreedPage } from "./pages/public/FearGreedPage";
 import { DcaGuidePage } from "./pages/public/DcaGuidePage";
 import { GlossaryIndexPage } from "./pages/public/GlossaryIndexPage";
 
+const Index = lazy(() => import("./pages/Index"));
+
 const App = () => (
   <ErrorBoundary>
     <TooltipProvider>
       <SeoHead />
       <Routes>
-        <Route path="/" element={<Index />} />
+        <Route path="/" element={<Suspense fallback={<main className="min-h-screen bg-background" aria-busy="true" />}><Index /></Suspense>} />
         <Route path="/sobre" element={<AboutPage />} />
         <Route path="/metodologia" element={<MethodologyPage />} />
         <Route path="/contato" element={<ContactPage />} />
