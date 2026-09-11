@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { initializeAnalytics, trackEvent, updateAnalyticsConsent, type AnalyticsConsent } from "@/lib/analytics";
 
 const CONSENT_STORAGE_KEY = "crypto-dashboard-analytics-consent";
@@ -57,7 +58,7 @@ export function CookieConsent({ measurementId }: CookieConsentProps) {
       <p className="mt-1 text-sm text-muted-foreground">
         Com sua autorização, usamos o Google Analytics para entender o uso agregado da ferramenta. Você pode
         recusar sem perder acesso ao dashboard. Saiba mais na{" "}
-        <a className="underline underline-offset-4" href="/privacidade">Política de Privacidade</a>.
+        <Link className="underline underline-offset-4" to="/privacidade">Política de Privacidade</Link>.
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
         <button
