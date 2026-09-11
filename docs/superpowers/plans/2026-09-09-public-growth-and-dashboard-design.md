@@ -330,7 +330,7 @@ git commit -m "feat: add original crypto editorial pages"
 - Create: `src/components/dashboard/MarketBrief.tsx`
 - Create: `src/components/dashboard/TradingControlsSheet.tsx`
 
-- [ ] **Step 1: Escrever teste para prioridade do gráfico no mobile**
+- [x] **Step 1: Escrever teste para prioridade do gráfico no mobile**
 
 Renderizar `ProfessionalCandlestickChart` e exigir um botão "Indicadores e alertas" que abre um `Sheet`; o contêiner do gráfico deve aparecer antes desse botão no DOM.
 
@@ -340,17 +340,17 @@ expect(screen.getByTestId("trading-chart").compareDocumentPosition(
 )).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
 ```
 
-- [ ] **Step 2: Executar teste e confirmar falha**
+- [x] **Step 2: Executar teste e confirmar falha**
 
 Run: `npm run test -- ProfessionalCandlestickChart.test.tsx`
 
 Expected: FAIL porque os controles ainda aparecem antes do gráfico.
 
-- [ ] **Step 3: Implementar a hierarquia visual**
+- [x] **Step 3: Implementar a hierarquia visual**
 
 No mobile, mover switches e filtros para `TradingControlsSheet`; manter timeframe, estado da fonte e gráfico no topo. No dashboard, introduzir `MarketBrief` com uma leitura curta de contexto antes das coleções de cards e transformar notícias em lista sem rolagem interna na primeira dobra.
 
-- [ ] **Step 4: Verificar acessibilidade e responsividade**
+- [x] **Step 4: Verificar acessibilidade e responsividade**
 
 Run: `npm run test -- ProfessionalCandlestickChart.test.tsx && npm run build`
 

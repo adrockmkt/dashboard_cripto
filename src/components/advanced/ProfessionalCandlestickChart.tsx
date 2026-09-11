@@ -10,6 +10,7 @@ import { createChart, ColorType, IChartApi, ISeriesApi, CandlestickData, Time, C
 import { TrendingUp, TrendingDown, TriangleAlert as AlertTriangle, RefreshCw, Activity } from "lucide-react";
 import { fetchOHLCVData } from "@/services/chartService";
 import { trackEvent } from "@/lib/analytics";
+import { TradingControlsSheet } from "@/components/dashboard/TradingControlsSheet";
 import type { DataSource } from "@/services/types";
 
 interface TechnicalPattern {
@@ -310,6 +311,59 @@ export function ProfessionalCandlestickChart({ symbol = "BTC" }: ProfessionalCan
     }
   };
 
+  const renderControls = () => (
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
+      <div className="space-y-2">
+        <Label className="text-sm font-semibold">Indicadores</Label>
+        <div className="space-y-2">
+          {Object.entries(indicators).map(([key, value]) => (
+            <div key={key} className="flex items-center space-x-2">
+              <Switch checked={value} onCheckedChange={(checked) => setIndicators((current) => ({ ...current, [key]: checked }))} />
+              <Label className="text-xs capitalize">{key}</Label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-sm font-semibold">Alertas</Label>
+        <div className="space-y-2">
+          {Object.entries(alerts).map(([key, value]) => (
+            <div key={key} className="flex items-center space-x-2">
+              <Switch checked={value} onCheckedChange={(checked) => setAlerts((current) => ({ ...current, [key]: checked }))} />
+              <Label className="text-xs capitalize">{key}</Label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-sm font-semibold">Padrões detectados</Label>
+        <div className="max-h-32 space-y-1 overflow-y-auto">
+          {patterns.map((pattern, index) => (
+            <Badge key={`${pattern.name}-${index}`} variant={pattern.type === "bullish" ? "default" : pattern.type === "bearish" ? "destructive" : "secondary"} className="block w-full justify-start text-xs">
+              {pattern.name} ({(pattern.confidence * 100).toFixed(0)}%)
+            </Badge>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-sm font-semibold">Suportes e resistências</Label>
+        <div className="max-h-32 space-y-1 overflow-y-auto">
+          {supportResistance.map((sr, index) => (
+            <div key={`${sr.level}-${index}`} className="flex items-center justify-between text-xs">
+              <span className={sr.type === "support" ? "text-green-500" : "text-red-500"}>
+                {sr.type === "support" ? <TrendingUp className="inline h-3 w-3" /> : <TrendingDown className="inline h-3 w-3" />} ${sr.level.toLocaleString()}
+              </span>
+              <Badge variant="outline" className="text-xs">{sr.touches}x</Badge>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       <Card>
@@ -346,86 +400,18 @@ export function ProfessionalCandlestickChart({ symbol = "BTC" }: ProfessionalCan
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
-            {/* Indicadores */}
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold">Indicadores</Label>
-              <div className="space-y-2">
-                {Object.entries(indicators).map(([key, value]) => (
-                  <div key={key} className="flex items-center space-x-2">
-                    <Switch
-                      checked={value}
-                      onCheckedChange={(checked) => 
-                        setIndicators(prev => ({ ...prev, [key]: checked }))
-                      }
-                    />
-                    <Label className="text-xs capitalize">{key}</Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Alertas */}
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold">Alertas</Label>
-              <div className="space-y-2">
-                {Object.entries(alerts).map(([key, value]) => (
-                  <div key={key} className="flex items-center space-x-2">
-                    <Switch
-                      checked={value}
-                      onCheckedChange={(checked) => 
-                        setAlerts(prev => ({ ...prev, [key]: checked }))
-                      }
-                    />
-                    <Label className="text-xs capitalize">{key}</Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Padrões Detectados */}
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold">Padrões Detectados</Label>
-              <div className="space-y-1 max-h-32 overflow-y-auto">
-                {patterns.map((pattern, index) => (
-                  <Badge
-                    key={index}
-                    variant={pattern.type === 'bullish' ? 'default' : 
-                            pattern.type === 'bearish' ? 'destructive' : 'secondary'}
-                    className="text-xs block w-full justify-start"
-                  >
-                    {pattern.name} ({(pattern.confidence * 100).toFixed(0)}%)
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            {/* S&R Níveis */}
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold">S&R Níveis</Label>
-              <div className="space-y-1 max-h-32 overflow-y-auto">
-                {supportResistance.map((sr, index) => (
-                  <div key={index} className="flex items-center justify-between text-xs">
-                    <span className={sr.type === 'support' ? 'text-green-500' : 'text-red-500'}>
-                      {sr.type === 'support' ? <TrendingUp className="w-3 h-3 inline" /> : <TrendingDown className="w-3 h-3 inline" />} ${sr.level.toLocaleString()}
-                    </span>
-                    <Badge variant="outline" className="text-xs">
-                      {sr.touches}x
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Gráfico */}
-          <div className="relative border rounded-lg overflow-hidden bg-slate-900">
+          <div data-testid="trading-chart" className="relative overflow-hidden rounded-lg border bg-slate-900">
             <div ref={chartContainerRef} className="w-full h-[500px]" />
             {loading && (
               <div className="absolute inset-0 flex items-center justify-center bg-slate-900/80">
                 <RefreshCw className="w-8 h-8 animate-spin text-white" />
               </div>
             )}
+          </div>
+
+          <div className="mt-4">
+            <TradingControlsSheet>{renderControls()}</TradingControlsSheet>
+            <div className="mt-4 hidden lg:block">{renderControls()}</div>
           </div>
 
           {/* Alertas */}

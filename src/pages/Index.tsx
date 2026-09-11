@@ -28,6 +28,7 @@ import { OnChainMetrics } from "@/components/advanced/OnChainMetrics";
 import { DCASimulator } from "@/components/advanced/DCASimulator";
 import { StockToFlowModel } from "@/components/advanced/StockToFlowModel";
 import { AdvancedAlertsSystem } from "@/components/advanced/AdvancedAlertsSystem";
+import { MarketBrief } from "@/components/dashboard/MarketBrief";
 
 // Lazy load heavy components
 const AdvancedCharts = lazy(() => import("@/components/AdvancedCharts"));
@@ -58,6 +59,11 @@ const Index = () => {
       case "dashboard":
         return (
           <div className="space-y-4 md:space-y-6 pb-20 md:pb-4">            
+            <MarketBrief
+              fearGreedLabel={fearGreed?.value_classification}
+              fearGreedValue={fearGreed?.value}
+              btcDominance={dominance?.btc_dominance}
+            />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               <FavoritesPanel />
               <CryptoNewsFeed />

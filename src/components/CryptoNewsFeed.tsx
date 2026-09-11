@@ -126,7 +126,7 @@ export function CryptoNewsFeed() {
             {error && <p className="mt-2 text-xs">{t("cards.details")}: {error}</p>}
           </div>
         ) : (
-          <div className="space-y-4 max-h-96 overflow-y-auto">
+          <div className="space-y-4">
             {news.map((item) => (
               <div key={item.id} className="border rounded-lg p-4 hover:bg-muted/30 transition-colors">
                 <div className="flex items-start justify-between mb-2">
