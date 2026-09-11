@@ -187,7 +187,7 @@ Run: `npm run test -- analytics.test.ts && npm run build`
 Expected: teste verde, build concluída e nenhum identificador GA4 no HTML antes
 da interação de consentimento.
 
-- [ ] **Step 7: Validar na propriedade GA4 antes do deploy**
+- [x] **Step 7: Validar na propriedade GA4 antes do deploy**
 
 Usar DebugView e Realtime para conferir somente eventos e parâmetros previstos.
 Configurar tráfego interno e dimensões customizadas descritas em

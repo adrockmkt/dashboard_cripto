@@ -93,6 +93,13 @@ customizadas necessárias na interface da propriedade.
 - A Política de IA e os Termos de Uso estão disponíveis por URL própria e
   linkados no rodapé público.
 
+## Validação registrada
+
+Em 11 de setembro de 2026, o DebugView recebeu `consent_update`,
+`first_visit`, `page_view`, `session_start`, `tutorial_begin` e
+`user_engagement` após o consentimento analítico. O modo de depuração foi
+desabilitado na publicação seguinte; a coleta normal permanece ativa.
+
 ## Referências
 
 - [Eventos do GA4](https://developers.google.com/analytics/devguides/collection/ga4/events)
