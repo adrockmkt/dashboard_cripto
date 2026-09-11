@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mobiledelivery.com.br/cripto-dashboard/sitemap.xml

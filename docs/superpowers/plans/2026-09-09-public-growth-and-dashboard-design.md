@@ -67,7 +67,7 @@ Run: `npm run build`
 
 Expected: build de produção concluída; registrar o tamanho de `dist/assets/index-*.js`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add README.md ROADMAP.md .env.example
@@ -117,7 +117,7 @@ Run: `npm run test -- AboutPage.test.tsx && npm run build`
 
 Expected: testes verdes e build concluída.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/pages/public src/components/public src/App.tsx package.json package-lock.json
@@ -193,7 +193,7 @@ Usar DebugView e Realtime para conferir somente eventos e parâmetros previstos.
 Configurar tráfego interno e dimensões customizadas descritas em
 `docs/ga4-tracking-plan.md`; esta etapa exige acesso à propriedade GA4.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/lib/analytics.ts src/lib/analytics.test.ts src/components/privacy/CookieConsent.tsx .env.example src/main.tsx src/pages/Index.tsx docs/ga4-tracking-plan.md
@@ -211,7 +211,7 @@ git commit -m "feat: add consented GA4 tracking"
 - Modify: `vite.config.ts`
 - Modify: `src/App.tsx`
 
-- [ ] **Step 1: Escrever testes do contrato SEO**
+- [x] **Step 1: Escrever testes do contrato SEO**
 
 Criar teste para `buildPageMeta` exigindo canonical absoluto, title específico e description não vazia.
 
@@ -220,13 +220,13 @@ expect(buildPageMeta({ path: "/bitcoin-hoje", title: "Bitcoin hoje" }).canonical
   .toBe("https://dominio-da-ad-rock.com.br/bitcoin-hoje");
 ```
 
-- [ ] **Step 2: Executar teste e confirmar falha**
+- [x] **Step 2: Executar teste e confirmar falha**
 
 Run: `npm run test -- seo.test.ts`
 
 Expected: FAIL porque `buildPageMeta` ainda não existe.
 
-- [ ] **Step 3: Implementar contrato e rotas**
+- [x] **Step 3: Implementar contrato e rotas**
 
 Definir a interface abaixo e usá-la nas rotas públicas:
 
@@ -244,11 +244,11 @@ export function buildPageMeta(input: { path: string; title: string; description:
 
 Configurar pré-renderização estática para as rotas editoriais; validar que o HTML gerado contém `h1`, title e descrição sem precisar executar dados de mercado no cliente.
 
-- [ ] **Step 4: Criar descoberta controlada**
+- [x] **Step 4: Criar descoberta controlada**
 
 `robots.txt` aponta ao sitemap. `sitemap.xml` inclui somente home, páginas institucionais e conteúdo editorial público; `/cripto-dashboard`, portfolio e alertas ficam fora até uma decisão explícita de indexação.
 
-- [ ] **Step 5: Verificar artefatos de produção**
+- [x] **Step 5: Verificar artefatos de produção**
 
 Run: `npm run test -- seo.test.ts && npm run build && rg -n "bitcoin-hoje|<h1|canonical" dist public`
 

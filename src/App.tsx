@@ -9,10 +9,12 @@ import { MethodologyPage } from "./pages/public/MethodologyPage";
 import { PrivacyPage } from "./pages/public/PrivacyPage";
 import { RiskDisclosurePage } from "./pages/public/RiskDisclosurePage";
 import { TermsPage } from "./pages/public/TermsPage";
+import { SeoHead } from "./components/public/SeoHead";
 
 const App = () => (
   <ErrorBoundary>
     <TooltipProvider>
+      <SeoHead />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/sobre" element={<AboutPage />} />
