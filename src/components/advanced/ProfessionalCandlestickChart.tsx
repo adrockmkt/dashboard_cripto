@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { createChart, ColorType, IChartApi, ISeriesApi, CandlestickData, Time, CandlestickSeries, HistogramSeries } from 'lightweight-charts';
 import { TrendingUp, TrendingDown, TriangleAlert as AlertTriangle, RefreshCw, Activity } from "lucide-react";
 import { fetchOHLCVData } from "@/services/chartService";
+import { trackEvent } from "@/lib/analytics";
 import type { DataSource } from "@/services/types";
 
 interface TechnicalPattern {
@@ -322,7 +323,10 @@ export function ProfessionalCandlestickChart({ symbol = "BTC" }: ProfessionalCan
               <Badge variant={source === "real" ? "default" : "secondary"}>
                 {getSourceLabel()}
               </Badge>
-              <Select value={timeframe} onValueChange={setTimeframe}>
+              <Select value={timeframe} onValueChange={(value) => {
+                setTimeframe(value);
+                trackEvent("chart_timeframe_change", { timeframe: value });
+              }}>
                 <SelectTrigger className="w-24">
                   <SelectValue />
                 </SelectTrigger>

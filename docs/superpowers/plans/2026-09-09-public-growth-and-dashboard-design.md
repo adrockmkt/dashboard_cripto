@@ -135,7 +135,7 @@ git commit -m "feat: add public institutional foundation"
 - Modify: `src/pages/Index.tsx`
 - Modify: `docs/ga4-tracking-plan.md`
 
-- [ ] **Step 1: Escrever testes para consentimento e eventos**
+- [x] **Step 1: Escrever testes para consentimento e eventos**
 
 Criar testes que provem que `trackEvent` não envia nada antes de
 `updateAnalyticsConsent("granted")` e que remove quaisquer propriedades não
@@ -147,13 +147,13 @@ updateAnalyticsConsent("granted");
 expect(trackEvent("dashboard_tab_view", { tab_name: "trading" })).toBe(true);
 ```
 
-- [ ] **Step 2: Executar o teste e confirmar falha**
+- [x] **Step 2: Executar o teste e confirmar falha**
 
 Run: `npm run test -- analytics.test.ts`
 
 Expected: FAIL porque a biblioteca de tracking ainda não existe.
 
-- [ ] **Step 3: Implementar biblioteca GA4 com consentimento**
+- [x] **Step 3: Implementar biblioteca GA4 com consentimento**
 
 Implementar as interfaces abaixo; aceitar somente os eventos e parâmetros
 documentados em `docs/ga4-tracking-plan.md`.
@@ -168,19 +168,19 @@ export function trackEvent(name: AnalyticsEventName, params: AnalyticsEventParam
 O estado inicial precisa ser `denied`. Nenhum evento pode conter PII, valores de
 portfolio, texto de busca, endereço de carteira ou chave de API.
 
-- [ ] **Step 4: Implementar banner de preferências**
+- [x] **Step 4: Implementar banner de preferências**
 
 `CookieConsent` oferece aceitar, recusar e reabrir preferências. Persistir apenas
 a decisão localmente e linkar `/privacidade`; o dashboard permanece funcional
 independentemente da escolha.
 
-- [ ] **Step 5: Conectar somente os eventos aprovados**
+- [x] **Step 5: Conectar somente os eventos aprovados**
 
 Instrumentar conclusão/início do onboarding, visualização de abas, alterações
 de timeframe, exportações e alertas. A busca global pode registrar
 `search_scope: "global"`, mas nunca o termo pesquisado.
 
-- [ ] **Step 6: Verificar no ambiente local**
+- [x] **Step 6: Verificar no ambiente local**
 
 Run: `npm run test -- analytics.test.ts && npm run build`
 

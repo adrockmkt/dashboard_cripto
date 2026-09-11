@@ -13,6 +13,7 @@ import { DashboardSkeleton, ChartSkeleton, CardSkeleton } from "@/components/Loa
 import { useCryptoAnalysis } from "@/hooks/useCryptoAnalysis";
 import { Menu, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { trackEvent } from "@/lib/analytics";
 
 // Eager load critical components
 import { FavoritesPanel } from "@/components/FavoritesPanel";
@@ -110,14 +111,14 @@ const Index = () => {
                     <Button 
                       variant="outline" 
                       className="w-full justify-start text-sm md:text-base"
-                      onClick={() => setActiveTab('dca')}
+                      onClick={() => handleTabChange('dca')}
                     >
                       🔄 Simulador DCA
                     </Button>
                     <Button 
                       variant="outline" 
                       className="w-full justify-start text-sm md:text-base"
-                      onClick={() => setActiveTab('s2f')}
+                      onClick={() => handleTabChange('s2f')}
                     >
                       📈 Modelo Stock-to-Flow
                     </Button>
@@ -315,10 +316,15 @@ const Index = () => {
     t("header.legacy");
 
   const handleNavigate = (tab: string, symbol?: string) => {
-    setActiveTab(tab);
+    handleTabChange(tab);
     if (tab === "trading" && symbol) {
       setSelectedTradingSymbol(symbol.toUpperCase());
     }
+  };
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    trackEvent("dashboard_tab_view", { tab_name: tab });
   };
 
   return (
@@ -334,7 +340,7 @@ const Index = () => {
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0">
               <Sidebar activeTab={activeTab} onTabChange={(tab) => {
-                setActiveTab(tab);
+                handleTabChange(tab);
                 setMobileMenuOpen(false);
               }} />
             </SheetContent>
@@ -366,7 +372,7 @@ const Index = () => {
       <div className="flex">
         {/* Desktop Sidebar */}
         <div className="hidden lg:block">
-          <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+          <Sidebar activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
         
         {/* Main Content */}
@@ -414,7 +420,7 @@ const Index = () => {
       </div>
       
       {/* Mobile Bottom Navigation */}
-      <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      <MobileBottomNav activeTab={activeTab} onTabChange={handleTabChange} />
       
       {/* Onboarding Tour */}
       <OnboardingTour />

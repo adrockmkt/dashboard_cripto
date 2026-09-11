@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { exportToCSV, exportToPDF, exportToJSON, type ExportData } from "@/utils/exportData";
 import { toast } from "sonner";
+import { trackEvent } from "@/lib/analytics";
 
 interface ExportMenuProps {
   data: ExportData;
@@ -27,6 +28,7 @@ export const ExportMenu = ({ data }: ExportMenuProps) => {
           exportToJSON(data);
           break;
       }
+      trackEvent("export_data", { export_format: format, export_scope: "market_data" });
       toast.success(`Dados exportados em ${format.toUpperCase()} com sucesso!`);
     } catch (error) {
       toast.error('Erro ao exportar dados');

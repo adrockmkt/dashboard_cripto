@@ -32,6 +32,7 @@ import {
   getBrowserNotificationPermission,
   requestBrowserNotificationPermission,
 } from "@/services/browserNotifications";
+import { trackEvent } from "@/lib/analytics";
 
 const metricOptions = [
   { value: "btc_price", label: "Preço BTC" },
@@ -130,6 +131,7 @@ export function AdvancedAlertsSystem() {
       actions,
       isActive: true,
     });
+    trackEvent("create_alert", { alert_type: newAlert.type });
 
     setNewAlert({
       name: "",

@@ -6,6 +6,7 @@ import App from "./App.tsx";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { CookieConsent } from "@/components/privacy/CookieConsent";
 import "./index.css";
 import "./i18n/config";
 
@@ -33,6 +34,7 @@ createRoot(document.getElementById("root")!).render(
       <ThemeProvider defaultTheme="dark" storageKey="crypto-dashboard-theme">
         <BrowserRouter basename={import.meta.env.PROD ? "/cripto-dashboard" : "/"}>
           <App />
+          <CookieConsent measurementId={import.meta.env.VITE_GA_MEASUREMENT_ID} />
           <Toaster />
           <Sonner />
         </BrowserRouter>

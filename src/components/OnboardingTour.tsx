@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { X, ArrowRight, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { trackEvent } from "@/lib/analytics";
 
 interface Step {
   title: string;
@@ -48,13 +49,19 @@ export const OnboardingTour = () => {
   useEffect(() => {
     const hasSeenTour = localStorage.getItem('hasSeenOnboarding');
     if (!hasSeenTour) {
-      setTimeout(() => setIsOpen(true), 1000);
+      setTimeout(() => {
+        setIsOpen(true);
+        trackEvent("tutorial_begin", { tutorial_name: "dashboard_onboarding" });
+      }, 1000);
     }
   }, []);
 
   const handleClose = () => {
     setIsOpen(false);
     localStorage.setItem('hasSeenOnboarding', 'true');
+    if (currentStep === steps.length - 1) {
+      trackEvent("tutorial_complete", { tutorial_name: "dashboard_onboarding" });
+    }
   };
 
   const handleNext = () => {
