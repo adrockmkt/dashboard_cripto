@@ -88,7 +88,7 @@ git commit -m "docs: define public growth baseline"
 - Create: `src/components/public/EditorialMeta.tsx`
 - Modify: `src/App.tsx`
 
-- [ ] **Step 1: Escrever testes de rota pública**
+- [x] **Step 1: Escrever testes de rota pública**
 
 Instalar uma camada mínima de testes com Vitest e Testing Library; criar um teste que renderize `/sobre` e exija um único `h1`, link para `/cripto-dashboard` e texto "Ad Rock".
 
@@ -97,13 +97,13 @@ expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Sobre a pla
 expect(screen.getByRole("link", { name: /abrir dashboard/i })).toHaveAttribute("href", "/cripto-dashboard");
 ```
 
-- [ ] **Step 2: Executar o teste e confirmar falha**
+- [x] **Step 2: Executar o teste e confirmar falha**
 
 Run: `npm run test -- AboutPage.test.tsx`
 
 Expected: FAIL porque a rota e o componente ainda não existem.
 
-- [ ] **Step 3: Implementar layout público e páginas legais**
+- [x] **Step 3: Implementar layout público e páginas legais**
 
 `PublicLayout` recebe `children`, `title` e `updatedAt`; renderiza cabeçalho com marca, navegação, rodapé, autoria da Ad Rock e links institucionais. Cada página legal usa texto aprovado pelo responsável jurídico antes do deploy.
 
@@ -111,7 +111,7 @@ As páginas devem identificar Ad Rock Digital Mkt, CNPJ 12.520.651/0001-91 e
 contato@adrock.com.br. Incluir `/politica-de-ia`, com limites, transparência e
 supervisão humana de qualquer funcionalidade assistida por IA.
 
-- [ ] **Step 4: Verificar navegação e semântica**
+- [x] **Step 4: Verificar navegação e semântica**
 
 Run: `npm run test -- AboutPage.test.tsx && npm run build`
 
