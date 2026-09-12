@@ -43,7 +43,7 @@ shadcn/ui, Chrome/Playwright para validação assistida e Nginx na publicação.
 | Acessibilidade | Tab, Shift+Tab, Enter, Espaço e Escape em menus, dialogs, sheets e popovers |
 | Externo | e-mail, WhatsApp, GitHub, Ad Rock e links de fontes |
 
-## Task 1: Criar os relatórios de auditoria reproduzíveis
+## Task 1: Criar os relatórios de auditoria reproduzíveis — em validação
 
 **Files:**
 - Create: `docs/audits/functional-audit-2026-09-12.md`
@@ -56,7 +56,7 @@ shadcn/ui, Chrome/Playwright para validação assistida e Nginx na publicação.
 - Produces: três relatórios com status `pendente`, `aprovado`, `falhou` ou
   `bloqueado`, usados nas Tasks 2–5.
 
-- [ ] **Step 1: Criar o relatório funcional com a matriz de evidências**
+- [x] **Step 1: Criar o relatório funcional com a matriz de evidências**
 
 Adicionar uma linha para cada controle do escopo, com as colunas abaixo. Não
 agrupar controles com efeitos diferentes.
@@ -68,7 +68,7 @@ agrupar controles com efeitos diferentes.
 | CONSENT-01 | mobile | Aceitar análise | Clique | persiste consentimento e fecha banner | pendente | pendente | pendente | - | - |
 ```
 
-- [ ] **Step 2: Criar o relatório de segurança com método e escopo fixos**
+- [x] **Step 2: Criar o relatório de segurança com método e escopo fixos**
 
 Iniciar o relatório com esta tabela de áreas, para que cada linha seja
 preenchida com evidência de comando, arquivo ou resposta HTTP:
@@ -84,7 +84,7 @@ preenchida com evidência de comando, arquivo ou resposta HTTP:
 | Exposição | sitemap, robots e HTML pré-renderizado | pendente | pendente | - | - |
 ```
 
-- [ ] **Step 3: Criar o relatório PageSpeed com a linha de base conhecida**
+- [x] **Step 3: Criar o relatório PageSpeed com a linha de base conhecida**
 
 Registrar as notas da captura do usuário e reservar campos para as
 oportunidades detalhadas do relatório:
@@ -100,19 +100,19 @@ As seções obrigatórias são: LCP, INP/TBT, CLS, JavaScript, imagens, fontes,
 acessibilidade e SEO. Cada oportunidade posterior terá valor estimado, origem,
 mudança proposta e nova medição.
 
-- [ ] **Step 4: Atualizar o roadmap**
+- [x] **Step 4: Atualizar o roadmap**
 
 Adicionar o marco “Auditoria de qualidade e segurança” antes da expansão das
 ferramentas públicas, com links relativos aos três relatórios.
 
-- [ ] **Step 5: Verificar os documentos**
+- [x] **Step 5: Verificar os documentos**
 
 Run: `git diff --check && rg -n "functional-audit|security-review|pagespeed" ROADMAP.md docs/audits`
 
 Expected: todos os relatórios existem, contêm a matriz solicitada e não há
 erro de whitespace.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add ROADMAP.md docs/audits

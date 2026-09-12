@@ -31,6 +31,21 @@ experiência de usuário por si só.
 - Sprint 3: concluida na primeira fase de produto
 - Sprint 4: em andamento
 
+## Marco de qualidade antes da expansão pública
+
+Antes de criar novas páginas para as ferramentas existentes, a execução segue
+quatro gates: auditoria funcional de controles, revisão de segurança,
+diagnóstico detalhado de PageSpeed e revisão visual aprovada. As evidências
+ficam em:
+
+- `docs/audits/functional-audit-2026-09-12.md`
+- `docs/audits/security-review-2026-09-12.md`
+- `docs/audits/pagespeed-2026-09-12.md`
+
+Somente após esses gates será implementado o catálogo público de ferramentas
+sem login e suas páginas indexáveis. AdSense permanece desativado até uma
+revisão específica de elegibilidade, consentimento publicitário e conteúdo.
+
 As secoes abaixo preservam o desenho original de execucao e servem como historico de planejamento. O que segue como backlog agora e a expansao da camada social, da parte educacional e de uma infraestrutura mais robusta para alertas fora da sessao do usuario.
 
 ## Sprint 4
