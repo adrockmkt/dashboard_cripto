@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -17,18 +17,8 @@ const ApiKeyConfig = () => {
   });
   const [saved, setSaved] = useState(false);
 
-  useEffect(() => {
-    // Carregar chaves do localStorage
-    const savedKeys = {
-      coingecko: localStorage.getItem('coingecko_api_key') || '',
-      coinmarketcap: localStorage.getItem('coinmarketcap_api_key') || ''
-    };
-    setKeys(savedKeys);
-  }, []);
-
   const handleSave = () => {
-    localStorage.setItem('coingecko_api_key', keys.coingecko);
-    localStorage.setItem('coinmarketcap_api_key', keys.coinmarketcap);
+    setKeys({ coingecko: '', coinmarketcap: '' });
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
@@ -51,8 +41,8 @@ const ApiKeyConfig = () => {
       <CardContent className="space-y-6">
         <Alert>
           <AlertDescription>
-            As chaves de API são armazenadas localmente no seu navegador para segurança. 
-            Você pode obter essas chaves gratuitamente nos respectivos sites.
+            As chaves informadas não são armazenadas no navegador. A integração
+            segura de provedores exige uma camada de servidor antes de ativação.
           </AlertDescription>
         </Alert>
 
@@ -121,8 +111,8 @@ const ApiKeyConfig = () => {
 
         <Alert>
           <AlertDescription className="text-sm">
-            <strong>Nota:</strong> Por enquanto, as API keys fornecidas estão pré-configuradas no código para demonstração. 
-            Em produção, você deve usar suas próprias chaves para evitar limites de taxa.
+            <strong>Nota:</strong> Esta tela não ativa provedores nem persiste
+            credenciais. Não informe chaves de API até a integração segura estar disponível.
           </AlertDescription>
         </Alert>
       </CardContent>

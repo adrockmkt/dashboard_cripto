@@ -44,6 +44,8 @@ function ensureGtagQueue() {
 
   if (typeof window.gtag !== "function") {
     window.gtag = function () {
+      // The gtag loader consumes the native Arguments object queued by its standard snippet.
+      // eslint-disable-next-line prefer-rest-params
       window.dataLayer?.push(arguments);
     };
   }

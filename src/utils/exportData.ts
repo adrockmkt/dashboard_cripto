@@ -8,12 +8,19 @@ export interface ExportData {
   filename: string;
 }
 
+export const escapeCsvCell = (value: unknown) => {
+  const text = String(value ?? '');
+  const neutralized = /^[\t\r\n ]*[=+\-@]/.test(text) ? `'${text}` : text;
+
+  return /[",\r\n]/.test(neutralized)
+    ? `"${neutralized.replaceAll('"', '""')}"`
+    : neutralized;
+};
+
 export const exportToCSV = ({ headers, rows, filename }: ExportData) => {
   const csvContent = [
-    headers.join(','),
-    ...rows.map(row => row.map(cell => 
-      typeof cell === 'string' && cell.includes(',') ? `"${cell}"` : cell
-    ).join(','))
+    headers.map(escapeCsvCell).join(','),
+    ...rows.map(row => row.map(escapeCsvCell).join(','))
   ].join('\n');
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

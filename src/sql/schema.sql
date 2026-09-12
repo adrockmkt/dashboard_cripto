@@ -108,3 +108,39 @@ CREATE INDEX IF NOT EXISTS idx_advanced_alerts_active ON advanced_alerts(is_acti
 CREATE INDEX IF NOT EXISTS idx_alert_delivery_queue_status ON alert_delivery_queue(status);
 CREATE INDEX IF NOT EXISTS idx_alert_delivery_queue_alert_id ON alert_delivery_queue(alert_id);
 CREATE INDEX IF NOT EXISTS idx_alert_delivery_history_alert_id ON alert_delivery_history(alert_id);
+
+-- Dados de portfolio e alertas pertencem exclusivamente ao usuário autenticado.
+-- O frontend anônimo não pode ler ou modificar registros de terceiros.
+ALTER TABLE portfolio ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE favorites ENABLE ROW LEVEL SECURITY;
+ALTER TABLE custom_alerts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE advanced_alerts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE alert_delivery_queue ENABLE ROW LEVEL SECURITY;
+ALTER TABLE alert_delivery_history ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE alert_delivery_queue ADD COLUMN IF NOT EXISTS user_id TEXT;
+ALTER TABLE alert_delivery_history ADD COLUMN IF NOT EXISTS user_id TEXT;
+
+DROP POLICY IF EXISTS "portfolio_owner_access" ON portfolio;
+DROP POLICY IF EXISTS "notifications_owner_access" ON notifications;
+DROP POLICY IF EXISTS "favorites_owner_access" ON favorites;
+DROP POLICY IF EXISTS "custom_alerts_owner_access" ON custom_alerts;
+DROP POLICY IF EXISTS "advanced_alerts_owner_access" ON advanced_alerts;
+DROP POLICY IF EXISTS "alert_delivery_queue_owner_access" ON alert_delivery_queue;
+DROP POLICY IF EXISTS "alert_delivery_history_owner_access" ON alert_delivery_history;
+
+CREATE POLICY "portfolio_owner_access" ON portfolio
+  FOR ALL USING (user_id = auth.uid()::text) WITH CHECK (user_id = auth.uid()::text);
+CREATE POLICY "notifications_owner_access" ON notifications
+  FOR ALL USING (user_id = auth.uid()::text) WITH CHECK (user_id = auth.uid()::text);
+CREATE POLICY "favorites_owner_access" ON favorites
+  FOR ALL USING (user_id = auth.uid()::text) WITH CHECK (user_id = auth.uid()::text);
+CREATE POLICY "custom_alerts_owner_access" ON custom_alerts
+  FOR ALL USING (user_id = auth.uid()::text) WITH CHECK (user_id = auth.uid()::text);
+CREATE POLICY "advanced_alerts_owner_access" ON advanced_alerts
+  FOR ALL USING (user_id = auth.uid()::text) WITH CHECK (user_id = auth.uid()::text);
+CREATE POLICY "alert_delivery_queue_owner_access" ON alert_delivery_queue
+  FOR ALL USING (user_id = auth.uid()::text) WITH CHECK (user_id = auth.uid()::text);
+CREATE POLICY "alert_delivery_history_owner_access" ON alert_delivery_history
+  FOR ALL USING (user_id = auth.uid()::text) WITH CHECK (user_id = auth.uid()::text);
