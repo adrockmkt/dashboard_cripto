@@ -176,7 +176,7 @@ git add docs/audits/functional-audit-2026-09-12.md
 git commit -m "docs: record public control audit"
 ```
 
-## Task 3: Executar a revisão de segurança sem mutação
+## Task 3: Executar a revisão de segurança sem mutação — em andamento
 
 **Files:**
 - Modify: `docs/audits/security-review-2026-09-12.md`
