@@ -20,19 +20,8 @@
 
 <body>
   <div id="root"></div>
-  <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
   <script type="module" src="/src/main.tsx"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        const base = document.querySelector('base')?.href || window.location.pathname.match(/.*\//)[0] || '/';
-        const swPath = base + 'sw.js';
-        navigator.serviceWorker.register(swPath)
-          .then(registration => console.log('SW registered:', swPath))
-          .catch(err => console.log('SW registration failed:', err));
-      });
-    }
-  </script>
+  <script src="/cripto-dashboard/register-sw.js" defer></script>
 </body>
 
 </html>

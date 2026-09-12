@@ -13,7 +13,7 @@ pendentes.
 | Dependências | `npm audit --omit=dev` | restam 2 vulnerabilidades moderadas de React Router; alertas críticos/altos anteriores foram removidos | parcial | média | planejar migração testada para React Router v7 |
 | Entrada do cliente | busca, query string e exportação | não há `dangerouslySetInnerHTML`, `eval` ou redirecionamento de URL no código revisado; CSV neutraliza fórmulas | aprovado | - | manter teste de regressão |
 | Privacidade | consentimento, `localStorage` e eventos GA4 | Analytics inicia negado; a tela de chaves não lê nem grava chaves no navegador | aprovado | - | manter chaves fora do frontend público |
-| Servidor | TLS, redirecionamento e cabeçalhos | pendente de inspeção de resposta publicada | pendente | - | - |
+| Servidor | TLS, redirecionamento e cabeçalhos | resposta publicada contém CSP, Permissions-Policy, Referrer-Policy, X-Content-Type-Options e X-Frame-Options | aprovado | - | revisar CSP ao incluir novos provedores ou AdSense |
 | Exposição | sitemap, robots e HTML pré-renderizado | sitemap contém somente páginas públicas; build verificado sem arquivos `.map` | parcial | - | confirmar o artefato publicado após deploy |
 | Terceiros | links, fontes de dados e scripts externos | fontes de mercado fazem `fetch` direto no cliente; falhas CORS/429 observadas | parcial | média | migrar fontes para camada de servidor/proxy com limites e cache |
 
@@ -35,3 +35,4 @@ pendentes.
 | SEC-004 | `src/utils/exportData.ts` usa `escapeCsvCell`; teste cobre fórmulas, vírgulas e aspas | Células que começam com prefixo de fórmula são neutralizadas antes do download. | resolvido | manter o teste de regressão | nenhum conhecido |
 | SEC-005 | `vite.config.ts` define `sourcemap: false`; build não contém `.map` | Artefato local não publica mapas de fonte. | resolvido localmente | confirmar após deploy | depende do artefato efetivamente publicado |
 | SEC-006 | console do navegador em 2026-09-12: CORS em CryptoCompare/CoinGecko e resposta 429 | A falha não é comprometimento, mas reduz confiabilidade e pode levar usuários a dados fallback simulados. | média | usar um proxy/serviço de dados com cache, limites e indicação de fonte/fallback | depende de decisão de infraestrutura |
+| SEC-007 | resposta HTTPS de `/cripto-dashboard/` após reload do Nginx | Sem cabeçalhos, o browser aceitava mais contextos de execução e integração do que o necessário. | resolvido | manter o snippet `ops/nginx/cripto-dashboard-security.conf` como fonte de verdade e revisar as origens ao integrar AdSense | CSP precisa de ajuste antes de qualquer novo script de terceiro |
