@@ -344,11 +344,19 @@ const Index = () => {
                 <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 p-0">
+            <SheetContent side="left" className="w-72 overflow-y-auto p-0">
               <Sidebar activeTab={activeTab} onTabChange={(tab) => {
                 handleTabChange(tab);
                 setMobileMenuOpen(false);
-              }} />
+              }} footerActions={
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Preferências</span>
+                  <div className="flex items-center gap-1">
+                    <LanguageSelector />
+                    <ThemeToggle />
+                  </div>
+                </div>
+              } />
             </SheetContent>
           </Sheet>
           
@@ -369,8 +377,6 @@ const Index = () => {
               </Button>
             )}
             <NotificationCenter />
-            <LanguageSelector />
-            <ThemeToggle />
           </div>
         </div>
       </div>
@@ -384,9 +390,12 @@ const Index = () => {
         {/* Main Content */}
         <main className="flex-1 overflow-auto">
           {/* Desktop Header with Search */}
-          <div className="hidden lg:flex justify-between items-center p-4 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 sticky top-0 z-30">
+          <div className="hidden lg:flex justify-between items-center gap-4 px-6 py-4 border-b border-border/80 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 sticky top-0 z-30">
             <div className="flex items-center gap-4">
-              <h1 className="font-bold text-xl whitespace-nowrap">{t("app.title")} - {activeTabTitle}</h1>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Ad Rock Digital Mkt</p>
+                <h1 className="font-bold text-xl whitespace-nowrap">{activeTabTitle}</h1>
+              </div>
               <GlobalSearch onNavigate={handleNavigate} />
             </div>
             <div className="flex items-center gap-2">
@@ -407,7 +416,7 @@ const Index = () => {
             </div>
           </div>
           
-          <div className="p-3 md:p-4 lg:p-6">
+          <div className="mx-auto w-full max-w-[1600px] p-3 md:p-5 lg:p-6">
             {isLoading && <DashboardSkeleton />}
             {!isLoading && renderContent()}
             {error && (

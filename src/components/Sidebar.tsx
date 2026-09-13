@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import { ChartBar as BarChart3, TrendingUp, TriangleAlert as AlertTriangle, Settings, ChartPie as PieChart, ChevronLeft, ChevronRight, Chrome as Home, FileText, Activity, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -8,9 +8,10 @@ import { useTranslation } from "react-i18next"
 interface SidebarProps {
   activeTab: string
   onTabChange: (tab: string) => void
+  footerActions?: ReactNode
 }
 
-export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
+export function Sidebar({ activeTab, onTabChange, footerActions }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false)
   const { t } = useTranslation()
 
@@ -81,6 +82,12 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
           )
         })}
       </nav>
+
+      {footerActions && (
+        <div className="border-t border-border/80 p-3">
+          {footerActions}
+        </div>
+      )}
 
       {/* About Footer */}
       {!collapsed && (

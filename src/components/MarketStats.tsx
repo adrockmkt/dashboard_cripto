@@ -80,15 +80,15 @@ const MarketStats = memo(() => {
   ];
 
   return (
-    <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3 animate-fade-in">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-3 animate-fade-in">
       {items.map((item) => {
         const Icon = item.icon;
 
         return (
-          <div key={item.title} className="glass-card rounded-lg p-6 transition-all hover-lift">
+          <div key={item.title} className="adrock-panel p-5 transition-all hover-lift">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-medium text-muted-foreground">{item.title}</h3>
-              <div className={`rounded-full p-2 ${item.positive ? "bg-green-500/10 text-green-500" : "bg-orange-500/10 text-orange-500"}`}>
+              <div className={`rounded-full p-2 ${item.positive ? "bg-success/10 text-success" : "bg-danger/10 text-danger"}`}>
                 <Icon className="h-4 w-4" />
               </div>
             </div>
@@ -102,7 +102,7 @@ const MarketStats = memo(() => {
             ) : (
               <>
                 <p className="mt-2 text-2xl font-semibold">{item.value}</p>
-                <span className={`mt-1 flex items-center gap-1 text-sm ${item.positive ? "text-green-500" : "text-orange-500"}`}>
+                <span className={`mt-1 flex items-center gap-1 text-sm ${item.positive ? "text-success" : "text-danger"}`}>
                   {item.positive ? <ArrowUpIcon className="h-3 w-3" /> : <ArrowDownIcon className="h-3 w-3" />}
                   {item.change}
                 </span>
