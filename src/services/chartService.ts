@@ -3,14 +3,8 @@ import { getMarketJson } from "@/services/marketGateway";
 
 type ChartTimeframe = "1m" | "5m" | "15m" | "1h" | "4h" | "1d";
 
-const timeframeConfig: Record<ChartTimeframe, { endpoint: string; aggregate: number }> = {
-  "1m": { endpoint: "histominute", aggregate: 1 },
-  "5m": { endpoint: "histominute", aggregate: 5 },
-  "15m": { endpoint: "histominute", aggregate: 15 },
-  "1h": { endpoint: "histohour", aggregate: 1 },
-  "4h": { endpoint: "histohour", aggregate: 4 },
-  "1d": { endpoint: "histoday", aggregate: 1 },
-};
+const coinIds: Record<string, string> = { BTC: "bitcoin", ETH: "ethereum" };
+const timeframeDays: Record<ChartTimeframe, number> = { "1m": 1, "5m": 1, "15m": 1, "1h": 7, "4h": 14, "1d": 30 };
 
 const generateSimulatedCandles = (points: number = 200): OHLCVPoint[] => {
   const data: OHLCVPoint[] = [];
@@ -51,27 +45,31 @@ export const fetchOHLCVData = async (
   timeframe: ChartTimeframe = "1h",
   limit: number = 200
 ): Promise<ServiceResult<OHLCVPoint[]>> => {
-  const config = timeframeConfig[timeframe];
-
   try {
-    const query = new URLSearchParams({ fsym: symbol, tsym: "USD", limit: String(limit), aggregate: String(config.aggregate) });
-    const payload = await getMarketJson<any>(`/cripto-dashboard/api/market/cryptocompare/v2/${config.endpoint}?${query}`);
-    const rawPoints = payload?.Data?.Data;
+    const coinId = coinIds[symbol.toUpperCase()] || symbol.toLowerCase();
+    const query = new URLSearchParams({ vs_currency: "usd", days: String(timeframeDays[timeframe]), precision: "2" });
+    const payload = await getMarketJson<{ prices?: Array<[number, number]> }>(
+      `/cripto-dashboard/api/market/coingecko/coins/${encodeURIComponent(coinId)}/market_chart?${query}`
+    );
+    const rawPoints = payload.prices?.slice(-limit);
 
-    if (!Array.isArray(rawPoints) || rawPoints.length === 0) {
+    if (!rawPoints?.length) {
       throw new Error("Nenhum candle retornado pela API");
     }
 
     const points = rawPoints
-      .filter((item: any) => item.open && item.high && item.low && item.close)
-      .map((item: any) => ({
-        time: item.time,
-        open: item.open,
-        high: item.high,
-        low: item.low,
-        close: item.close,
-        volume: item.volumefrom || item.volumeto || 0,
-      }));
+      .filter(([, price]) => Number.isFinite(price))
+      .map(([timestamp, close], index, prices) => {
+        const open = prices[Math.max(0, index - 1)][1];
+        return {
+          time: Math.floor(timestamp / 1000),
+          open,
+          high: Math.max(open, close),
+          low: Math.min(open, close),
+          close,
+          volume: 0,
+        };
+      });
 
     return {
       data: points,
