@@ -62,9 +62,10 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
           return (
             <Button
               key={item.id}
-              variant={isActive ? "secondary" : "ghost"}
+              variant="ghost"
               className={cn(
-                "w-full justify-start h-10",
+                "w-full justify-start h-10 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground",
+                isActive && "adrock-active",
                 collapsed ? "px-2" : "px-3"
               )}
               onClick={() => onTabChange(item.id)}

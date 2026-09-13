@@ -3,6 +3,12 @@ import { describe, expect, it, vi } from "vitest";
 import { Sidebar } from "./Sidebar";
 
 describe("Sidebar", () => {
+  it("marks the active destination with the Ad Rock treatment", () => {
+    render(<Sidebar activeTab="dashboard" onTabChange={vi.fn()} />);
+
+    expect(screen.getByRole("button", { name: "nav.dashboard" })).toHaveClass("adrock-active");
+  });
+
   it("names the collapse control according to its current state", () => {
     render(<Sidebar activeTab="dashboard" onTabChange={vi.fn()} />);
 
