@@ -21,13 +21,6 @@ import { CryptoNewsFeed } from "@/components/CryptoNewsFeed";
 import MarketStats from "@/components/MarketStats";
 import CryptoList from "@/components/CryptoList";
 import { NotificationCenter } from "@/components/NotificationCenter";
-import { CustomAlertsPanel } from "@/components/CustomAlertsPanel";
-import { AdvancedTechnicalIndicators } from "@/components/AdvancedTechnicalIndicators";
-import { ProfessionalCandlestickChart } from "@/components/advanced/ProfessionalCandlestickChart";
-import { OnChainMetrics } from "@/components/advanced/OnChainMetrics";
-import { DCASimulator } from "@/components/advanced/DCASimulator";
-import { StockToFlowModel } from "@/components/advanced/StockToFlowModel";
-import { AdvancedAlertsSystem } from "@/components/advanced/AdvancedAlertsSystem";
 import { MarketBrief } from "@/components/dashboard/MarketBrief";
 
 // Lazy load heavy components
@@ -38,6 +31,13 @@ const DailyReport = lazy(() => import("@/components/DailyReport"));
 const CryptoTable = lazy(() => import("@/components/CryptoTable"));
 const CryptoChart = lazy(() => import("@/components/CryptoChart"));
 const PortfolioManager = lazy(() => import("@/components/PortfolioManager").then(m => ({ default: m.PortfolioManager })));
+const CustomAlertsPanel = lazy(() => import("@/components/CustomAlertsPanel").then(m => ({ default: m.CustomAlertsPanel })));
+const AdvancedTechnicalIndicators = lazy(() => import("@/components/AdvancedTechnicalIndicators").then(m => ({ default: m.AdvancedTechnicalIndicators })));
+const ProfessionalCandlestickChart = lazy(() => import("@/components/advanced/ProfessionalCandlestickChart").then(m => ({ default: m.ProfessionalCandlestickChart })));
+const OnChainMetrics = lazy(() => import("@/components/advanced/OnChainMetrics").then(m => ({ default: m.OnChainMetrics })));
+const DCASimulator = lazy(() => import("@/components/advanced/DCASimulator").then(m => ({ default: m.DCASimulator })));
+const StockToFlowModel = lazy(() => import("@/components/advanced/StockToFlowModel").then(m => ({ default: m.StockToFlowModel })));
+const AdvancedAlertsSystem = lazy(() => import("@/components/advanced/AdvancedAlertsSystem").then(m => ({ default: m.AdvancedAlertsSystem })));
 
 const Index = () => {
   const { t } = useTranslation();
@@ -95,14 +95,18 @@ const Index = () => {
       case "trading":
         return (
           <div className="space-y-4 md:space-y-6 pb-20 md:pb-4">
-            <ProfessionalCandlestickChart symbol={selectedTradingSymbol} />
+            <Suspense fallback={<ChartSkeleton />}>
+              <ProfessionalCandlestickChart symbol={selectedTradingSymbol} />
+            </Suspense>
           </div>
         );
 
       case "onchain":
         return (
           <div className="space-y-4 md:space-y-6 pb-20 md:pb-4">
-            <OnChainMetrics />
+            <Suspense fallback={<CardSkeleton />}>
+              <OnChainMetrics />
+            </Suspense>
           </div>
         );
 
@@ -147,14 +151,18 @@ const Index = () => {
       case "dca":
         return (
           <div className="space-y-4 md:space-y-6 pb-20 md:pb-4">
-            <DCASimulator />
+            <Suspense fallback={<CardSkeleton />}>
+              <DCASimulator />
+            </Suspense>
           </div>
         );
 
       case "s2f":
         return (
           <div className="space-y-4 md:space-y-6 pb-20 md:pb-4">
-            <StockToFlowModel />
+            <Suspense fallback={<CardSkeleton />}>
+              <StockToFlowModel />
+            </Suspense>
           </div>
         );
 
@@ -242,9 +250,11 @@ const Index = () => {
             
             {/* Additional Technical Analysis */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-              <AdvancedTechnicalIndicators technicalIndicators={technicalIndicators} />
               <Suspense fallback={<CardSkeleton />}>
                 <CustomAlertsPanel />
+              </Suspense>
+              <Suspense fallback={<CardSkeleton />}>
+                <AdvancedTechnicalIndicators technicalIndicators={technicalIndicators} />
               </Suspense>
             </div>
           </div>
@@ -262,7 +272,9 @@ const Index = () => {
       case "alerts":
         return (
           <div className="space-y-4 md:space-y-6 pb-20 md:pb-4">
-            <AdvancedAlertsSystem />
+            <Suspense fallback={<CardSkeleton />}>
+              <AdvancedAlertsSystem />
+            </Suspense>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               <Suspense fallback={<CardSkeleton />}>
                 <CustomAlertsPanel />
@@ -294,7 +306,9 @@ const Index = () => {
               <Suspense fallback={<ChartSkeleton />}>
                 <CryptoChart />
               </Suspense>
-              <AdvancedTechnicalIndicators technicalIndicators={technicalIndicators} />
+              <Suspense fallback={<CardSkeleton />}>
+                <AdvancedTechnicalIndicators technicalIndicators={technicalIndicators} />
+              </Suspense>
             </div>
 
             <Suspense fallback={<CardSkeleton />}>

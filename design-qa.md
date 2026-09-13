@@ -23,6 +23,12 @@ As capturas de implementação foram revisadas diretamente no In-app Browser dur
 - `https://mobiledelivery.com.br/cripto-dashboard/` respondeu `200 OK` após a cópia, com `Last-Modified` correspondente ao deploy.
 - O In-app Browser carregou a página publicada, exibiu o novo briefing e retornou sentimento/dominância de mercado. Nenhum erro novo da interface foi adicionado ao console após abrir a URL publicada.
 
+## Otimização posterior de carregamento
+
+- Medição anterior: `Index` com 1.160,49 kB / 353,99 kB gzip.
+- Medição após lazy loading de Trading Pro, On-chain, modelos, alertas e indicadores: `Index` com 552,36 kB / 175,65 kB gzip.
+- Redução do JavaScript inicial: aproximadamente 50% em gzip. Os módulos adiados são baixados somente ao abrir sua respectiva aba.
+
 ## Avaliação das superfícies de fidelidade
 
 ### Tipografia e copy
@@ -47,7 +53,7 @@ As capturas de implementação foram revisadas diretamente no In-app Browser dur
 
 ## Findings
 
-- [P3] O chunk principal ainda tem aproximadamente 1,19 MB minificado no build. Impacto: pode limitar o desempenho mobile descrito no PageSpeed. Correção recomendada: desmembrar módulos pesados de gráfico/exportação em uma próxima etapa de performance.
+- [P3] O chunk principal ainda tem aproximadamente 552 kB minificado. Impacto: pode limitar o desempenho mobile descrito no PageSpeed em conexões lentas. Uma iteração posterior pode separar bibliotecas compartilhadas de gráficos e exportação.
 - [P3] O agrupamento “Mais” na navegação inferior ainda não foi criado. Os destinos permanecem acessíveis pelo menu lateral.
 
 ## Histórico de iteração

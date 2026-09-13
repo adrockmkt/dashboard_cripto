@@ -26,8 +26,21 @@ vi.mock("@/components/OnboardingTour", () => ({ OnboardingTour: () => null }));
 vi.mock("@/components/GlobalSearch", () => ({ GlobalSearch: () => <input aria-label="Buscar" /> }));
 vi.mock("@/components/LanguageSelector", () => ({ LanguageSelector: () => <button aria-label="Idioma">Idioma</button> }));
 vi.mock("@/components/ThemeToggle", () => ({ ThemeToggle: () => <button aria-label="Tema">Tema</button> }));
+vi.mock("@/components/advanced/ProfessionalCandlestickChart", () => {
+  throw new Error("Trading Pro must not be loaded on the initial dashboard");
+});
 
 describe("Index mobile navigation", () => {
+  it("does not load Trading Pro for the initial dashboard", () => {
+    render(
+      <BrowserRouter>
+        <Index />
+      </BrowserRouter>,
+    );
+
+    expect(screen.getByText("Favoritos")).toBeVisible();
+  });
+
   it("opens a named navigation dialog from the mobile menu", () => {
     render(
       <BrowserRouter>
