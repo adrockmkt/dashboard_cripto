@@ -2,7 +2,7 @@
 
 **URL:** `https://mobiledelivery.com.br/cripto-dashboard/`  
 **Escopo:** funcionalidades abertas, sem login e sem dados pessoais.  
-**Status geral:** em preparação.
+**Status geral:** em andamento.
 
 ## Método
 
@@ -16,7 +16,7 @@
 
 | ID | Tela/viewport | Controle | Ação | Resultado esperado | Resultado observado | Evidência | Status | Gravidade | Decisão |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| NAV-01 | desktop | Sidebar: recolher/expandir | clique | largura e rótulos alternam | pendente | - | pendente | - | - |
+| NAV-01 | desktop | Sidebar: recolher/expandir | clique | largura e rótulos alternam | botão agora possui nome acessível que alterna entre recolher e expandir | `Sidebar.test.tsx` | aprovado | - | - |
 | NAV-02 | desktop | Sidebar: Dashboard | clique | abre panorama | pendente | - | pendente | - | - |
 | NAV-03 | desktop | Sidebar: Trading | clique | abre Trading | pendente | - | pendente | - | - |
 | NAV-04 | desktop | Sidebar: On-chain | clique | abre On-chain | pendente | - | pendente | - | - |
@@ -51,7 +51,7 @@
 | TRANS-03 | ambos | link de privacidade | clique | abre `/cripto-dashboard/privacidade` | pendente | - | pendente | - | - |
 | EXT-01 | ambos | Ad Rock/GitHub/fontes | inspecionar link | URL válida e `noopener` quando externa | pendente | - | pendente | - | - |
 | EXT-02 | ambos | e-mail/WhatsApp | inspecionar link | `mailto:` e `wa.me` corretos, sem envio | pendente | - | pendente | - | - |
-| A11Y-01 | ambos | teclado | Tab/Shift+Tab/Enter/Espaço/Escape | foco e controle de overlay corretos | pendente | - | pendente | - | - |
+| A11Y-01 | ambos | teclado | Tab/Shift+Tab/Enter/Espaço/Escape | foco e controle de overlay corretos | nome acessível da sidebar coberto por teste; revisão dos demais overlays permanece em andamento | `Sidebar.test.tsx` | parcial | baixa | continuar validação manual dos overlays |
 
 ## Registro de achados
 

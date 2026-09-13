@@ -42,6 +42,7 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
           variant="ghost"
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
+          aria-label={collapsed ? "Expandir navegação" : "Recolher navegação"}
           className="h-8 w-8"
         >
           {collapsed ? (
