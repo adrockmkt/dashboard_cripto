@@ -1,4 +1,5 @@
 import type { CryptoNewsItem, ServiceResult } from "@/services/types";
+import { getMarketJson } from "@/services/marketGateway";
 
 const fallbackNews: CryptoNewsItem[] = [
   {
@@ -45,13 +46,7 @@ const categorizeNews = (title: string, body: string, categories?: string): Crypt
 
 export const fetchCryptoNews = async (limit: number = 10): Promise<ServiceResult<CryptoNewsItem[]>> => {
   try {
-    const response = await fetch("https://min-api.cryptocompare.com/data/v2/news/?lang=EN");
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const payload = await response.json();
+    const payload = await getMarketJson<any>("/cripto-dashboard/api/market/cryptocompare/v2/news/?lang=EN");
     const rawItems = Array.isArray(payload?.Data) ? payload.Data.slice(0, limit) : [];
     const items = rawItems.map((item: any, index: number) => ({
       id: item.id?.toString() || `${item.guid || "news"}-${index}`,

@@ -4,6 +4,7 @@ import type {
   FearGreedData,
   TechnicalIndicators,
 } from "@/services/types";
+import { getMarketJson } from "@/services/marketGateway";
 
 const fallbackCryptoData: CryptoData[] = [
   {
@@ -64,12 +65,8 @@ const generateFallbackHistoricalData = (days: number = 30) => {
 
 export const fetchCryptoData = async (): Promise<CryptoData[]> => {
   try {
-    const response = await fetch(
-      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false&price_change_percentage=24h"
-    );
-
-    if (response.ok) {
-      const data = await response.json();
+    const data = await getMarketJson<any[]>("/cripto-dashboard/api/market/coingecko/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false&price_change_percentage=24h");
+    if (Array.isArray(data)) {
       return data.map((coin: any) => ({
         id: coin.id,
         symbol: coin.symbol.toLowerCase(),
@@ -87,12 +84,8 @@ export const fetchCryptoData = async (): Promise<CryptoData[]> => {
   }
 
   try {
-    const response = await fetch(
-      "https://min-api.cryptocompare.com/data/top/mktcapfull?limit=20&tsym=USD"
-    );
-
-    if (response.ok) {
-      const data = await response.json();
+    const data = await getMarketJson<any>("/cripto-dashboard/api/market/cryptocompare/top/mktcapfull?limit=20&tsym=USD");
+    if (Array.isArray(data?.Data)) {
       return data.Data.map((item: any, index: number) => {
         const coin = item.CoinInfo;
         const raw = item.RAW?.USD || {};
@@ -119,12 +112,9 @@ export const fetchCryptoData = async (): Promise<CryptoData[]> => {
 
 export const fetchHistoricalData = async (coinId: string, days: number = 30) => {
   try {
-    const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&interval=daily&precision=2`
-    );
-
-    if (response.ok) {
-      const result = await response.json();
+    const query = new URLSearchParams({ vs_currency: "usd", days: String(days), interval: "daily", precision: "2" });
+    const result = await getMarketJson<any>(`/cripto-dashboard/api/market/coingecko/coins/${encodeURIComponent(coinId)}/market_chart?${query}`);
+    if (result) {
 
       if (result?.prices && Array.isArray(result.prices) && result.prices.length > 0) {
         const prices: [number, number][] = result.prices.map(
@@ -139,12 +129,8 @@ export const fetchHistoricalData = async (coinId: string, days: number = 30) => 
 
   try {
     let currentPrice = 45000;
-    const currentResponse = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd`
-    );
-
-    if (currentResponse.ok) {
-      const currentData = await currentResponse.json();
+    const currentData = await getMarketJson<any>(`/cripto-dashboard/api/market/coingecko/simple/price?ids=${encodeURIComponent(coinId)}&vs_currencies=usd`);
+    if (currentData) {
       currentPrice = currentData[coinId]?.usd || currentPrice;
     }
 
@@ -181,17 +167,7 @@ export const fetchHistoricalData = async (coinId: string, days: number = 30) => 
 
 export const fetchFearGreedIndex = async (): Promise<FearGreedData | null> => {
   try {
-    const response = await fetch("https://api.alternative.me/fng/", {
-      headers: {
-        Accept: "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = await getMarketJson<any>("/cripto-dashboard/api/market/alternative/fng/");
     return data?.data?.[0] || null;
   } catch (error) {
     console.error("Erro ao buscar Fear & Greed Index:", error);
@@ -201,23 +177,7 @@ export const fetchFearGreedIndex = async (): Promise<FearGreedData | null> => {
 
 export const fetchMarketDominance = async (): Promise<DominanceData | null> => {
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-    const response = await fetch("https://api.coingecko.com/api/v3/global", {
-      signal: controller.signal,
-      headers: {
-        Accept: "application/json",
-      },
-    });
-
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = await getMarketJson<any>("/cripto-dashboard/api/market/coingecko/global");
     const globalData = data.data;
 
     if (globalData?.market_cap_percentage && globalData?.total_market_cap) {

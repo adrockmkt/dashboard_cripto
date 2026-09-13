@@ -1,4 +1,5 @@
 import type { OHLCVPoint, ServiceResult } from "@/services/types";
+import { getMarketJson } from "@/services/marketGateway";
 
 type ChartTimeframe = "1m" | "5m" | "15m" | "1h" | "4h" | "1d";
 
@@ -53,15 +54,8 @@ export const fetchOHLCVData = async (
   const config = timeframeConfig[timeframe];
 
   try {
-    const response = await fetch(
-      `https://min-api.cryptocompare.com/data/v2/${config.endpoint}?fsym=${symbol}&tsym=USD&limit=${limit}&aggregate=${config.aggregate}`
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const payload = await response.json();
+    const query = new URLSearchParams({ fsym: symbol, tsym: "USD", limit: String(limit), aggregate: String(config.aggregate) });
+    const payload = await getMarketJson<any>(`/cripto-dashboard/api/market/cryptocompare/v2/${config.endpoint}?${query}`);
     const rawPoints = payload?.Data?.Data;
 
     if (!Array.isArray(rawPoints) || rawPoints.length === 0) {

@@ -4,6 +4,7 @@ import type {
   OnChainSnapshot,
   ServiceResult,
 } from "@/services/types";
+import { getMarketJson } from "@/services/marketGateway";
 
 interface BlockchainChartResponse {
   values?: Array<{ x: number; y: number }>;
@@ -17,29 +18,11 @@ const normalizeToPercent = (value: number | null, min: number, max: number) => {
 };
 
 const fetchBlockchainChart = async (chartName: string, timespan: string = "30days") => {
-  const endpoints = [
-    `https://api.blockchain.info/charts/${chartName}?timespan=${timespan}&format=json&sampled=true&cors=true`,
-    `https://blockchain.info/charts/${chartName}?timespan=${timespan}&format=json&sampled=true&cors=true`,
-  ];
-
-  let lastError: Error | null = null;
-
-  for (const endpoint of endpoints) {
-    try {
-      const response = await fetch(endpoint);
-
-      if (!response.ok) {
-        throw new Error(`Falha ao carregar ${chartName}: ${response.status}`);
-      }
-
-      const data = (await response.json()) as BlockchainChartResponse;
-      return Array.isArray(data.values) ? data.values : [];
-    } catch (error) {
-      lastError = error instanceof Error ? error : new Error("Falha desconhecida");
-    }
-  }
-
-  throw lastError || new Error(`Falha ao carregar ${chartName}`);
+  const query = new URLSearchParams({ timespan, format: "json", sampled: "true" });
+  const data = await getMarketJson<BlockchainChartResponse>(
+    `/cripto-dashboard/api/market/blockchain/charts/${chartName}?${query}`
+  );
+  return Array.isArray(data.values) ? data.values : [];
 };
 
 const buildFallbackHistory = (): OnChainHistoryPoint[] => {
@@ -142,13 +125,7 @@ export const fetchOnChainSnapshot = async (): Promise<ServiceResult<OnChainSnaps
       fetchBlockchainChart("fees-usd-per-transaction"),
     ]);
 
-  const recommendedFeesResult = await fetch("https://mempool.space/api/v1/fees/recommended")
-    .then(async (response) => {
-      if (!response.ok) {
-        throw new Error(`Falha ao carregar taxas recomendadas: ${response.status}`);
-      }
-      return response.json();
-    })
+  const recommendedFeesResult = await getMarketJson<any>("/cripto-dashboard/api/market/mempool/api/v1/fees/recommended")
     .catch(() => null);
 
   const recommendedFees = {
