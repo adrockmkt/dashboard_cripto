@@ -87,8 +87,11 @@ export const OnboardingTour = () => {
   const step = steps[currentStep];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-      <Card className="w-full max-w-md mx-4 shadow-xl">
+    <aside
+      aria-label="Introdução ao Cripto Dashboard"
+      className="fixed inset-x-3 bottom-20 z-50 animate-fade-in-up md:inset-x-auto md:bottom-6 md:right-6 md:w-full md:max-w-md"
+    >
+      <Card className="adrock-panel border-primary/20 shadow-xl">
         <CardHeader className="relative">
           <Button
             variant="ghost"
@@ -99,11 +102,12 @@ export const OnboardingTour = () => {
           >
             <X className="h-4 w-4" />
           </Button>
-          <CardTitle>{step.title}</CardTitle>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Etapa {currentStep + 1} de {steps.length}</p>
+          <CardTitle className="mt-1">{step.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">{step.description}</p>
-          <div className="flex gap-1 mt-6">
+          <div className="mt-6 flex gap-1" aria-label={`Etapa ${currentStep + 1} de ${steps.length}`}>
             {steps.map((_, index) => (
               <div
                 key={index}
@@ -138,6 +142,6 @@ export const OnboardingTour = () => {
           </div>
         </CardFooter>
       </Card>
-    </div>
+    </aside>
   );
 };

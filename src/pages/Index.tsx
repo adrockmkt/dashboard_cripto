@@ -2,7 +2,7 @@ import { useState, lazy, Suspense } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Card, CardContent } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { GlobalSearch } from "@/components/GlobalSearch";
@@ -340,11 +340,13 @@ const Index = () => {
         <div className="p-3 md:p-4 flex items-center justify-between gap-2">
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="flex-shrink-0">
-                <Menu className="h-4 w-4" />
+              <Button variant="outline" size="icon" className="flex-shrink-0" aria-label="Abrir navegação">
+                <Menu className="h-4 w-4" aria-hidden="true" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-72 overflow-y-auto p-0">
+              <SheetTitle className="sr-only">Navegação</SheetTitle>
+              <SheetDescription className="sr-only">Acesse as ferramentas e preferências do dashboard.</SheetDescription>
               <Sidebar activeTab={activeTab} onTabChange={(tab) => {
                 handleTabChange(tab);
                 setMobileMenuOpen(false);
