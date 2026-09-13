@@ -17,6 +17,12 @@ As capturas de implementação foram revisadas diretamente no In-app Browser dur
 - Controles testados: abrir menu, navegar para Trading Pro, abrir o painel de indicadores, atualizar o gráfico e fechar/pular o onboarding.
 - Console: não houve novo aviso de título/descrição de diálogo após a correção. O ambiente Vite local retorna 404 para rotas de gateway de mercado porque o proxy Nginx de produção não existe localmente; os componentes exibem dados alternativos. Isso não altera a composição visual e requer conferência final na URL publicada.
 
+## Verificação publicada
+
+- Publicação realizada em `/home/adrock/cripto-dashboard/` via SSH em 13 de setembro de 2026.
+- `https://mobiledelivery.com.br/cripto-dashboard/` respondeu `200 OK` após a cópia, com `Last-Modified` correspondente ao deploy.
+- O In-app Browser carregou a página publicada, exibiu o novo briefing e retornou sentimento/dominância de mercado. Nenhum erro novo da interface foi adicionado ao console após abrir a URL publicada.
+
 ## Avaliação das superfícies de fidelidade
 
 ### Tipografia e copy
