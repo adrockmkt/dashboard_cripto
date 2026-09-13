@@ -20,6 +20,13 @@ vi.mock("@/services/chartService", () => ({
 }));
 
 describe("ProfessionalCandlestickChart", () => {
+  it("identifies the active trading pair and names the refresh action", () => {
+    render(<ProfessionalCandlestickChart symbol="BTC" />);
+
+    expect(screen.getByText("BTC / BRL")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Atualizar gráfico" })).toBeEnabled();
+  });
+
   it("places the chart before the mobile controls trigger", () => {
     render(<ProfessionalCandlestickChart />);
 

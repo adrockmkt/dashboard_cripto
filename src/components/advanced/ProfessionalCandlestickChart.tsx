@@ -173,32 +173,32 @@ export function ProfessionalCandlestickChart({ symbol = "BTC" }: ProfessionalCan
     // Criar gráfico
     const chart = createChart(chartContainerRef.current, {
       layout: {
-        background: { type: ColorType.Solid, color: '#0F172A' },
-        textColor: '#94A3B8',
+        background: { type: ColorType.Solid, color: '#101114' },
+        textColor: '#d9d5ce',
       },
       grid: {
-        vertLines: { color: '#1E293B' },
-        horzLines: { color: '#1E293B' },
+        vertLines: { color: '#28231f' },
+        horzLines: { color: '#28231f' },
       },
       width: chartContainerRef.current.clientWidth,
       height: 500,
       timeScale: {
         timeVisible: true,
         secondsVisible: false,
-        borderColor: '#334155',
+        borderColor: '#3b322b',
       },
       rightPriceScale: {
-        borderColor: '#334155',
+        borderColor: '#3b322b',
       },
       crosshair: {
         mode: 1,
         vertLine: {
-          color: '#64748B',
+          color: '#8b8177',
           width: 1,
           style: 3,
         },
         horzLine: {
-          color: '#64748B',
+          color: '#8b8177',
           width: 1,
           style: 3,
         },
@@ -221,7 +221,7 @@ export function ProfessionalCandlestickChart({ symbol = "BTC" }: ProfessionalCan
 
     // Adicionar série de volume
     const volumeSeries = chart.addSeries(HistogramSeries, {
-      color: '#26a69a',
+      color: '#f97316',
       priceFormat: {
         type: 'volume',
       },
@@ -353,7 +353,7 @@ export function ProfessionalCandlestickChart({ symbol = "BTC" }: ProfessionalCan
         <div className="max-h-32 space-y-1 overflow-y-auto">
           {supportResistance.map((sr, index) => (
             <div key={`${sr.level}-${index}`} className="flex items-center justify-between text-xs">
-              <span className={sr.type === "support" ? "text-green-500" : "text-red-500"}>
+              <span className={sr.type === "support" ? "text-success" : "text-danger"}>
                 {sr.type === "support" ? <TrendingUp className="inline h-3 w-3" /> : <TrendingDown className="inline h-3 w-3" />} ${sr.level.toLocaleString()}
               </span>
               <Badge variant="outline" className="text-xs">{sr.touches}x</Badge>
@@ -366,22 +366,28 @@ export function ProfessionalCandlestickChart({ symbol = "BTC" }: ProfessionalCan
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="w-5 h-5" />
-              Gráfico de Velas - Análise Técnica Avançada ({symbol})
-            </CardTitle>
-            <div className="flex items-center gap-2">
-              <Badge variant={source === "real" ? "default" : "secondary"}>
+      <Card className="adrock-panel overflow-hidden">
+        <CardHeader className="border-b border-border/80 bg-background/30">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="rounded-xl border border-primary/30 bg-primary/10 p-2 text-primary">
+                <Activity className="h-5 w-5" aria-hidden="true" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Trading Pro</p>
+                <CardTitle className="mt-1 text-xl">{symbol} / BRL</CardTitle>
+                <p className="mt-1 text-sm text-muted-foreground">Gráfico de velas e análise técnica</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="outline" className="border-border bg-background/60 text-muted-foreground">
                 {getSourceLabel()}
               </Badge>
               <Select value={timeframe} onValueChange={(value) => {
                 setTimeframe(value);
                 trackEvent("chart_timeframe_change", { timeframe: value });
               }}>
-                <SelectTrigger className="w-24">
+                <SelectTrigger className="w-24 border-border bg-background/60">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -393,18 +399,18 @@ export function ProfessionalCandlestickChart({ symbol = "BTC" }: ProfessionalCan
                   <SelectItem value="1d">1d</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="outline" size="sm" onClick={() => setRefreshKey((prev) => prev + 1)}>
-                <RefreshCw className="w-4 h-4" />
+              <Button variant="outline" size="sm" onClick={() => setRefreshKey((prev) => prev + 1)} aria-label="Atualizar gráfico" title="Atualizar gráfico">
+                <RefreshCw className="w-4 h-4" aria-hidden="true" />
               </Button>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div data-testid="trading-chart" className="relative overflow-hidden rounded-lg border bg-slate-900">
+        <CardContent className="p-4 md:p-6">
+          <div data-testid="trading-chart" className="relative overflow-hidden rounded-xl border border-border bg-background">
             <div ref={chartContainerRef} className="w-full h-[500px]" />
             {loading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-slate-900/80">
-                <RefreshCw className="w-8 h-8 animate-spin text-white" />
+              <div className="absolute inset-0 flex items-center justify-center bg-background/85">
+                <RefreshCw className="w-8 h-8 animate-spin text-primary" aria-label="Carregando gráfico" />
               </div>
             )}
           </div>
