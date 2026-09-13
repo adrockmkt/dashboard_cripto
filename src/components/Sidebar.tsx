@@ -29,21 +29,23 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   return (
     <div 
       className={cn(
-        "h-full bg-card border-r border-border transition-all duration-300 flex flex-col",
+        "min-h-screen bg-card/95 border-r border-border/80 transition-all duration-300 flex flex-col shadow-xl",
         collapsed ? "w-16" : "w-64"
       )}
     >
-      {/* Header */}
-      <div className="p-4 border-b border-border flex items-center justify-between">
-        {!collapsed && (
-          <h2 className="font-semibold text-sm">{t("nav.navigation")}</h2>
-        )}
+      {/* Brand header */}
+      <header aria-label="Ad Rock" className={cn("border-b border-border/80 flex items-center", collapsed ? "justify-center p-3" : "justify-between gap-3 px-4 py-5")}>
+        <img
+          src={adRockLogo}
+          alt="Ad Rock Digital MKT"
+          className={cn("h-auto object-contain", collapsed ? "w-9" : "w-36")}
+        />
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
           aria-label={collapsed ? "Expandir navegação" : "Recolher navegação"}
-          className="h-8 w-8"
+          className={cn("h-8 w-8 text-muted-foreground hover:bg-accent hover:text-primary", collapsed && "absolute -right-10 top-4 border border-border bg-card")}
         >
           {collapsed ? (
             <ChevronRight className="h-4 w-4" />
@@ -51,10 +53,10 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             <ChevronLeft className="h-4 w-4" />
           )}
         </Button>
-      </div>
+      </header>
 
       {/* Navigation Items */}
-      <nav className="flex-1 p-2 space-y-1">
+      <nav aria-label={t("nav.navigation")} className="flex-1 space-y-1 p-3">
         {sidebarItems.map((item) => {
           const Icon = item.icon
           const isActive = activeTab === item.id
@@ -64,10 +66,11 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
               key={item.id}
               variant="ghost"
               className={cn(
-                "w-full justify-start h-10 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground",
+                "w-full justify-start h-11 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground",
                 isActive && "adrock-active",
                 collapsed ? "px-2" : "px-3"
               )}
+              aria-current={isActive ? "page" : undefined}
               onClick={() => onTabChange(item.id)}
             >
               <Icon className={cn("h-4 w-4", collapsed ? "" : "mr-3")} />
@@ -79,27 +82,10 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
         })}
       </nav>
 
-      {/* Logo */}
-      <div className="p-4 border-t border-border flex items-center justify-center">
-        {!collapsed ? (
-          <img 
-            src={adRockLogo} 
-            alt="Ad Rock Digital MKT" 
-            className="w-32 h-auto object-contain"
-          />
-        ) : (
-          <img 
-            src={adRockLogo} 
-            alt="Ad Rock Digital MKT" 
-            className="w-10 h-auto object-contain"
-          />
-        )}
-      </div>
-
       {/* About Footer */}
       {!collapsed && (
-        <div className="p-4 border-t border-border space-y-2 text-xs text-muted-foreground">
-          <p className="font-semibold text-foreground">About</p>
+        <div className="border-t border-border/80 p-4 space-y-2 text-xs text-muted-foreground">
+          <p className="font-semibold uppercase tracking-[0.14em] text-primary">Ad Rock Digital Mkt</p>
           <p>Um produto Ad Rock Digital Mkt por Rafael Marques Lins</p>
           <div className="space-y-1">
             <a 
