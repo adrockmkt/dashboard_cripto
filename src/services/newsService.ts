@@ -45,39 +45,10 @@ const categorizeNews = (title: string, body: string, categories?: string): Crypt
 };
 
 export const fetchCryptoNews = async (limit: number = 10): Promise<ServiceResult<CryptoNewsItem[]>> => {
-  try {
-    const payload = await getMarketJson<any>("/cripto-dashboard/api/market/cryptocompare/v2/news/?lang=EN");
-    const rawItems = Array.isArray(payload?.Data) ? payload.Data.slice(0, limit) : [];
-    const items = rawItems.map((item: any, index: number) => ({
-      id: item.id?.toString() || `${item.guid || "news"}-${index}`,
-      title: item.title || "Sem título",
-      description: item.body || item.source_info?.name || "Sem descrição disponível",
-      url: item.url || "#",
-      source: item.source_info?.name || item.source || "CryptoCompare",
-      publishedAt: new Date((item.published_on || Math.floor(Date.now() / 1000)) * 1000),
-      category: categorizeNews(item.title || "", item.body || "", item.categories),
-    }));
-
-    if (items.length === 0) {
-      return {
-        data: fallbackNews.slice(0, limit),
-        source: "fallback",
-        updatedAt: new Date().toISOString(),
-        error: "A fonte principal não retornou notícias.",
-      };
-    }
-
-    return {
-      data: items,
-      source: "real",
-      updatedAt: new Date().toISOString(),
-    };
-  } catch (error) {
-    return {
-      data: fallbackNews.slice(0, limit),
-      source: "fallback",
-      updatedAt: new Date().toISOString(),
-      error: error instanceof Error ? error.message : "Falha ao carregar notícias",
-    };
-  }
+  return {
+    data: fallbackNews.slice(0, limit),
+    source: "fallback",
+    updatedAt: new Date().toISOString(),
+    error: "Provedor público de notícias indisponível; exibindo contexto editorial.",
+  };
 };

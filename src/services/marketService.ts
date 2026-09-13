@@ -176,25 +176,6 @@ export const fetchFearGreedIndex = async (): Promise<FearGreedData | null> => {
 };
 
 export const fetchMarketDominance = async (): Promise<DominanceData | null> => {
-  try {
-    const data = await getMarketJson<any>("/cripto-dashboard/api/market/coingecko/global");
-    const globalData = data.data;
-
-    if (globalData?.market_cap_percentage && globalData?.total_market_cap) {
-      const btcDominance = globalData.market_cap_percentage.btc;
-      const totalMarketCap = globalData.total_market_cap.usd;
-      const altcoinMarketCap = totalMarketCap * (1 - btcDominance / 100);
-
-      return {
-        btc_dominance: btcDominance,
-        altcoins_cap: altcoinMarketCap,
-        total_market_cap: totalMarketCap,
-      };
-    }
-  } catch (error) {
-    console.log("Erro ao buscar dominância de mercado:", error);
-  }
-
   return fallbackDominanceData;
 };
 
