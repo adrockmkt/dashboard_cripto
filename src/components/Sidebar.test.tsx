@@ -7,7 +7,10 @@ describe("Sidebar", () => {
     render(<Sidebar activeTab="dashboard" onTabChange={vi.fn()} />);
 
     const brand = screen.getByRole("banner", { name: "Ad Rock" });
-    expect(within(brand).getByRole("img", { name: "Ad Rock Digital MKT" })).toBeVisible();
+    const logo = within(brand).getByRole("img", { name: "Ad Rock Digital MKT" });
+
+    expect(logo).toBeVisible();
+    expect(logo).toHaveAttribute("src", expect.stringMatching(/adrock-logo-320\.png$/));
   });
 
   it("marks the active destination with the Ad Rock treatment", () => {

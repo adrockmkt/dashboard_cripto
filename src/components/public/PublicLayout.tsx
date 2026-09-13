@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import adRockLogo from "@/assets/adrock-logo.png";
+import adRockLogo from "@/assets/adrock-logo-320.png";
 import { AdPlaceholder } from "@/components/public/AdPlaceholder";
 
 interface PublicLayoutProps {

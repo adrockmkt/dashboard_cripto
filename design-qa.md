@@ -28,6 +28,7 @@ As capturas de implementação foram revisadas diretamente no In-app Browser dur
 - Medição anterior: `Index` com 1.160,49 kB / 353,99 kB gzip.
 - Medição após lazy loading de Trading Pro, On-chain, modelos, alertas e indicadores: `Index` com 552,36 kB / 175,65 kB gzip.
 - Redução do JavaScript inicial: aproximadamente 50% em gzip. Os módulos adiados são baixados somente ao abrir sua respectiva aba.
+- A marca distribuída pela interface foi reduzida de 1024 × 1024 / 608,77 kB para 320 × 320 / 104,74 kB. É a mesma marca Ad Rock, preservando transparência; a redução é de aproximadamente 83% no arquivo transferido.
 
 ## Avaliação das superfícies de fidelidade
 
@@ -45,7 +46,7 @@ As capturas de implementação foram revisadas diretamente no In-app Browser dur
 
 ### Imagens e ativos
 
-**Resultado:** aprovado. A logo de produção é a asset original da Ad Rock. A arte/personagem criada para a referência não foi colocada no bundle, por não ser ativo de marca e por custo de desempenho. Essa é uma divergência intencional: o briefing usa composição editorial sem imagem pesada.
+**Resultado:** aprovado. A logo de produção deriva da asset original da Ad Rock, redimensionada para a resolução adequada de interface e sem alteração visual. A arte/personagem criada para a referência não foi colocada no bundle, por não ser ativo de marca e por custo de desempenho. Essa é uma divergência intencional: o briefing usa composição editorial sem imagem pesada.
 
 ### Responsividade, acessibilidade e estados
 

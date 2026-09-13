@@ -2,7 +2,7 @@ import { useState, type ReactNode } from "react"
 import { ChartBar as BarChart3, TrendingUp, TriangleAlert as AlertTriangle, Settings, ChartPie as PieChart, ChevronLeft, ChevronRight, Chrome as Home, FileText, Activity, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import adRockLogo from "@/assets/adrock-logo.png"
+import adRockLogo from "@/assets/adrock-logo-320.png"
 import { useTranslation } from "react-i18next"
 
 interface SidebarProps {
