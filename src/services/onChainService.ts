@@ -10,6 +10,10 @@ interface BlockchainChartResponse {
   values?: Array<{ x: number; y: number }>;
 }
 
+// Blockchain.com returns its `hash-rate` chart in TH/s; keep the UI and
+// chart data in EH/s so the displayed unit matches the value.
+const TERAHASHES_PER_EXAHASH = 1_000_000;
+
 const formatDate = (timestamp: number) => new Date(timestamp * 1000).toLocaleDateString("pt-BR");
 
 const normalizeToPercent = (value: number | null, min: number, max: number) => {
@@ -131,7 +135,9 @@ export const fetchOnChainSnapshot = async (): Promise<ServiceResult<OnChainSnaps
 
   const [addressesResult, hashrateResult, mempoolResult, feesResult] = chartResults;
   const addresses = addressesResult.status === "fulfilled" ? addressesResult.value : [];
-  const hashrate = hashrateResult.status === "fulfilled" ? hashrateResult.value : [];
+  const hashrate = hashrateResult.status === "fulfilled"
+    ? hashrateResult.value.map((point) => ({ ...point, y: point.y / TERAHASHES_PER_EXAHASH }))
+    : [];
   const mempool = mempoolResult.status === "fulfilled" ? mempoolResult.value : [];
   const fees = feesResult.status === "fulfilled" ? feesResult.value : [];
 

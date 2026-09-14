@@ -51,7 +51,8 @@ describe("fetchOnChainSnapshot", () => {
 
     expect(result.data?.overview).toMatchObject({
       activeAddresses: 100,
-      hashrate: 200,
+      // Blockchain.com reports this series in TH/s; the application exposes EH/s.
+      hashrate: 0.0002,
       mempoolTransactions: 300,
       averageFeeUsd: 400,
     });
