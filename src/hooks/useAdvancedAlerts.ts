@@ -79,6 +79,8 @@ export const useAdvancedAlerts = () => {
     setGlobalSettings({
       ...defaultGlobalSettings,
       ...persistedSettings,
+      emailEnabled: false,
+      webhookEnabled: false,
     });
     setIsHydrated(true);
   }, []);
@@ -188,52 +190,19 @@ export const useAdvancedAlerts = () => {
           }
           break;
         case "webhook":
-          if (globalSettings.webhookEnabled && action.config?.url) {
-            try {
-              await fetch(action.config.url, {
-                method: action.config.method || "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  ...(action.config.headers || {}),
-                },
-                body: JSON.stringify({
-                  alertId: alert.id,
-                  alertName: alert.name,
-                  type: alert.type,
-                  message,
-                  triggeredAt: new Date().toISOString(),
-                  metricValues,
-                }),
-              });
-              await finalizeAlertDelivery({
-                ...deliveryBase,
-                status: "delivered",
-                deliveredAt: new Date().toISOString(),
-              });
-            } catch (webhookError) {
-              console.error("Erro ao chamar webhook:", webhookError);
-              await finalizeAlertDelivery({
-                ...deliveryBase,
-                status: "failed",
-                deliveredAt: new Date().toISOString(),
-                error: webhookError instanceof Error ? webhookError.message : "Falha no webhook",
-              });
-            }
-          } else {
-            await finalizeAlertDelivery({
-              ...deliveryBase,
-              status: "failed",
-              deliveredAt: new Date().toISOString(),
-              error: "Webhook desativado ou sem URL",
-            });
-          }
+          await finalizeAlertDelivery({
+            ...deliveryBase,
+            status: "failed",
+            deliveredAt: new Date().toISOString(),
+            error: "Webhook indisponível até existir entrega autenticada no servidor",
+          });
           break;
         case "email":
           await finalizeAlertDelivery({
             ...deliveryBase,
-            status: globalSettings.emailEnabled ? "pending" : "failed",
+            status: "failed",
             deliveredAt: new Date().toISOString(),
-            error: globalSettings.emailEnabled ? "Entrega por email depende de backend dedicado" : "Email desativado",
+            error: "Email indisponível até existir entrega autenticada no servidor",
           });
           break;
       }

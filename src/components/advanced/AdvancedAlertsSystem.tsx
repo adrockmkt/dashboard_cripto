@@ -23,7 +23,6 @@ import {
   Settings,
   CheckCircle,
   RefreshCw,
-  Link2,
   MonitorSmartphone,
 } from "lucide-react";
 import { useAdvancedAlerts } from "@/hooks/useAdvancedAlerts";
@@ -83,7 +82,6 @@ export function AdvancedAlertsSystem() {
       { type: "sound" as const, config: { sound: "default" } },
       { type: "visual" as const, config: { duration: 5000 } },
     ],
-    webhookUrl: "",
   });
 
   const enableBrowserNotifications = async () => {
@@ -113,22 +111,11 @@ export function AdvancedAlertsSystem() {
   const handleCreateAlert = () => {
     if (!newAlert.name.trim()) return;
 
-    const actions = [...newAlert.actions];
-    if (newAlert.webhookUrl.trim()) {
-      actions.push({
-        type: "webhook",
-        config: {
-          url: newAlert.webhookUrl.trim(),
-          method: "POST",
-        },
-      });
-    }
-
     createAlert({
       name: newAlert.name,
       type: newAlert.type,
       conditions: newAlert.conditions,
-      actions,
+      actions: newAlert.actions,
       isActive: true,
     });
     trackEvent("create_alert", { alert_type: newAlert.type });
@@ -148,7 +135,6 @@ export function AdvancedAlertsSystem() {
         { type: "sound", config: { sound: "default" } },
         { type: "visual", config: { duration: 5000 } },
       ],
-      webhookUrl: "",
     });
     setShowCreateForm(false);
   };
@@ -218,20 +204,20 @@ export function AdvancedAlertsSystem() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <CardTitle className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-2">
               <Settings className="w-5 h-5" />
               Sistema de Alertas Avançado
               {alerts.filter((alert) => alert.isActive).length > 0 && (
                 <Badge variant="secondary">{alerts.filter((alert) => alert.isActive).length} ativos</Badge>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" onClick={refreshSnapshot} disabled={loading}>
+            <div data-testid="alerts-header-actions" className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+              <Button className="w-full sm:w-auto" variant="outline" onClick={refreshSnapshot} disabled={loading}>
                 <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
                 Atualizar
               </Button>
-              <Button onClick={() => setShowCreateForm(true)}>
+              <Button className="w-full sm:w-auto" onClick={() => setShowCreateForm(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Novo Alerta
               </Button>
@@ -239,7 +225,7 @@ export function AdvancedAlertsSystem() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
             <div className="flex items-center space-x-2">
               <Switch
                 checked={globalSettings.soundEnabled}
@@ -262,23 +248,14 @@ export function AdvancedAlertsSystem() {
               </Label>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Switch
-                checked={globalSettings.emailEnabled}
-                onCheckedChange={(checked) => setGlobalSettings((prev) => ({ ...prev, emailEnabled: checked }))}
-              />
+            <div className="flex items-center gap-2 text-muted-foreground">
               <Label>Email</Label>
+              <Badge variant="secondary">Indisponível</Badge>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Switch
-                checked={globalSettings.webhookEnabled}
-                onCheckedChange={(checked) => setGlobalSettings((prev) => ({ ...prev, webhookEnabled: checked }))}
-              />
-              <Label className="flex items-center gap-2">
-                <Link2 className="w-4 h-4" />
-                Webhook
-              </Label>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Label>Webhook</Label>
+              <Badge variant="secondary">Indisponível</Badge>
             </div>
           </div>
 
@@ -458,15 +435,6 @@ export function AdvancedAlertsSystem() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-
-            <div>
-              <Label>Webhook URL (opcional)</Label>
-              <Input
-                value={newAlert.webhookUrl}
-                onChange={(e) => setNewAlert((prev) => ({ ...prev, webhookUrl: e.target.value }))}
-                placeholder="https://example.com/webhook"
-              />
             </div>
 
             <div className="flex gap-2">
