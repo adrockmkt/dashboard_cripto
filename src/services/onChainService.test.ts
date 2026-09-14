@@ -35,4 +35,25 @@ describe("fetchOnChainSnapshot", () => {
     expect(getMarketJson).toHaveBeenCalledWith(expect.stringContaining("transaction-fees-usd?"));
     expect(result.data?.history[0]?.fees).toBe(42);
   });
+
+  it("uses the latest available value of each metric when providers end on different dates", async () => {
+    vi.mocked(getMarketJson).mockImplementation(async (path) => {
+      if (path.includes("mempool/api/v1/fees/recommended")) {
+        return { fastestFee: 12, halfHourFee: 8, hourFee: 5 } as never;
+      }
+      if (path.includes("n-unique-addresses")) return { values: [{ x: 1_726_099_200, y: 100 }] } as never;
+      if (path.includes("hash-rate")) return { values: [{ x: 1_726_185_600, y: 200 }] } as never;
+      if (path.includes("mempool-count")) return { values: [{ x: 1_726_272_000, y: 300 }] } as never;
+      return { values: [{ x: 1_726_358_400, y: 400 }] } as never;
+    });
+
+    const result = await fetchOnChainSnapshot();
+
+    expect(result.data?.overview).toMatchObject({
+      activeAddresses: 100,
+      hashrate: 200,
+      mempoolTransactions: 300,
+      averageFeeUsd: 400,
+    });
+  });
 });

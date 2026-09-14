@@ -60,39 +60,45 @@ const buildOverviewFromHistory = (
 ): OnChainOverview | null => {
   if (history.length === 0) return null;
 
-  const latest = history.at(-1);
+  const latestValue = <Field extends keyof Omit<OnChainHistoryPoint, "date" | "timestamp">>(field: Field) =>
+    [...history].reverse().find((point) => point[field] !== null)?.[field] ?? null;
+
+  const activeAddresses = latestValue("activeAddresses");
+  const hashrate = latestValue("hashrate");
+  const mempoolTransactions = latestValue("mempoolSize");
+  const averageFeeUsd = latestValue("fees");
   const activeAddressesRange = history.flatMap((point) => point.activeAddresses === null ? [] : [point.activeAddresses]);
   const hashrateRange = history.flatMap((point) => point.hashrate === null ? [] : [point.hashrate]);
   const mempoolRange = history.flatMap((point) => point.mempoolSize === null ? [] : [point.mempoolSize]);
   const feeRange = history.flatMap((point) => point.fees === null ? [] : [point.fees]);
 
   const adoption = normalizeToPercent(
-    latest?.activeAddresses ?? null,
+    activeAddresses,
     activeAddressesRange.length ? Math.min(...activeAddressesRange) : 0,
     activeAddressesRange.length ? Math.max(...activeAddressesRange) : 0
   );
   const security = normalizeToPercent(
-    latest?.hashrate ?? null,
+    hashrate,
     hashrateRange.length ? Math.min(...hashrateRange) : 0,
     hashrateRange.length ? Math.max(...hashrateRange) : 0
   );
   const activity = normalizeToPercent(
-    latest?.mempoolSize ?? null,
+    mempoolTransactions,
     mempoolRange.length ? Math.min(...mempoolRange) : 0,
     mempoolRange.length ? Math.max(...mempoolRange) : 0
   );
   const feeComfort = 100 - normalizeToPercent(
-    latest?.fees ?? null,
+    averageFeeUsd,
     feeRange.length ? Math.min(...feeRange) : 0,
     feeRange.length ? Math.max(...feeRange) : 0
   );
   const score = (adoption + security + activity + feeComfort) / 4;
 
   return {
-    activeAddresses: latest?.activeAddresses ?? null,
-    hashrate: latest?.hashrate ?? null,
-    mempoolTransactions: latest?.mempoolSize ?? null,
-    averageFeeUsd: latest?.fees ?? null,
+    activeAddresses,
+    hashrate,
+    mempoolTransactions,
+    averageFeeUsd,
     recommendedFees,
     networkHealth: {
       score,
