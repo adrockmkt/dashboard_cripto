@@ -5,7 +5,10 @@ export async function getMarketJson<T>(path: MarketGatewayPath): Promise<T> {
     throw new Error("Rota de mercado inválida");
   }
 
-  const response = await fetch(path, { headers: { Accept: "application/json" } });
+  const response = await fetch(path, {
+    cache: "no-store",
+    headers: { Accept: "application/json" },
+  });
 
   if (!response.ok) {
     throw new Error(`Fonte de mercado indisponível (${response.status})`);

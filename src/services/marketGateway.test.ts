@@ -12,7 +12,7 @@ describe("getMarketJson", () => {
     await expect(getMarketJson<{ data: string }>("/cripto-dashboard/api/market/coingecko/global")).resolves.toEqual({ data: "ok" });
     expect(fetchMock).toHaveBeenCalledWith(
       "/cripto-dashboard/api/market/coingecko/global",
-      expect.objectContaining({ headers: { Accept: "application/json" } })
+      expect.objectContaining({ cache: "no-store", headers: { Accept: "application/json" } })
     );
   });
 
