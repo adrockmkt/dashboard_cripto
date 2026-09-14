@@ -18,7 +18,7 @@ import {
   Network
 } from "lucide-react";
 import { fetchOnChainSnapshot } from "@/services/onChainService";
-import type { DataSource, OnChainHistoryPoint, OnChainOverview } from "@/services/types";
+import type { DataSource, OnChainHistoryPoint, OnChainOverview, OnChainSnapshot } from "@/services/types";
 
 export function OnChainMetrics() {
   const [onChainData, setOnChainData] = useState<OnChainOverview | null>(null);
@@ -26,7 +26,8 @@ export function OnChainMetrics() {
   const [loading, setLoading] = useState(true);
   const [selectedMetric, setSelectedMetric] = useState('addresses');
   const [source, setSource] = useState<DataSource>("fallback");
-  const [error, setError] = useState<string | null>(null);
+  const [availability, setAvailability] = useState<OnChainSnapshot["availability"]>("unavailable");
+  const [unavailableMetrics, setUnavailableMetrics] = useState<string[]>([]);
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
@@ -36,7 +37,8 @@ export function OnChainMetrics() {
       setOnChainData(result.data?.overview || null);
       setHistoricalData(result.data?.history || []);
       setSource(result.source);
-      setError(result.error || null);
+      setAvailability(result.data?.availability || "unavailable");
+      setUnavailableMetrics(result.data?.unavailableMetrics || []);
       setLoading(false);
     };
 
@@ -61,8 +63,8 @@ export function OnChainMetrics() {
     return "text-red-500";
   };
 
-  const getSourceLabel = (currentSource: DataSource) =>
-    currentSource === "real" ? "Fonte real" : currentSource === "simulated" ? "Simulado" : "Fallback";
+  const getSourceLabel = () =>
+    availability === "complete" && source === "real" ? "Dados reais" : "Dados parciais";
 
   if (loading) {
     return (
@@ -84,7 +86,6 @@ export function OnChainMetrics() {
           <p className="text-sm text-muted-foreground">
             Não foi possível carregar métricas on-chain.
           </p>
-          {error && <p className="text-xs text-muted-foreground">{error}</p>}
           <Button variant="outline" onClick={() => setReloadKey((prev) => prev + 1)}>
             Tentar novamente
           </Button>
@@ -96,13 +97,22 @@ export function OnChainMetrics() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Badge variant={source === "real" ? "default" : "secondary"}>
-          {getSourceLabel(source)}
+        <Badge variant={availability === "complete" && source === "real" ? "default" : "secondary"}>
+          {getSourceLabel()}
         </Badge>
         <span className="text-sm text-muted-foreground">
           Dados on-chain vindos de Blockchain.com Charts e mempool.space.
         </span>
       </div>
+
+      {availability === "partial" && (
+        <Alert>
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            Algumas métricas on-chain estão temporariamente indisponíveis: {unavailableMetrics.join(", ")}.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Métricas Principais */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -151,9 +161,9 @@ export function OnChainMetrics() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Taxa Média</p>
+                <p className="text-sm text-muted-foreground">Taxas Totais</p>
                 <p className="text-2xl font-bold">${onChainData.averageFeeUsd?.toFixed(2) ?? "N/A"}</p>
-                <p className="text-xs text-muted-foreground">USD por transação</p>
+                <p className="text-xs text-muted-foreground">USD no período mais recente</p>
               </div>
               <Activity className="w-8 h-8 text-orange-500" />
             </div>
@@ -275,7 +285,7 @@ export function OnChainMetrics() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
-                  <Tooltip formatter={(value: number) => [`$${value.toFixed(2)}`, 'Taxa Média']} />
+                  <Tooltip formatter={(value: number) => [`$${value.toFixed(2)}`, 'Taxas Totais']} />
                   <Line type="monotone" dataKey="fees" stroke="#ef4444" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
@@ -293,13 +303,6 @@ export function OnChainMetrics() {
         </Alert>
       )}
 
-      <Alert>
-        <AlertTriangle className="h-4 w-4" />
-        <AlertDescription>
-          Exchange flow, baleias e fluxo institucional ficaram fora desta primeira integração por dependerem de provedores adicionais ou pagos. Nesta Sprint 1, o módulo foi migrado para métricas on-chain reais e verificáveis.
-          {error ? ` Detalhe técnico: ${error}` : ""}
-        </AlertDescription>
-      </Alert>
     </div>
   );
 }

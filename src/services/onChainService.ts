@@ -25,77 +25,66 @@ const fetchBlockchainChart = async (chartName: string, timespan: string = "30day
   return Array.isArray(data.values) ? data.values : [];
 };
 
-const buildFallbackHistory = (): OnChainHistoryPoint[] => {
-  const history: OnChainHistoryPoint[] = [];
-  const now = Math.floor(Date.now() / 1000);
-
-  for (let i = 29; i >= 0; i -= 1) {
-    const timestamp = now - i * 24 * 60 * 60;
-    history.push({
-      date: formatDate(timestamp),
-      timestamp,
-      activeAddresses: 650000 + i * 3500,
-      hashrate: 520 - i * 1.2,
-      mempoolSize: 18000 + i * 250,
-      fees: 2.5 + (i % 7) * 0.25,
-    });
-  }
-
-  return history;
-};
-
-const mergeSeriesIntoHistory = (
-  history: OnChainHistoryPoint[],
-  points: Array<{ x: number; y: number }>,
-  field: keyof Omit<OnChainHistoryPoint, "date" | "timestamp">
+const buildHistoryFromSeries = (
+  series: Array<{
+    points: Array<{ x: number; y: number }>;
+    field: keyof Omit<OnChainHistoryPoint, "date" | "timestamp">;
+  }>
 ) => {
-  const historyByDay = new Map(
-    history.map((point) => [
-      new Date(point.timestamp * 1000).toLocaleDateString("en-CA"),
-      point,
-    ])
-  );
+  const historyByDay = new Map<string, OnChainHistoryPoint>();
 
-  points.forEach((point) => {
-    const key = new Date(point.x * 1000).toLocaleDateString("en-CA");
-    const target = historyByDay.get(key);
-    if (target) {
-      target[field] = point.y;
-    }
+  series.forEach(({ points, field }) => {
+    points.forEach((point) => {
+      const key = new Date(point.x * 1000).toLocaleDateString("en-CA");
+      const entry = historyByDay.get(key) ?? {
+        date: formatDate(point.x),
+        timestamp: point.x,
+        activeAddresses: null,
+        hashrate: null,
+        mempoolSize: null,
+        fees: null,
+      };
+      entry[field] = point.y;
+      historyByDay.set(key, entry);
+    });
   });
 
-  return history;
+  return Array.from(historyByDay.values())
+    .sort((left, right) => left.timestamp - right.timestamp)
+    .slice(-30);
 };
 
 const buildOverviewFromHistory = (
   history: OnChainHistoryPoint[],
   recommendedFees: OnChainOverview["recommendedFees"]
-): OnChainOverview => {
+): OnChainOverview | null => {
+  if (history.length === 0) return null;
+
   const latest = history.at(-1);
-  const activeAddressesRange = history.map((point) => point.activeAddresses ?? 0);
-  const hashrateRange = history.map((point) => point.hashrate ?? 0);
-  const mempoolRange = history.map((point) => point.mempoolSize ?? 0);
-  const feeRange = history.map((point) => point.fees ?? 0);
+  const activeAddressesRange = history.flatMap((point) => point.activeAddresses === null ? [] : [point.activeAddresses]);
+  const hashrateRange = history.flatMap((point) => point.hashrate === null ? [] : [point.hashrate]);
+  const mempoolRange = history.flatMap((point) => point.mempoolSize === null ? [] : [point.mempoolSize]);
+  const feeRange = history.flatMap((point) => point.fees === null ? [] : [point.fees]);
 
   const adoption = normalizeToPercent(
     latest?.activeAddresses ?? null,
-    Math.min(...activeAddressesRange),
-    Math.max(...activeAddressesRange)
+    activeAddressesRange.length ? Math.min(...activeAddressesRange) : 0,
+    activeAddressesRange.length ? Math.max(...activeAddressesRange) : 0
   );
   const security = normalizeToPercent(
     latest?.hashrate ?? null,
-    Math.min(...hashrateRange),
-    Math.max(...hashrateRange)
+    hashrateRange.length ? Math.min(...hashrateRange) : 0,
+    hashrateRange.length ? Math.max(...hashrateRange) : 0
   );
   const activity = normalizeToPercent(
     latest?.mempoolSize ?? null,
-    Math.min(...mempoolRange),
-    Math.max(...mempoolRange)
+    mempoolRange.length ? Math.min(...mempoolRange) : 0,
+    mempoolRange.length ? Math.max(...mempoolRange) : 0
   );
   const feeComfort = 100 - normalizeToPercent(
     latest?.fees ?? null,
-    Math.min(...feeRange),
-    Math.max(...feeRange)
+    feeRange.length ? Math.min(...feeRange) : 0,
+    feeRange.length ? Math.max(...feeRange) : 0
   );
   const score = (adoption + security + activity + feeComfort) / 4;
 
@@ -122,7 +111,7 @@ export const fetchOnChainSnapshot = async (): Promise<ServiceResult<OnChainSnaps
       fetchBlockchainChart("n-unique-addresses"),
       fetchBlockchainChart("hash-rate"),
       fetchBlockchainChart("mempool-count", "30days"),
-      fetchBlockchainChart("fees-usd-per-transaction"),
+      fetchBlockchainChart("transaction-fees-usd"),
     ]);
 
   const recommendedFeesResult = await getMarketJson<any>("/cripto-dashboard/api/market/mempool/api/v1/fees/recommended")
@@ -140,32 +129,38 @@ export const fetchOnChainSnapshot = async (): Promise<ServiceResult<OnChainSnaps
   const mempool = mempoolResult.status === "fulfilled" ? mempoolResult.value : [];
   const fees = feesResult.status === "fulfilled" ? feesResult.value : [];
 
-  let history = buildFallbackHistory();
-  history = mergeSeriesIntoHistory(history, addresses, "activeAddresses");
-  history = mergeSeriesIntoHistory(history, hashrate, "hashrate");
-  history = mergeSeriesIntoHistory(history, mempool, "mempoolSize");
-  history = mergeSeriesIntoHistory(history, fees, "fees");
+  const history = buildHistoryFromSeries([
+    { points: addresses, field: "activeAddresses" },
+    { points: hashrate, field: "hashrate" },
+    { points: mempool, field: "mempoolSize" },
+    { points: fees, field: "fees" },
+  ]);
 
   let source: ServiceResult<OnChainSnapshot>["source"] = "real";
-  const errors: string[] = [];
+  const unavailableMetrics: string[] = [];
+  if (addressesResult.status === "rejected" || addresses.length === 0) unavailableMetrics.push("Endereços ativos");
+  if (hashrateResult.status === "rejected" || hashrate.length === 0) unavailableMetrics.push("Hashrate");
+  if (mempoolResult.status === "rejected" || mempool.length === 0) unavailableMetrics.push("Mempool");
+  if (feesResult.status === "rejected" || fees.length === 0) unavailableMetrics.push("Taxa média");
+  if (!recommendedFeesResult) unavailableMetrics.push("Taxas recomendadas");
 
-  if (addressesResult.status === "rejected") errors.push(addressesResult.reason?.message || "Falha em endereços ativos");
-  if (hashrateResult.status === "rejected") errors.push(hashrateResult.reason?.message || "Falha em hashrate");
-  if (mempoolResult.status === "rejected") errors.push(mempoolResult.reason?.message || "Falha em mempool");
-  if (feesResult.status === "rejected") errors.push(feesResult.reason?.message || "Falha em fees");
-  if (!recommendedFeesResult) errors.push("Falha em taxas recomendadas");
+  const availability = history.length === 0
+    ? "unavailable"
+    : unavailableMetrics.length === 0
+      ? "complete"
+      : "partial";
 
-  if (errors.length > 0) {
-    source = "fallback";
-  }
+  if (availability !== "complete") source = "fallback";
 
   return {
     data: {
       overview: buildOverviewFromHistory(history, recommendedFees),
       history,
+      availability,
+      unavailableMetrics,
     },
     source,
     updatedAt: new Date().toISOString(),
-    error: errors.length > 0 ? errors.join(" | ") : undefined,
+    error: availability === "unavailable" ? "Métricas on-chain indisponíveis no momento." : undefined,
   };
 };

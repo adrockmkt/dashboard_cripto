@@ -93,6 +93,8 @@ export interface OnChainHistoryPoint {
 }
 
 export interface OnChainSnapshot {
-  overview: OnChainOverview;
+  overview: OnChainOverview | null;
   history: OnChainHistoryPoint[];
+  availability: "complete" | "partial" | "unavailable";
+  unavailableMetrics: string[];
 }
