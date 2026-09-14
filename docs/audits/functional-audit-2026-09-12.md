@@ -18,21 +18,21 @@
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | NAV-01 | desktop | Sidebar: recolher/expandir | clique | largura e rótulos alternam | botão agora possui nome acessível que alterna entre recolher e expandir | `Sidebar.test.tsx` | aprovado | - | - |
 | NAV-02 | desktop | Sidebar: Dashboard | clique | abre panorama | pendente | - | pendente | - | - |
-| NAV-03 | desktop | Sidebar: Trading | clique | abre Trading | pendente | - | pendente | - | - |
-| NAV-04 | desktop | Sidebar: On-chain | clique | abre On-chain | pendente | - | pendente | - | - |
+| NAV-03 | desktop | Sidebar: Trading | clique | abre Trading | abriu `Trading Pro · BTC`, com gráfico e controles acessíveis | Playwright, 14/09, release `26b0479` | aprovado | - | - |
+| NAV-04 | desktop | Sidebar: On-chain | clique | abre On-chain | abriu métricas reais, quatro cards e tabs históricas | Playwright, 14/09, release `26b0479` | aprovado | - | - |
 | NAV-05 | desktop | Sidebar: Modelos | clique | abre modelos | pendente | - | pendente | - | - |
 | NAV-06 | desktop | Sidebar: Portfolio | clique | abre portfolio | pendente | - | pendente | - | - |
 | NAV-07 | desktop | Sidebar: Charts | clique | abre charts | pendente | - | pendente | - | - |
 | NAV-08 | desktop | Sidebar: Relatório | clique | abre relatório | pendente | - | pendente | - | - |
-| NAV-09 | desktop | Sidebar: Alertas | clique | abre alertas | pendente | - | pendente | - | - |
+| NAV-09 | desktop | Sidebar: Alertas | clique | abre alertas | aberto pela navegação inferior mobile; cabeçalho, ações e cards sem corte em 390 px | Playwright screenshot, 14/09, release `26b0479` | aprovado | - | - |
 | NAV-10 | desktop | Sidebar: Legado | clique | abre visão legado | pendente | - | pendente | - | - |
 | NAV-11 | mobile | botão de menu | clique/Escape | abre e fecha Sheet com foco correto | pendente | - | pendente | - | - |
-| NAV-12 | mobile | navegação inferior | cada item | abre a aba indicada | pendente | - | pendente | - | - |
+| NAV-12 | mobile | navegação inferior | cada item | abre a aba indicada | Alertas abriu corretamente em 390 px; demais destinos continuam pendentes | Playwright, 14/09, release `26b0479` | parcial | baixa | concluir destinos restantes |
 | DATA-01 | ambos | atualizar dados | clique | estado de recarga ou erro visível | pendente | - | pendente | - | - |
 | DATA-02 | ambos | busca global | abrir, buscar, selecionar | resultado navega para item correto | pendente | - | pendente | - | - |
 | DATA-03 | ambos | gráfico candlestick | trocar ativo/timeframe/atualizar | gráfico e rótulos atualizam | pendente | - | pendente | - | - |
 | DATA-04 | ambos | indicadores técnicos | tabs e controles | painel correto é mostrado | pendente | - | pendente | - | - |
-| DATA-05 | ambos | On-chain | atualizar e tabs | dados/tabs atualizam ou erro é claro | pendente | - | pendente | - | - |
+| DATA-05 | ambos | On-chain | atualizar e tabs | dados/tabs atualizam ou erro é claro | dados reais carregaram; cards usam o último ponto de cada série e hashrate é exibido em EH/s | Playwright, 14/09, release `26b0479`; `onChainService.test.ts` | aprovado | - | - |
 | DATA-06 | ambos | Stock-to-Flow | tabs | histórico, projeções e halvings alternam | pendente | - | pendente | - | - |
 | DATA-07 | ambos | Charts avançados | tabs | dominância, altcoins, F&G e técnico alternam | pendente | - | pendente | - | - |
 | DATA-08 | ambos | DCA | cenários, tabs, CSV e PDF | simulação/tabs/exportação respondem | pendente | - | pendente | - | - |
@@ -42,7 +42,7 @@
 | UTIL-03 | ambos | notificações | abrir/fechar/ler/limpar | painel e estados respondem | pendente | - | pendente | - | - |
 | UTIL-04 | ambos | favoritos | atualizar/remover | item e estado respondem sem erro | pendente | - | pendente | - | - |
 | UTIL-05 | ambos | alertas simples | som/limpar/remover | estado responde sem ação indevida | pendente | - | pendente | - | - |
-| UTIL-06 | ambos | alertas avançados | criar/cancelar/tabs/remover | formulário e abas respondem | pendente | - | pendente | - | - |
+| UTIL-06 | mobile | alertas avançados | criar/cancelar/tabs/remover | formulário e abas respondem | Novo Alerta abre formulário; Cancelar o fecha; aba Sinais alterna; Email e Webhook ficam explicitamente indisponíveis | Playwright, 14/09, release `26b0479` | parcial | baixa | testar criação/remover sem disparar alerta externo |
 | UTIL-07 | ambos | alertas personalizados | abrir/criar/cancelar/excluir | estados e validações respondem | pendente | - | pendente | - | - |
 | UTIL-08 | ambos | portfolio | holdings/adicionar/remover | formulário e lista respondem | pendente | - | pendente | - | - |
 | UTIL-09 | ambos | menu de exportação | CSV/PDF/JSON | menu e formato selecionado respondem | pendente | - | pendente | - | - |

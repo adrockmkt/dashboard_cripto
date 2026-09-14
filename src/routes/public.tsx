@@ -71,6 +71,31 @@ const routeDefinitions = [
     title: "Glossário cripto",
     description: "Definições claras para conceitos de blockchain, liquidez e custódia.",
   },
+  {
+    path: "/ferramentas",
+    title: "Ferramentas cripto",
+    description: "Guias da Ad Rock para usar as ferramentas do Cripto Dashboard com contexto, fontes e limites claros.",
+  },
+  {
+    path: "/ferramentas/metricas-on-chain",
+    title: "Métricas on-chain",
+    description: "Guia para interpretar atividade, hashrate, mempool e taxas no Cripto Dashboard.",
+  },
+  {
+    path: "/ferramentas/alertas-cripto",
+    title: "Alertas cripto",
+    description: "Entenda como configurar alertas de mercado e seus limites no Cripto Dashboard.",
+  },
+  {
+    path: "/ferramentas/simulador-dca",
+    title: "Simulador DCA",
+    description: "Guia educativo para testar cenários de aportes periódicos em criptoativos.",
+  },
+  {
+    path: "/ferramentas/grafico-bitcoin",
+    title: "Gráfico de Bitcoin",
+    description: "Como usar gráfico de velas e indicadores no Cripto Dashboard com mais contexto.",
+  },
 ] as const;
 
 export const publicRoutes: PublicRoute[] = routeDefinitions.map((route) => ({

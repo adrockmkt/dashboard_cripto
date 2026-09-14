@@ -15,6 +15,11 @@ import { EthereumTodayPage } from "./pages/public/EthereumTodayPage";
 import { FearGreedPage } from "./pages/public/FearGreedPage";
 import { DcaGuidePage } from "./pages/public/DcaGuidePage";
 import { GlossaryIndexPage } from "./pages/public/GlossaryIndexPage";
+import { ToolsHubPage } from "./pages/public/ToolsHubPage";
+import { OnChainGuidePage } from "./pages/public/OnChainGuidePage";
+import { AlertsGuidePage } from "./pages/public/AlertsGuidePage";
+import { DcaSimulatorGuidePage } from "./pages/public/DcaSimulatorGuidePage";
+import { TradingChartGuidePage } from "./pages/public/TradingChartGuidePage";
 
 const Index = lazy(() => import("./pages/Index"));
 
@@ -36,6 +41,11 @@ const App = () => (
         <Route path="/fear-greed-cripto" element={<FearGreedPage />} />
         <Route path="/guia-dca-cripto" element={<DcaGuidePage />} />
         <Route path="/glossario-cripto" element={<GlossaryIndexPage />} />
+        <Route path="/ferramentas" element={<ToolsHubPage />} />
+        <Route path="/ferramentas/metricas-on-chain" element={<OnChainGuidePage />} />
+        <Route path="/ferramentas/alertas-cripto" element={<AlertsGuidePage />} />
+        <Route path="/ferramentas/simulador-dca" element={<DcaSimulatorGuidePage />} />
+        <Route path="/ferramentas/grafico-bitcoin" element={<TradingChartGuidePage />} />
       </Routes>
     </TooltipProvider>
   </ErrorBoundary>
