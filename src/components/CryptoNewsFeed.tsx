@@ -54,12 +54,12 @@ export function CryptoNewsFeed() {
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'bitcoin': return 'bg-orange-500'
-      case 'ethereum': return 'bg-blue-500'
-      case 'market': return 'bg-green-500'
-      case 'regulation': return 'bg-red-500'
-      case 'technology': return 'bg-purple-500'
-      default: return 'bg-gray-500'
+      case 'bitcoin': return 'bg-orange-700'
+      case 'ethereum': return 'bg-blue-700'
+      case 'market': return 'bg-green-700'
+      case 'regulation': return 'bg-red-700'
+      case 'technology': return 'bg-purple-700'
+      default: return 'bg-gray-700'
     }
   }
 
@@ -104,6 +104,7 @@ export function CryptoNewsFeed() {
             size="sm"
             onClick={loadNews}
             disabled={isLoading}
+            aria-label="Atualizar notícias"
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
           </Button>

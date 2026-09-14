@@ -107,7 +107,7 @@ export const OnboardingTour = () => {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">{step.description}</p>
-          <div className="mt-6 flex gap-1" aria-label={`Etapa ${currentStep + 1} de ${steps.length}`}>
+          <div className="mt-6 flex gap-1" role="group" aria-label={`Etapa ${currentStep + 1} de ${steps.length}`}>
             {steps.map((_, index) => (
               <div
                 key={index}

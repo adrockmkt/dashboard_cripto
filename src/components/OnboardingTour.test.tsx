@@ -17,6 +17,7 @@ describe("OnboardingTour", () => {
     act(() => vi.advanceTimersByTime(1000));
 
     expect(screen.getByRole("complementary", { name: "Introdução ao Cripto Dashboard" })).toBeVisible();
+    expect(screen.getByRole("group", { name: "Etapa 1 de 6" })).toBeVisible();
     expect(screen.queryByTestId("onboarding-backdrop")).not.toBeInTheDocument();
   });
 });

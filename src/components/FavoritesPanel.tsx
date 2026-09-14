@@ -57,6 +57,7 @@ export function FavoritesPanel() {
             variant="outline"
             size="sm"
             onClick={refreshFavorites}
+            aria-label="Atualizar favoritos"
           >
             <RefreshCw className="w-4 h-4" />
           </Button>
@@ -101,6 +102,7 @@ export function FavoritesPanel() {
                   size="sm"
                   onClick={() => removeFromFavorites(crypto.id)}
                   className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                  aria-label={`Remover ${crypto.name} dos favoritos`}
                 >
                   <Heart className="w-4 h-4 fill-current" />
                 </Button>

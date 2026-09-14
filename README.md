@@ -11,6 +11,15 @@ Este README descreve o estado atual real do projeto. Para planejamento de evoluc
 - Responsavel pelo produto e conteudo: Ad Rock Digital Mkt
 - Responsavel pela infraestrutura e publicacao: a definir antes da primeira rota editorial publica
 
+### Indexação do domínio
+
+Como o dashboard é servido em um subdiretório, o protocolo de crawlers consulta
+`/robots.txt` na raiz de `mobiledelivery.com.br`. A versão válida desse arquivo
+está versionada em `ops/nginx/mobiledelivery-root-robots.txt` e deve ser
+instalada em `/home/adrock/apps/ferramenta_profissional_mkt/dist/robots.txt` no
+servidor. Ela libera o domínio e anuncia o sitemap do Cripto Dashboard, sem
+alterar o fallback da SPA principal.
+
 O arquivo `.env.example` documenta as variaveis publicas esperadas em cada
 ambiente. Ele nunca deve receber chaves reais; use um arquivo `.env.local`
 ignorado pelo Git para dados de desenvolvimento.

@@ -63,6 +63,7 @@ const ApiKeyConfig = () => {
                 variant="outline"
                 size="icon"
                 onClick={() => toggleShowKey('coingecko')}
+                aria-label={showKeys.coingecko ? "Ocultar chave CoinGecko" : "Mostrar chave CoinGecko"}
               >
                 {showKeys.coingecko ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </Button>
@@ -88,6 +89,7 @@ const ApiKeyConfig = () => {
                 variant="outline"
                 size="icon"
                 onClick={() => toggleShowKey('coinmarketcap')}
+                aria-label={showKeys.coinmarketcap ? "Ocultar chave CoinMarketCap" : "Mostrar chave CoinMarketCap"}
               >
                 {showKeys.coinmarketcap ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </Button>

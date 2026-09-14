@@ -36,7 +36,9 @@ As capturas de implementação foram revisadas diretamente no In-app Browser dur
 - Medição após as otimizações: **mobile** — desempenho 70, acessibilidade 87, boas práticas 100 e SEO 61; FCP 3,9 s, LCP 4,8 s, TBT 110 ms e CLS 0,059.
 - **Desktop** — desempenho 96, acessibilidade 87, boas práticas 100 e SEO 61; FCP 0,8 s, LCP 1,0 s, TBT 20 ms e CLS 0,063.
 - A auditoria identificou a home como `noindex,nofollow`. A tag estática, os metadados pós-hidratação e o sitemap foram corrigidos para `index,follow` e incluem a home.
-- O PageSpeed também consulta `/robots.txt` na raiz do domínio. Esse endpoint pertence à outra aplicação hospedada em `mobiledelivery.com.br` e devolve HTML em vez do formato robots; a correção requer alteração específica na configuração da raiz, fora do diretório deste projeto.
+- O PageSpeed também consulta `/robots.txt` na raiz do domínio. O arquivo versionado em `ops/nginx/mobiledelivery-root-robots.txt` deve ser instalado no diretório estático da aplicação raiz; ele preserva o fallback da SPA e anuncia o sitemap deste dashboard.
+- Após a publicação do `robots.txt` raiz, o PageSpeed confirmou **SEO 100**. A variação entre execuções de performance móvel é esperada em laboratório; a referência passou a priorizar FCP, LCP, TBT e CLS, não apenas o índice agregado.
+- A auditoria de acessibilidade identificou controles só com ícones, uma etiqueta ARIA aplicada a elemento genérico e contraste insuficiente nas categorias de notícia. Foram adicionados nomes acessíveis, `role="group"` ao progresso do onboarding e tons mais escuros nas etiquetas coloridas.
 
 ## Avaliação das superfícies de fidelidade
 

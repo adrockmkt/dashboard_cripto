@@ -245,6 +245,8 @@ export function NotificationCenter() {
         size="icon"
         onClick={() => setIsOpen(!isOpen)}
         className="relative"
+        aria-label={isOpen ? "Fechar notificações" : "Abrir notificações"}
+        aria-expanded={isOpen}
       >
         <Bell className="h-4 w-4" />
         {unreadCount > 0 && (
@@ -280,6 +282,7 @@ export function NotificationCenter() {
                     size="icon"
                     onClick={() => setIsOpen(false)}
                     className="h-8 w-8"
+                    aria-label="Fechar notificações"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -324,6 +327,7 @@ export function NotificationCenter() {
                               removeNotification(notification.id);
                             }}
                             className="h-6 w-6 opacity-50 hover:opacity-100"
+                            aria-label={`Remover notificação: ${notification.title}`}
                           >
                             <X className="h-3 w-3" />
                           </Button>

@@ -77,6 +77,7 @@ const AlertsPanel = ({ technicalIndicators }: AlertsPanelProps) => {
               variant="outline"
               size="sm"
               onClick={() => setSoundEnabled(!soundEnabled)}
+              aria-label={soundEnabled ? "Desativar som de alertas" : "Ativar som de alertas"}
             >
               {soundEnabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
             </Button>
@@ -125,6 +126,7 @@ const AlertsPanel = ({ technicalIndicators }: AlertsPanelProps) => {
                     size="sm"
                     onClick={() => removeAlert(alert.id)}
                     className="h-6 w-6 p-0"
+                    aria-label={`Remover alerta para ${alert.symbol}`}
                   >
                     <X className="w-3 h-3" />
                   </Button>

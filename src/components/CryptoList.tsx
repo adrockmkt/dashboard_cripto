@@ -76,7 +76,7 @@ const CryptoList = () => {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             Top Cryptocurrencies
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
+            <Button variant="outline" size="sm" onClick={() => refetch()} aria-label="Atualizar dados">
               <RefreshCw className="w-4 h-4" />
             </Button>
           </CardTitle>
