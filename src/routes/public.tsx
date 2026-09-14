@@ -7,6 +7,11 @@ export interface PublicRoute {
 
 const routeDefinitions = [
   {
+    path: "/",
+    title: "Dashboard de criptomoedas",
+    description: "Ferramenta gratuita da Ad Rock para acompanhar criptomoedas, dados de mercado, indicadores e contexto de risco.",
+  },
+  {
     path: "/sobre",
     title: "Sobre a plataforma",
     description: "Conheça a proposta do Cripto Dashboard, ferramenta da Ad Rock para acompanhar o mercado cripto com mais contexto.",

@@ -30,8 +30,7 @@ export function SeoHead() {
     const pageMeta: PageMeta = getPublicRoute(pathname)?.meta ?? buildPageMeta({
       path: pathname,
       title: "Dashboard de criptomoedas",
-      description: "Ferramenta operacional para acompanhar criptomoedas. Não é uma página editorial indexável.",
-      robots: "noindex,nofollow",
+      description: "Ferramenta gratuita da Ad Rock para acompanhar criptomoedas, dados de mercado, indicadores e contexto de risco.",
     });
 
     document.title = pageMeta.title;

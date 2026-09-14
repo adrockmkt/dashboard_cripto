@@ -31,6 +31,13 @@ As capturas de implementação foram revisadas diretamente no In-app Browser dur
 - A marca distribuída pela interface foi reduzida de 1024 × 1024 / 608,77 kB para 320 × 320 / 104,74 kB. É a mesma marca Ad Rock, preservando transparência; a redução é de aproximadamente 83% no arquivo transferido.
 - A exportação em PDF deixou de integrar a rota inicial: o chunk `Index` passou de 552,36 kB / 175,65 kB gzip para 140,82 kB / 41,67 kB gzip. `jspdf` e sua tabela são carregados apenas ao solicitar “Exportar PDF”; CSV e JSON seguem disponíveis sem espera adicional.
 
+## PageSpeed Insights — 14 de setembro de 2026
+
+- Medição após as otimizações: **mobile** — desempenho 70, acessibilidade 87, boas práticas 100 e SEO 61; FCP 3,9 s, LCP 4,8 s, TBT 110 ms e CLS 0,059.
+- **Desktop** — desempenho 96, acessibilidade 87, boas práticas 100 e SEO 61; FCP 0,8 s, LCP 1,0 s, TBT 20 ms e CLS 0,063.
+- A auditoria identificou a home como `noindex,nofollow`. A tag estática, os metadados pós-hidratação e o sitemap foram corrigidos para `index,follow` e incluem a home.
+- O PageSpeed também consulta `/robots.txt` na raiz do domínio. Esse endpoint pertence à outra aplicação hospedada em `mobiledelivery.com.br` e devolve HTML em vez do formato robots; a correção requer alteração específica na configuração da raiz, fora do diretório deste projeto.
+
 ## Avaliação das superfícies de fidelidade
 
 ### Tipografia e copy
