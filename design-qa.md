@@ -29,6 +29,7 @@ As capturas de implementação foram revisadas diretamente no In-app Browser dur
 - Medição após lazy loading de Trading Pro, On-chain, modelos, alertas e indicadores: `Index` com 552,36 kB / 175,65 kB gzip.
 - Redução do JavaScript inicial: aproximadamente 50% em gzip. Os módulos adiados são baixados somente ao abrir sua respectiva aba.
 - A marca distribuída pela interface foi reduzida de 1024 × 1024 / 608,77 kB para 320 × 320 / 104,74 kB. É a mesma marca Ad Rock, preservando transparência; a redução é de aproximadamente 83% no arquivo transferido.
+- A exportação em PDF deixou de integrar a rota inicial: o chunk `Index` passou de 552,36 kB / 175,65 kB gzip para 140,82 kB / 41,67 kB gzip. `jspdf` e sua tabela são carregados apenas ao solicitar “Exportar PDF”; CSV e JSON seguem disponíveis sem espera adicional.
 
 ## Avaliação das superfícies de fidelidade
 
@@ -54,7 +55,7 @@ As capturas de implementação foram revisadas diretamente no In-app Browser dur
 
 ## Findings
 
-- [P3] O chunk principal ainda tem aproximadamente 552 kB minificado. Impacto: pode limitar o desempenho mobile descrito no PageSpeed em conexões lentas. Uma iteração posterior pode separar bibliotecas compartilhadas de gráficos e exportação.
+- [P3] A base compartilhada da aplicação ainda possui aproximadamente 394 kB minificados. Impacto: pode limitar o desempenho mobile descrito no PageSpeed em conexões lentas. Uma iteração posterior pode separar bibliotecas compartilhadas de interface e dados, após nova medição de PageSpeed.
 - [P3] O agrupamento “Mais” na navegação inferior ainda não foi criado. Os destinos permanecem acessíveis pelo menu lateral.
 
 ## Histórico de iteração

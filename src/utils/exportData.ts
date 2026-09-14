@@ -1,6 +1,3 @@
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-
 export interface ExportData {
   headers: string[];
   rows: any[][];
@@ -35,7 +32,11 @@ export const exportToCSV = ({ headers, rows, filename }: ExportData) => {
   document.body.removeChild(link);
 };
 
-export const exportToPDF = ({ headers, rows, title, filename }: ExportData) => {
+export const exportToPDF = async ({ headers, rows, title, filename }: ExportData) => {
+  const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
+    import('jspdf'),
+    import('jspdf-autotable'),
+  ]);
   const doc = new jsPDF();
   
   // Add title

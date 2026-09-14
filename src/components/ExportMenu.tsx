@@ -15,14 +15,14 @@ interface ExportMenuProps {
 }
 
 export const ExportMenu = ({ data }: ExportMenuProps) => {
-  const handleExport = (format: 'csv' | 'pdf' | 'json') => {
+  const handleExport = async (format: 'csv' | 'pdf' | 'json') => {
     try {
       switch (format) {
         case 'csv':
           exportToCSV(data);
           break;
         case 'pdf':
-          exportToPDF(data);
+          await exportToPDF(data);
           break;
         case 'json':
           exportToJSON(data);
